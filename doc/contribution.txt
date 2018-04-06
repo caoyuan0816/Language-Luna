@@ -1,0 +1,19 @@
+# Contribution Document
+
+### Team Members
+- Zelin Bao
+- Yuan Cao
+- Yiru Hu
+- Lei Zhang
+
+### Current Contribution
+- Zelin Bao: Milestone 2 document 4.5 4.6
+- Yuan Cao: Milestone 2 document 1, 2, 3, 4.1-4.2, 5.2, 6
+- Yiru Hu: Milestone 2 document 4.3, 4.4
+- Lei Zhang: Milestone 2 document 4.7 4.8 5.1
+
+### Contribution Plan
+- Zelin Bao: bytecode generator, help documents and testing
+- Yuan Cao: interpreter and bash scripts
+- Yiru Hu: bytecode generator, help documents and testing
+- Lei Zhang: scanner, parser and cmake files

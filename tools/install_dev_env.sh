@@ -2,5 +2,5 @@
 
 echo "Installing Development Thirdlibs - Need Root Privilege"
 
-sudo apt-get install flex bison cmake
+sudo apt-get install build-essential flex bison cmake
 

@@ -13,6 +13,7 @@ int main(int argc, char** argv){
     }
 
     VirtualMachine vm(argv[1]);
+    vm.run();
 
     return 0;
 }

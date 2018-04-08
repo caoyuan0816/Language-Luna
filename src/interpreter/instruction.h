@@ -15,6 +15,7 @@ private:
 public:
     Instruction(std::string command, std::vector<std::string> opList);
     int getCommandIndex();
+    std::string getOp(int index);
 };
 
 #endif

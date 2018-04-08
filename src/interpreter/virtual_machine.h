@@ -12,9 +12,16 @@
 class VirtualMachine{
 private:
     std::vector<Instruction> instructions;
+    std::stack<void*> stack;
+    int curInstructionPos = 0;
+
     void loadInstructions(const char* bytecodeFileName);
+    void runInstruction();
+    void LDC(Instruction ins);
+    void ADD(Instruction ins);
 public:
     VirtualMachine(const char* bytecodeFileName);
+    ~VirtualMachine();
     void run();
 };
 

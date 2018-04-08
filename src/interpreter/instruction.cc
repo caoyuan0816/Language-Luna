@@ -21,3 +21,7 @@ Instruction::Instruction(std::string command, std::vector<std::string> opList){
 int Instruction::getCommandIndex(){
     return this->commandIndex;
 }
+
+std::string Instruction::getOp(int index){
+    return this->opList[index];
+}

@@ -1,10 +1,12 @@
 #include <iostream>
 
+#include "virtual_machine.h"
+
 using namespace std;
 
-// Entry point of interpreter
 int main(void){
 
+    VirtualMachine vm;
 
     return 0;
 }

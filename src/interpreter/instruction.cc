@@ -5,8 +5,9 @@ std::string const Instruction::INSTRUCTION_LIST[] =
 {"LDV", "LDC", "HALT", "CALL", "RET", "ADD", "SUB", "MUL", "DIV", "GT",
  "GE", "LT", "LE", "EQ", "NEQ", "JMP", "JZ", "ASN", "DUP"};
 
-Instruction::Instruction(std::string command){
+Instruction::Instruction(std::string command, std::vector<std::string> opList){
     this->command = command;
+    this->opList = opList;
     //Finding commandIndex in INSTRUCTION_LIST
     auto res = std::find(INSTRUCTION_LIST, INSTRUCTION_LIST + 19, command);
     if(res != INSTRUCTION_LIST + 19){

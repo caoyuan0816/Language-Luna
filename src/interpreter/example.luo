@@ -1,3 +1,3 @@
-PUS H 1
-PUSH 2
-ADD
+LDC 1
+LDV 2
+ADD 

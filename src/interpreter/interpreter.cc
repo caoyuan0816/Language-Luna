@@ -1,16 +1,18 @@
 #include <iostream>
 
 #include "virtual_machine.h"
-#include "instruction.h"
 
 using namespace std;
 
-int main(void){
+int main(int argc, char** argv){
 
-    VirtualMachine vm;
+    if(argc == 1){
+        cout << "No byte-code file for interpreter!" << endl;
+        cout << "Usage: ./luna bytecodeFIle.luo" << endl;
+        return 1;
+    }
 
-    Instruction ins("DIV");
-    cout << ins.getCommandIndex() << endl;
+    VirtualMachine vm(argv[1]);
 
     return 0;
 }

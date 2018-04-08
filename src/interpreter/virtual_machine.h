@@ -1,13 +1,21 @@
+#ifndef VIRTUAL_MACHINE_H
+#define VIRTUAL_MACHINE_H
+
 #include <vector>
 #include <unordered_map>
+#include <stack>
+#include <fstream>
+#include <string>
 
 #include "instruction.h"
 
-using namespace std;
-
 class VirtualMachine{
 private:
-    vector<Instruction> instructions;
+    std::vector<Instruction> instructions;
+    void loadInstructions(const char* bytecodeFileName);
 public:
-    VirtualMachine(){}
+    VirtualMachine(const char* bytecodeFileName);
+    void run();
 };
+
+#endif

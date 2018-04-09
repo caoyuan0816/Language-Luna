@@ -11,11 +11,11 @@ private:
     static std::string const INSTRUCTION_LIST[];
     std::string command;
     int commandIndex;
-    std::vector<std::string> opList;
+    std::vector<std::string> opStrList;
 public:
-    Instruction(std::string command, std::vector<std::string> opList);
+    Instruction(std::string command, std::vector<std::string> opStrList);
     int getCommandIndex();
-    std::string getOp(int index);
+    std::vector<std::string> getOpStrList();
 };
 
 #endif

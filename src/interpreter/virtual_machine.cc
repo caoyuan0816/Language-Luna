@@ -20,7 +20,7 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
         while(std::getline(bytecodeFile, line)){
             //Use token ' ' split line
             bool isCommand = true;
-            std::vector<std::string> opList;
+            std::vector<std::string> opStrList;
             std::string command;
             std::size_t pos = 0;
             while((pos = line.find(" ")) != std::string::npos){
@@ -30,12 +30,12 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
                     command = token;
                     isCommand = false;
                 }else{
-                    opList.push_back(token);
+                    opStrList.push_back(token);
                 }
             }
-            opList.push_back(line);
+            opStrList.push_back(line);
             //Build Instruction per line
-            Instruction *ins = new Instruction(command, opList);
+            Instruction *ins = new Instruction(command, opStrList);
             this->instructions.push_back(*ins);
         }
     }else{
@@ -49,7 +49,7 @@ void VirtualMachine::runInstruction(){
     Instruction curInstruction = instructions[curInstructionPos];
     switch(curInstruction.getCommandIndex()){
         case(0): break;
-        case(1): LDC(curInstruction); break;
+        case(1): LDC(curInstruction);break;
         case(2): break;
         case(3): break;
         case(4): break;
@@ -73,27 +73,34 @@ void VirtualMachine::runInstruction(){
 }
 
 //Load Constant value to stack
-void VirtualMachine::LDC(Instruction ins){
+void VirtualMachine::LDC(Instruction &ins){
 
-    int* value = new int;
-    *value = std::stoi(ins.getOp(0));
-    stack.push(value);
+    Operand *operand = new Operand(ins.getCommandIndex(), ins.getOpStrList());
+    stack.push(*operand);
 
     return ;
 }
 
 //Pop and add two top values in stack, and push result into stack
-void VirtualMachine::ADD(Instruction ins){
+void VirtualMachine::ADD(Instruction &ins){
 
-    int a = *(int *)stack.top();
-    delete (int *)stack.top();
-    stack.pop();
-    int b = *(int *)stack.top();
-    delete (int *)stack.top();
-    stack.pop();
-    int* result = new int;
-    *result = a + b;
-    stack.push(result);
+    Operand op1 = stack.top(); stack.pop();
+    Operand op2 = stack.top(); stack.pop();
+
+    if(op1.getType() == OP_TYPE::DOUBLE || op2.getType() == OP_TYPE::DOUBLE){
+        double a = op1.getValue<double>();
+        double b = op2.getValue<double>();
+        double *result = new double;
+        *result = a + b;
+        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
+        stack.push(*resultOp);
+    }else{
+        int a = op1.getValue<int>();
+        int b = op2.getValue<int>();
+        int *result = new int;
+        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
+        stack.push(*resultOp);
+    }
 
     return ;
 }
@@ -105,8 +112,12 @@ void VirtualMachine::run(){
         curInstructionPos++;
     }
 
-    int result = *(int *)stack.top();
-    std::cout << result << std::endl;
+    Operand op = stack.top();
+    if(op.getType() == OP_TYPE::INT){
+        std::cout << op.getValue<int>() << std::endl;
+    }else{
+        std::cout << op.getValue<double>() << std::endl;
+    }
 
     return ;
 }

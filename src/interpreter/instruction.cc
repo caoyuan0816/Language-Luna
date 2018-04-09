@@ -5,9 +5,9 @@ std::string const Instruction::INSTRUCTION_LIST[] =
 {"LDV", "LDC", "HALT", "CALL", "RET", "ADD", "SUB", "MUL", "DIV", "GT",
  "GE", "LT", "LE", "EQ", "NEQ", "JMP", "JZ", "ASN", "DUP"};
 
-Instruction::Instruction(std::string command, std::vector<std::string> opList){
+Instruction::Instruction(std::string command, std::vector<std::string> opStrList){
     this->command = command;
-    this->opList = opList;
+    this->opStrList = opStrList;
     //Finding commandIndex in INSTRUCTION_LIST
     auto res = std::find(INSTRUCTION_LIST, INSTRUCTION_LIST + 19, command);
     if(res != INSTRUCTION_LIST + 19){
@@ -16,12 +16,17 @@ Instruction::Instruction(std::string command, std::vector<std::string> opList){
         this->commandIndex = -1;
         std::cerr << "Error when initial instruction: " << command << std::endl;
     }
+
+    std::cout << command << " ";
+    for(int i = 0; i < opStrList.size(); i++){
+        std::cout << opStrList[i] << " ";
+    }std::cout << std::endl;
 }
 
 int Instruction::getCommandIndex(){
     return this->commandIndex;
 }
 
-std::string Instruction::getOp(int index){
-    return this->opList[index];
+std::vector<std::string> Instruction::getOpStrList(){
+    return this->opStrList;
 }

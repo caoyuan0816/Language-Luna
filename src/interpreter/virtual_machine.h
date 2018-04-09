@@ -6,19 +6,21 @@
 #include <stack>
 #include <fstream>
 #include <string>
+#include <sstream>
 
 #include "instruction.h"
+#include "operand.h"
 
 class VirtualMachine{
 private:
     std::vector<Instruction> instructions;
-    std::stack<void*> stack;
+    std::stack<Operand> stack;
     int curInstructionPos = 0;
 
     void loadInstructions(const char* bytecodeFileName);
     void runInstruction();
-    void LDC(Instruction ins);
-    void ADD(Instruction ins);
+    void LDC(Instruction &ins);
+    void ADD(Instruction &ins);
 public:
     VirtualMachine(const char* bytecodeFileName);
     ~VirtualMachine();

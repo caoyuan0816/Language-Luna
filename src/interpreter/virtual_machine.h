@@ -20,6 +20,7 @@ private:
     void loadInstructions(const char* bytecodeFileName);
     void runInstruction();
     void LDC(Instruction &ins);
+    void HALT(Instruction &ins);
     void ADD(Instruction &ins);
     void SUB(Instruction &ins);
     void MUL(Instruction &ins);

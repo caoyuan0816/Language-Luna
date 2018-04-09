@@ -50,7 +50,7 @@ void VirtualMachine::runInstruction(){
     switch(curInstruction.getCommandIndex()){
         case(0): break;
         case(1): LDC(curInstruction);break;
-        case(2): break;
+        case(2): HALT(curInstruction); break;
         case(3): break;
         case(4): break;
         case(5): ADD(curInstruction); break;
@@ -68,6 +68,7 @@ void VirtualMachine::runInstruction(){
         case(17): break;
         case(18): break;
         case(19): break;
+        case(20): break;
         default: break;
     }
 }
@@ -79,6 +80,11 @@ void VirtualMachine::LDC(Instruction &ins){
     stack.push(*operand);
 
     return ;
+}
+
+//Terminate program
+void VirtualMachine::HALT(Instruction &ins){
+    curInstructionPos = instructions.size();
 }
 
 //Pop and add two top values in stack, and push result into stack
@@ -187,12 +193,13 @@ void VirtualMachine::run(){
         curInstructionPos++;
     }
 
+/*
     Operand op = stack.top();
     if(op.getType() == OP_TYPE::INT){
         std::cout << op.getValue<int>() << std::endl;
     }else{
         std::cout << op.getValue<double>() << std::endl;
     }
-
+*/
     return ;
 }

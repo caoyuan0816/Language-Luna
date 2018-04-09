@@ -54,9 +54,9 @@ void VirtualMachine::runInstruction(){
         case(3): break;
         case(4): break;
         case(5): ADD(curInstruction); break;
-        case(6): break;
-        case(7): break;
-        case(8): break;
+        case(6): SUB(curInstruction); break;
+        case(7): MUL(curInstruction);break;
+        case(8): DIV(curInstruction);break;
         case(9): break;
         case(10): break;
         case(11): break;
@@ -98,6 +98,81 @@ void VirtualMachine::ADD(Instruction &ins){
         int a = op1.getValue<int>();
         int b = op2.getValue<int>();
         int *result = new int;
+        *result = a + b;
+        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
+        stack.push(*resultOp);
+    }
+
+    return ;
+}
+void VirtualMachine::SUB(Instruction &ins){
+    Operand op1 = stack.top(); stack.pop();
+    Operand op2 = stack.top(); stack.pop();
+
+    if(op1.getType() == OP_TYPE::DOUBLE || op2.getType() == OP_TYPE::DOUBLE){
+        double a = op1.getValue<double>();
+        double b = op2.getValue<double>();
+        double *result = new double;
+        *result = a - b;
+        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
+        stack.push(*resultOp);
+    }else{
+        int a = op1.getValue<int>();
+        int b = op2.getValue<int>();
+        int *result = new int;
+        *result = a - b;
+        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
+        stack.push(*resultOp);
+    }
+
+    return ;
+}
+
+void VirtualMachine::MUL(Instruction &ins){
+    Operand op1 = stack.top(); stack.pop();
+    Operand op2 = stack.top(); stack.pop();
+
+    if(op1.getType() == OP_TYPE::DOUBLE || op2.getType() == OP_TYPE::DOUBLE){
+        double a = op1.getValue<double>();
+        double b = op2.getValue<double>();
+        double *result = new double;
+        *result = a * b;
+        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
+        stack.push(*resultOp);
+    }else{
+        int a = op1.getValue<int>();
+        int b = op2.getValue<int>();
+        int *result = new int;
+        *result = a * b;
+        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
+        stack.push(*resultOp);
+    }
+
+    return ;
+}
+
+void VirtualMachine::DIV(Instruction &ins){
+    Operand op1 = stack.top(); stack.pop();
+    Operand op2 = stack.top(); stack.pop();
+
+    if(op1.getType() == OP_TYPE::DOUBLE || op2.getType() == OP_TYPE::DOUBLE){
+        double a = op1.getValue<double>();
+        double b = op2.getValue<double>();
+        if(b == 0.0){
+            //TODO
+        }
+        double *result = new double;
+        *result = a / b;
+        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
+        stack.push(*resultOp);
+    }else{
+        int a = op1.getValue<int>();
+        int b = op2.getValue<int>();
+        if(b == 0){
+            //TODO
+        }
+        int *result = new int;
+        *result = a / b;
         Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
         stack.push(*resultOp);
     }

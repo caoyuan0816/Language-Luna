@@ -21,6 +21,9 @@ private:
     void runInstruction();
     void LDC(Instruction &ins);
     void ADD(Instruction &ins);
+    void SUB(Instruction &ins);
+    void MUL(Instruction &ins);
+    void DIV(Instruction &ins);
 public:
     VirtualMachine(const char* bytecodeFileName);
     ~VirtualMachine();

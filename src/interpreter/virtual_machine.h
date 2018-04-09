@@ -8,8 +8,29 @@
 #include <string>
 #include <sstream>
 
+#include "macros.h"
 #include "instruction.h"
 #include "operand.h"
+
+#define VM_CALCULATION(name, operation) void VirtualMachine::name(Instruction &ins){\
+    Operand op1 = stack.top(); stack.pop();\
+    Operand op2 = stack.top(); stack.pop();\
+    if(op1.getType() == OP_TYPE::DOUBLE || op2.getType() == OP_TYPE::DOUBLE){\
+        double a = op1.getValue<double>();\
+        double b = op2.getValue<double>();\
+        double *result = new double;\
+        *result = a operation b;\
+        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);\
+        stack.push(*resultOp);\
+    }else{\
+        int a = op1.getValue<int>();\
+        int b = op2.getValue<int>();\
+        int *result = new int;\
+        *result = a operation b;\
+        Operand *resultOp = new Operand(OP_TYPE::INT, (void *)result);\
+        stack.push(*resultOp);\
+    }\
+    return ;}
 
 class VirtualMachine{
 private:

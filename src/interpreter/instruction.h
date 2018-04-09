@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "macros.h"
+
 class Instruction{
 private:
     static std::string const INSTRUCTION_LIST[];

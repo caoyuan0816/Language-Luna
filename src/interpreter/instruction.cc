@@ -17,10 +17,11 @@ Instruction::Instruction(std::string command, std::vector<std::string> opStrList
         std::cerr << "Error when initial instruction: " << command << std::endl;
     }
 
-    std::cout << command << " ";
+    LOGI(command)
     for(int i = 0; i < opStrList.size(); i++){
-        std::cout << opStrList[i] << " ";
-    }std::cout << std::endl;
+        LOGI(opStrList[i])
+    }
+    LOG("")
 }
 
 int Instruction::getCommandIndex(){

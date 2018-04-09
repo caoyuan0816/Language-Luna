@@ -105,7 +105,7 @@ void VirtualMachine::ADD(Instruction &ins){
         int b = op2.getValue<int>();
         int *result = new int;
         *result = a + b;
-        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
+        Operand *resultOp = new Operand(OP_TYPE::INT, (void *)result);
         stack.push(*resultOp);
     }
 
@@ -127,7 +127,7 @@ void VirtualMachine::SUB(Instruction &ins){
         int b = op2.getValue<int>();
         int *result = new int;
         *result = a - b;
-        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
+        Operand *resultOp = new Operand(OP_TYPE::INT, (void *)result);
         stack.push(*resultOp);
     }
 
@@ -150,7 +150,7 @@ void VirtualMachine::MUL(Instruction &ins){
         int b = op2.getValue<int>();
         int *result = new int;
         *result = a * b;
-        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);
+        Operand *resultOp = new Operand(OP_TYPE::INT, (void *)result);
         stack.push(*resultOp);
     }
 
@@ -193,13 +193,11 @@ void VirtualMachine::run(){
         curInstructionPos++;
     }
 
-/*
     Operand op = stack.top();
     if(op.getType() == OP_TYPE::INT){
         std::cout << op.getValue<int>() << std::endl;
     }else{
         std::cout << op.getValue<double>() << std::endl;
     }
-*/
     return ;
 }

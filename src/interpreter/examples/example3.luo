@@ -1,4 +1,4 @@
-LDC 1
 LDC 2
-ADD
+LDC 2
+EQ
 PRT

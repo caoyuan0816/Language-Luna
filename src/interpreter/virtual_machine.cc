@@ -49,27 +49,26 @@ void VirtualMachine::runInstruction(){
     Instruction curInstruction = instructions[curInstructionPos];
     switch(curInstruction.getCommandIndex()){
         case(0): break;
-        case(1): LDC(curInstruction); curInstructionPos++; break;
-        case(2): HALT(curInstruction); curInstructionPos = instructions.size(); break;
+        case(1): LDC(curInstruction); break;
+        case(2): HALT(curInstruction); break;
         case(3): break;
         case(4): break;
-        case(5): ADD(curInstruction); curInstructionPos++; break;
-        case(6): SUB(curInstruction); curInstructionPos++; break;
-        case(7): MUL(curInstruction); curInstructionPos++; break;
-        case(8): DIV(curInstruction); curInstructionPos++; break;
-        case(9): break;
-        case(10): break;
-        case(11): break;
-        case(12): break;
-        case(13): break;
-        case(14): break;
+        case(5): ADD(); break;
+        case(6): SUB(); break;
+        case(7): MUL(); break;
+        case(8): DIV(); break;
+        case(9): GT(); break;
+        case(10): GE(); break;
+        case(11): LT(); break;
+        case(12): LE(); break;
+        case(13): EQ(); break;
+        case(14): NEQ(); break;
         case(15): break;
         case(16): break;
         case(17): break;
         case(18): break;
-        case(19): break;
-        case(20): break;
-        default: break;
+        case(19): PRT(); break;
+        default: LOGE("Instruction Error") HALT(curInstruction); break;
     }
 }
 
@@ -79,11 +78,13 @@ void VirtualMachine::LDC(Instruction &ins){
     Operand *operand = new Operand(ins.getCommandIndex(), ins.getOpStrList());
     stack.push(*operand);
 
+    curInstructionPos++;
     return ;
 }
 
 //Terminate program
 void VirtualMachine::HALT(Instruction &ins){
+    curInstructionPos = instructions.size();
     return ;
 }
 
@@ -92,17 +93,39 @@ VM_CALCULATION(SUB, -)
 VM_CALCULATION(MUL, *)
 VM_CALCULATION(DIV, /)
 
+VM_COMPARE(GT, >)
+VM_COMPARE(GE, >=)
+VM_COMPARE(LT, <)
+VM_COMPARE(LE, <=)
+VM_COMPARE(EQ, ==)
+VM_COMPARE(NEQ, !=)
+
+void VirtualMachine::PRT(){
+    Operand op = stack.top();
+    switch(op.getType()){
+        case(OP_TYPE::INT):
+            LOG(op.getValue<int>())
+            break;
+        case(OP_TYPE::DOUBLE):
+            LOG(op.getValue<double>())
+            break;
+        case(OP_TYPE::BOOL):
+            if(op.getValue<bool>()){
+                LOG("true")
+            }else{
+                LOG("false")
+            }
+            break;
+        default: break;
+    }
+    curInstructionPos++;
+}
+
 void VirtualMachine::run(){
 
     while(curInstructionPos < instructions.size()){
         runInstruction();
     }
 
-    Operand op = stack.top();
-    if(op.getType() == OP_TYPE::INT){
-        LOG(op.getValue<int>())
-    }else{
-        LOG(op.getValue<double>())
-    }
     return ;
 }

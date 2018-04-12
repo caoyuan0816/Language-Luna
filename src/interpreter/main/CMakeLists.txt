@@ -5,3 +5,5 @@ aux_source_directory(. DIR_SRCS)
 
 add_executable(luna ${DIR_SRCS})
 
+install(TARGETS luna DESTINATION bin)
+

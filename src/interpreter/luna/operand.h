@@ -13,6 +13,7 @@ class Operand{
 public:
     OP_TYPE type;
     void* value;
+    
     OP_TYPE checkOpType(std::string opStr);
     Operand();
     Operand(int commandIndex, std::vector<std::string> opStrList);

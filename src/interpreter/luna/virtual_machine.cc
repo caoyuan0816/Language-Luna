@@ -73,7 +73,7 @@ void VirtualMachine::runInstruction(){
         case(15): break;
         case(16): break;
         case(17): ASN(curInstruction); break;
-        case(18): break;
+        case(18): DUP(); break;
         case(19): PRT(curInstruction); break;
         default: HALT(curInstruction); break;
     }
@@ -111,6 +111,16 @@ void VirtualMachine::ASN(Instruction &ins){
 
     variable_map[ins.getOpStrList()[0]] = stack.top();
     stack.pop();
+
+    curInstructionPos++;
+    return ;
+}
+
+void VirtualMachine::DUP(){
+
+    Operand op = stack.top();
+    Operand nop = *new Operand(op.type, op.value);
+    stack.push(nop);
 
     curInstructionPos++;
     return ;

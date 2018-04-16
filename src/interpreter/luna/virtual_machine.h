@@ -70,6 +70,7 @@ private:
     void EQ();
     void NEQ();
     void ASN(Instruction &ins);
+    void DUP();
     void PRT(Instruction &ins);
 public:
     VirtualMachine(const char* bytecodeFileName);

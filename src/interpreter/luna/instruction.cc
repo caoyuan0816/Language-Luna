@@ -1,25 +1,23 @@
 #include "instruction.h"
 
-//Size 19
+//Size 20
 std::string const Instruction::INSTRUCTION_LIST[] =
 {"LDV", "LDC", "HALT", "CALL", "RET", "ADD", "SUB", "MUL", "DIV", "GT",
  "GE", "LT", "LE", "EQ", "NEQ", "JMP", "JZ", "ASN", "DUP", "PRT"};
 
-Instruction::Instruction(std::string command, std::vector<std::string> opStrList){
-    this->command = command;
-    this->opStrList = opStrList;
+Instruction::Instruction(){
     
-    //Finding commandIndex in INSTRUCTION_LIST
-    auto res = std::find(INSTRUCTION_LIST, INSTRUCTION_LIST + 20, command);
-    if(res != INSTRUCTION_LIST + 20){
-        this->commandIndex = res - INSTRUCTION_LIST;
-    }else{
-        this->commandIndex = -1;
-        std::string err("Error when initial instruction: ");
-        err.append(command);
-        err.append(".");
-        std::cout << err << std::endl;
-        throw err.c_str();
+}
+
+Instruction::Instruction(int commandIndex, std::vector<std::string> opStrList){
+    this->commandIndex = commandIndex;
+    this->opStrList = opStrList;
+}
+
+Instruction::Instruction(const Instruction &ins){
+    commandIndex = ins.commandIndex;
+    for(auto it = ins.opStrList.begin(); it != ins.opStrList.end(); it++){
+        opStrList.push_back(std::string(*it));
     }
 }
 

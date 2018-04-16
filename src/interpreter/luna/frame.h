@@ -6,6 +6,7 @@
 #include <stack>
 #include <fstream>
 #include <string>
+#include <functional>
 
 #include "macros.h"
 #include "instruction.h"
@@ -29,7 +30,7 @@
         Operand *resultOp = new Operand(OP_TYPE::INT, (void *)result);\
         stack.push(*resultOp);\
     }\
-    curInstructionPos++;return ;}
+    instructionPos++; return ;}
 
 #define FRAME_COMPARISON(name, operation) void Frame::name(){\
     Operand op1 = stack.top(); stack.pop();\
@@ -46,19 +47,24 @@
     }\
     Operand *resultOp = new Operand(OP_TYPE::BOOL, (void *)result);\
     stack.push(*resultOp);\
-    curInstructionPos++;return ;}
+    instructionPos++; return ;}
 
 class Frame{
 private:
+    std::string frameName;
     std::vector<Instruction> instructions;
     std::stack<Operand> stack;
     std::unordered_map<std::string, Operand> variable_map;
-    int curInstructionPos = 0;
+    std::vector<Instruction>::iterator instructionPos;
+    std::function<void(std::string, std::unordered_map<std::string, Operand> *)> vmRunFrameCallBack;
+    std::function<void(Operand)> vmFrameReturnCallBack;
 
-    void loadInstructions(const char* bytecodeFileName);
-    void runInstruction();
+    void runInstruction(Instruction &curInstruction);
+    void LDV(Instruction &ins);
     void LDC(Instruction &ins);
     void HALT(Instruction &ins);
+    void CALL(Instruction &ins);
+    void RET();
     void ADD();
     void SUB();
     void MUL();
@@ -73,9 +79,18 @@ private:
     void DUP();
     void PRT(Instruction &ins);
 public:
-    Frame(const char* bytecodeFileName);
+    Frame();
+    Frame(std::string frameName,
+        std::function<void(std::string, std::unordered_map<std::string, Operand> *)> vmRunFrameCallBack,
+        std::function<void(Operand)> vmReturnCallBack);
+    Frame(const Frame &frame);
     ~Frame();
+    void pushInstruction(Instruction &ins);
+    void pushOperand(Operand op);
+    std::string getName();
+    void setVariableMap(std::string key, Operand value);
     void run();
+    bool operator < (const Frame & cmp) const;
 };
 
 #endif

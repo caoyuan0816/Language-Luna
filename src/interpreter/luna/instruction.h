@@ -10,12 +10,13 @@
 
 class Instruction{
 private:
-    static std::string const INSTRUCTION_LIST[];
-    std::string command;
     int commandIndex;
     std::vector<std::string> opStrList;
 public:
-    Instruction(std::string command, std::vector<std::string> opStrList);
+	static std::string const INSTRUCTION_LIST[];
+	Instruction();
+    Instruction(int commandIndex, std::vector<std::string> opStrList);
+    Instruction(const Instruction &ins);
     int getCommandIndex();
     std::vector<std::string> getOpStrList();
 };

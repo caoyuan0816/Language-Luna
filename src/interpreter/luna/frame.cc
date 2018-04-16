@@ -1,8 +1,24 @@
 #include "frame.h"
 
-Frame::Frame(const char* bytecodeFileName){
-    //Load instructions from file, store in vector instructions
-    loadInstructions(bytecodeFileName);
+Frame::Frame(){
+
+}
+
+Frame::Frame(std::string frameName,
+        std::function<void(std::string, std::unordered_map<std::string, Operand> *)> vmRunFrameCallBack,
+        std::function<void(Operand)> vmReturnCallBack){
+    this->frameName = frameName;
+    this->vmRunFrameCallBack = vmRunFrameCallBack;
+    this->vmFrameReturnCallBack = vmReturnCallBack;
+}
+
+Frame::Frame(const Frame &frame){
+    frameName = frame.frameName;
+    for(auto it = frame.instructions.begin(); it != frame.instructions.end(); it++){
+        Instruction ins = *new Instruction();
+        ins = *it;
+        instructions.push_back(ins);
+    }
 }
 
 Frame::~Frame(){
@@ -11,55 +27,14 @@ Frame::~Frame(){
     }
 }
 
-void Frame::loadInstructions(const char* bytecodeFileName){
-    //Loading bytecode file to instructions list
-    std::ifstream bytecodeFile;
-    bytecodeFile.open(bytecodeFileName, std::ios::in);
-    if(bytecodeFile.is_open()){
-        std::string line;
-        while(std::getline(bytecodeFile, line)){
-            //Use token ' ' split line
-            bool isCommand = true;
-            std::vector<std::string> opStrList;
-            std::string command;
-            std::size_t pos = 0;
-            while((pos = line.find(" ")) != std::string::npos){
-                std::string token = line.substr(0, pos);
-                line.erase(0, pos + 1);
-                if(isCommand){
-                    command = token;
-                    isCommand = false;
-                }else{
-                    opStrList.push_back(token);
-                }
-            }
-            if(isCommand){
-                command = line;
-            }else{
-                opStrList.push_back(line);
-            }
-            //Build Instruction per line
-            Instruction *ins = new Instruction(command, opStrList);
-            this->instructions.push_back(*ins);
-        }
-    }else{
-        std::string err("Cannot open bytecode file: ");
-        err.append(bytecodeFileName);
-        std::cout << err << std::endl;
-        throw err.c_str();
-    }
-    return ;
-}
-
-//Will run instruction which pointed by curInstructionPos
-void Frame::runInstruction(){
-    Instruction curInstruction = instructions[curInstructionPos];
+//Will run instruction which pointed by curInstruction
+void Frame::runInstruction(Instruction &curInstruction){
     switch(curInstruction.getCommandIndex()){
-        case(0): break;
+        case(0): LDV(curInstruction); break;
         case(1): LDC(curInstruction); break;
         case(2): HALT(curInstruction); break;
-        case(3): break;
-        case(4): break;
+        case(3): CALL(curInstruction); break;
+        case(4): RET(); break;
         case(5): ADD(); break;
         case(6): SUB(); break;
         case(7): MUL(); break;
@@ -79,20 +54,43 @@ void Frame::runInstruction(){
     }
 }
 
+void Frame::LDV(Instruction &ins){
+    stack.push(variable_map[ins.getOpStrList()[0]]);
+    instructionPos++;
+}
+
 //Load Constant value to stack
 void Frame::LDC(Instruction &ins){
 
     Operand *operand = new Operand(ins.getCommandIndex(), ins.getOpStrList());
     stack.push(*operand);
 
-    curInstructionPos++;
+    instructionPos++;
     return ;
 }
 
 //Terminate program
 void Frame::HALT(Instruction &ins){
-    curInstructionPos = instructions.size();
-    return ;
+    exit(0);
+}
+
+void Frame::CALL(Instruction &ins){
+    std::unordered_map<std::string, Operand> callArgs = *new std::unordered_map<std::string, Operand>();
+    int argn = std::stoi(ins.getOpStrList()[1]);
+
+    for(int i = argn-1; i >= 0; i--){
+        callArgs[std::to_string(i)] = stack.top();
+        stack.pop();
+    }
+
+    vmRunFrameCallBack(ins.getOpStrList()[0], &callArgs);
+    instructionPos++;
+}
+    
+void Frame::RET(){
+    Operand op = stack.top();
+    vmFrameReturnCallBack(op);
+    instructionPos++;
 }
 
 FRAME_CALCULATION(ADD, +)
@@ -112,7 +110,7 @@ void Frame::ASN(Instruction &ins){
     variable_map[ins.getOpStrList()[0]] = stack.top();
     stack.pop();
 
-    curInstructionPos++;
+    instructionPos++;
     return ;
 }
 
@@ -122,7 +120,7 @@ void Frame::DUP(){
     Operand nop = *new Operand(op.type, op.value);
     stack.push(nop);
 
-    curInstructionPos++;
+    instructionPos++;
     return ;
 }
 
@@ -134,7 +132,7 @@ void Frame::PRT(Instruction &ins){
     }else{
         op = variable_map[ins.getOpStrList()[0]];
     }
-    
+
     switch(op.getType()){
         case(OP_TYPE::INT):
             LOG(op.getValue<int>())
@@ -151,15 +149,34 @@ void Frame::PRT(Instruction &ins){
             break;
         default: break;
     }
-    curInstructionPos++;
+    instructionPos++;
     return ;
 }
 
+void Frame::pushInstruction(Instruction &ins){
+    this->instructions.push_back(ins);
+}
+
+std::string Frame::getName(){
+    return this->frameName;
+}
+
+void Frame::setVariableMap(std::string key, Operand value){
+    variable_map[key] = value;
+}
+
+bool Frame::operator < (const Frame & cmp) const{
+    return frameName < cmp.frameName;
+}
+
 void Frame::run(){
-
-    while(curInstructionPos < instructions.size()){
-        runInstruction();
+    instructionPos = instructions.begin();
+    while(instructionPos != instructions.end()){
+        //std::cout << frameName << " " << instructionPos->getCommandIndex() << std::endl;
+        runInstruction(*instructionPos);
     }
+}
 
-    return ;
+void Frame::pushOperand(Operand op){
+    stack.push(op);
 }

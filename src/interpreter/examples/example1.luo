@@ -1,4 +1,12 @@
+add
+LDV 0
+LDV 1
+ADD
+RET
+
+main
 LDC 1
 LDC 2
-ADD
+CALL add 2
 PRT
+HALT

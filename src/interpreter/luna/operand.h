@@ -18,6 +18,7 @@ public:
     Operand();
     Operand(int commandIndex, std::vector<std::string> opStrList);
     Operand(OP_TYPE type, void* value);
+    Operand(const Operand &op);
     ~Operand();
     template <class T> T getValue();
     OP_TYPE getType();

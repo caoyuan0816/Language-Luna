@@ -16,6 +16,7 @@ protected:
 	}
 };
 
+/*
 TEST_F (TestFrame, LoadInstructions1){
 	::testing::internal::CaptureStdout();
 	EXPECT_ANY_THROW({
@@ -27,4 +28,4 @@ TEST_F (TestFrame, LoadInstructions1){
 TEST_F (TestFrame, LoadInstructions2){
 	EXPECT_NO_THROW({Frame frame(ROOT_PATH.append("/example0.luo").c_str());
 	});
-}
+}*/

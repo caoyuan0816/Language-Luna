@@ -46,6 +46,32 @@ Operand::Operand(OP_TYPE type, void* value){
 	this->value = value;
 }
 
+Operand::Operand(const Operand &op){
+    type = op.type;
+    switch(op.type){
+        case(OP_TYPE::BOOL): {
+            value = new bool;
+            if((*(bool *)op.value)){
+                *(bool *)value = true;
+            }else{
+                *(bool *)value = false;
+            }
+            break;
+        }
+        case(OP_TYPE::DOUBLE): {
+            value = new double;
+            *(double *)value = double(*(double *)op.value);
+            break;
+        }
+        case(OP_TYPE::INT): {
+            value = new int;
+            *(int *)value = int(*(int *)op.value);
+            break;
+        }
+        default: break;
+    }
+}
+
 Operand::~Operand(){
     //TODO
 }

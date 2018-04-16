@@ -33,13 +33,20 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
                     opStrList.push_back(token);
                 }
             }
-            opStrList.push_back(line);
+            if(isCommand){
+                command = line;
+            }else{
+                opStrList.push_back(line);
+            }
             //Build Instruction per line
             Instruction *ins = new Instruction(command, opStrList);
             this->instructions.push_back(*ins);
         }
     }else{
-        std::cerr << "Cannot open bytecode file." << std::endl;
+        std::string err("Cannot open bytecode file: ");
+        err.append(bytecodeFileName);
+        std::cout << err << std::endl;
+        throw err.c_str();
     }
     return ;
 }

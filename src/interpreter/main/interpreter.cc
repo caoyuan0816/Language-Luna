@@ -11,8 +11,12 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    VirtualMachine vm(argv[1]);
-    vm.run();
-
+    try{
+    	VirtualMachine vm(argv[1]);
+    	vm.run();
+    }catch(...){
+    	std::cout << "Eror occured! " << std::endl;
+    }
+    
     return 0;
 }

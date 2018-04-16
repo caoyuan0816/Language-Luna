@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 3.9.1)
 project (LUNA_TEST)
 
+add_definitions(-DROOTPATH="${CMAKE_CURRENT_LIST_DIR}")
+#message("${CMAKE_CURRENT_LIST_DIR}")
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 #Setting Luna test

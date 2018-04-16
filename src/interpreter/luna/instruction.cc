@@ -8,20 +8,19 @@ std::string const Instruction::INSTRUCTION_LIST[] =
 Instruction::Instruction(std::string command, std::vector<std::string> opStrList){
     this->command = command;
     this->opStrList = opStrList;
+    
     //Finding commandIndex in INSTRUCTION_LIST
     auto res = std::find(INSTRUCTION_LIST, INSTRUCTION_LIST + 20, command);
     if(res != INSTRUCTION_LIST + 20){
         this->commandIndex = res - INSTRUCTION_LIST;
     }else{
         this->commandIndex = -1;
-        std::cerr << "Error when initial instruction: " << command << std::endl;
+        std::string err("Error when initial instruction: ");
+        err.append(command);
+        err.append(".");
+        std::cout << err << std::endl;
+        throw err.c_str();
     }
-
-    LOGI(command)
-    for(int i = 0; i < opStrList.size(); i++){
-        LOGI(opStrList[i])
-    }
-    LOG("")
 }
 
 int Instruction::getCommandIndex(){

@@ -6,7 +6,6 @@
 #include <stack>
 #include <fstream>
 #include <string>
-#include <sstream>
 
 #include "macros.h"
 #include "instruction.h"

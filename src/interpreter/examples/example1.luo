@@ -1,9 +1,15 @@
+mul
+LDV 0
+LDV 1
+MUL
+RET
 add
 LDV 0
 LDV 1
 ADD
+LDC 3
+CALL mul 2
 RET
-
 main
 LDC 1
 LDC 2

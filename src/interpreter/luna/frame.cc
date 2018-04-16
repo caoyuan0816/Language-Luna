@@ -105,6 +105,30 @@ FRAME_COMPARISON(LE, <=)
 FRAME_COMPARISON(EQ, ==)
 FRAME_COMPARISON(NEQ, !=)
 
+void Frame::JMP(Instruction &ins){
+    int des = std::stoi(ins.getOpStrList()[0]);
+    instructionPos = instructions.begin() + des;
+    return ;
+}
+
+void Frame::JZ(Instruction &ins){
+    Operand op = stack.top();
+    stack.pop();
+    if(op.getType() != OP_TYPE::BOOL){
+        std::string err("Type maching error!");
+        std::cout << err << std::endl;
+        throw err.c_str();
+    }else{
+        if(op.getValue<bool>()){
+            int des = std::stoi(ins.getOpStrList()[0]);
+            instructionPos = instructions.begin() + des;
+        }else{
+            instructionPos++;
+        }
+    }
+    return ;
+}
+
 void Frame::ASN(Instruction &ins){
 
     variable_map[ins.getOpStrList()[0]] = stack.top();

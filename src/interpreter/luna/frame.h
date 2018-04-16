@@ -75,6 +75,8 @@ private:
     void LE();
     void EQ();
     void NEQ();
+    void JMP(Instruction &ins);
+    void JZ(Instruction &ins);
     void ASN(Instruction &ins);
     void DUP();
     void PRT(Instruction &ins);

@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 
 #include "gtest/gtest.h"
 #include "virtual_machine.h"
@@ -16,17 +17,14 @@ protected:
 };
 
 TEST_F (TestVM, LoadInstructions1){
-	try{
+	::testing::internal::CaptureStdout();
+	EXPECT_ANY_THROW({
 		VirtualMachine vm(ROOT_PATH.append("/invalidfile").c_str());
-	}catch (...){
-		SUCCEED();
-	}
+	});
+	std::string capturedStdout = ::testing::internal::GetCapturedStdout().c_str();
 }
 
 TEST_F (TestVM, LoadInstructions2){
-	try{
-		VirtualMachine vm(ROOT_PATH.append("/example0.luo").c_str());
-	}catch (...){
-		FAIL();
-	}
+	EXPECT_NO_THROW({VirtualMachine vm(ROOT_PATH.append("/example0.luo").c_str());
+	});
 }

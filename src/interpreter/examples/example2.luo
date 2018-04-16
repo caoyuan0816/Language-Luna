@@ -1,0 +1,14 @@
+main
+LDC 1
+ASN i
+LDV i
+LDC 5
+LE
+JZ 12
+PRT i
+LDV i
+LDC 1
+ADD
+ASN i
+JMP 2
+HALT

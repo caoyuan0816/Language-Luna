@@ -45,8 +45,8 @@ void Frame::runInstruction(Instruction &curInstruction){
         case(12): LE(); break;
         case(13): EQ(); break;
         case(14): NEQ(); break;
-        case(15): break;
-        case(16): break;
+        case(15): JMP(curInstruction); break;
+        case(16): JZ(curInstruction); break;
         case(17): ASN(curInstruction); break;
         case(18): DUP(); break;
         case(19): PRT(curInstruction); break;
@@ -120,10 +120,10 @@ void Frame::JZ(Instruction &ins){
         throw err.c_str();
     }else{
         if(op.getValue<bool>()){
+            instructionPos++;  
+        }else{
             int des = std::stoi(ins.getOpStrList()[0]);
             instructionPos = instructions.begin() + des;
-        }else{
-            instructionPos++;
         }
     }
     return ;

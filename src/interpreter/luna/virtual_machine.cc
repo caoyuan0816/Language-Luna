@@ -72,10 +72,10 @@ void VirtualMachine::runInstruction(){
         case(14): NEQ(); break;
         case(15): break;
         case(16): break;
-        case(17): break;
+        case(17): ASN(curInstruction); break;
         case(18): break;
-        case(19): PRT(); break;
-        default: LOGE("Instruction Error") HALT(curInstruction); break;
+        case(19): PRT(curInstruction); break;
+        default: HALT(curInstruction); break;
     }
 }
 
@@ -107,8 +107,24 @@ VM_COMPARISON(LE, <=)
 VM_COMPARISON(EQ, ==)
 VM_COMPARISON(NEQ, !=)
 
-void VirtualMachine::PRT(){
-    Operand op = stack.top();
+void VirtualMachine::ASN(Instruction &ins){
+
+    variable_map[ins.getOpStrList()[0]] = stack.top();
+    stack.pop();
+
+    curInstructionPos++;
+    return ;
+}
+
+void VirtualMachine::PRT(Instruction &ins){
+
+    Operand op;
+    if(ins.getOpStrList().size() == 0){
+        op = stack.top();
+    }else{
+        op = variable_map[ins.getOpStrList()[0]];
+    }
+    
     switch(op.getType()){
         case(OP_TYPE::INT):
             LOG(op.getValue<int>())

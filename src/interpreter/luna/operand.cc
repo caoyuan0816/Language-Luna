@@ -1,5 +1,9 @@
 #include "operand.h"
 
+Operand::Operand(){
+
+}
+
 Operand::Operand(int commandIndex, std::vector<std::string> opStrList){
     switch(commandIndex){
         case(1): {  //Const values
@@ -58,4 +62,8 @@ OP_TYPE Operand::checkOpType(std::string opStr){
 
 OP_TYPE Operand::getType(){
     return type;
+}
+
+bool Operand::operator==(const Operand &otherOp) const{
+    value == otherOp.value;
 }

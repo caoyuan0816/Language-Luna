@@ -52,6 +52,7 @@ class VirtualMachine{
 private:
     std::vector<Instruction> instructions;
     std::stack<Operand> stack;
+    std::unordered_map<std::string, Operand> variable_map;
     int curInstructionPos = 0;
 
     void loadInstructions(const char* bytecodeFileName);
@@ -68,7 +69,8 @@ private:
     void LE();
     void EQ();
     void NEQ();
-    void PRT();
+    void ASN(Instruction &ins);
+    void PRT(Instruction &ins);
 public:
     VirtualMachine(const char* bytecodeFileName);
     ~VirtualMachine();

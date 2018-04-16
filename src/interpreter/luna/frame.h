@@ -1,5 +1,5 @@
-#ifndef VIRTUAL_MACHINE_H
-#define VIRTUAL_MACHINE_H
+#ifndef FRAME_H
+#define FRAME_H
 
 #include <vector>
 #include <unordered_map>
@@ -11,7 +11,7 @@
 #include "instruction.h"
 #include "operand.h"
 
-#define VM_CALCULATION(name, operation) void VirtualMachine::name(){\
+#define FRAME_CALCULATION(name, operation) void Frame::name(){\
     Operand op1 = stack.top(); stack.pop();\
     Operand op2 = stack.top(); stack.pop();\
     if(op1.getType() == OP_TYPE::DOUBLE || op2.getType() == OP_TYPE::DOUBLE){\
@@ -31,7 +31,7 @@
     }\
     curInstructionPos++;return ;}
 
-#define VM_COMPARISON(name, operation) void VirtualMachine::name(){\
+#define FRAME_COMPARISON(name, operation) void Frame::name(){\
     Operand op1 = stack.top(); stack.pop();\
     Operand op2 = stack.top(); stack.pop();\
     bool *result = new bool;\
@@ -48,7 +48,7 @@
     stack.push(*resultOp);\
     curInstructionPos++;return ;}
 
-class VirtualMachine{
+class Frame{
 private:
     std::vector<Instruction> instructions;
     std::stack<Operand> stack;
@@ -73,8 +73,8 @@ private:
     void DUP();
     void PRT(Instruction &ins);
 public:
-    VirtualMachine(const char* bytecodeFileName);
-    ~VirtualMachine();
+    Frame(const char* bytecodeFileName);
+    ~Frame();
     void run();
 };
 

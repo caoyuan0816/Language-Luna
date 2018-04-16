@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "macros.h"
-#include "virtual_machine.h"
+#include "frame.h"
 
 int main(int argc, char** argv){
 
@@ -12,8 +12,8 @@ int main(int argc, char** argv){
     }
 
     try{
-    	VirtualMachine vm(argv[1]);
-    	vm.run();
+    	Frame vmf(argv[1]);
+    	vmf.run();
     }catch(...){
     	std::cout << "Eror occured! " << std::endl;
     }

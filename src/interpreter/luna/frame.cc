@@ -1,17 +1,17 @@
-#include "virtual_machine.h"
+#include "frame.h"
 
-VirtualMachine::VirtualMachine(const char* bytecodeFileName){
+Frame::Frame(const char* bytecodeFileName){
     //Load instructions from file, store in vector instructions
     loadInstructions(bytecodeFileName);
 }
 
-VirtualMachine::~VirtualMachine(){
+Frame::~Frame(){
     for(auto it = instructions.begin(); it != instructions.end(); it++){
         //TODO
     }
 }
 
-void VirtualMachine::loadInstructions(const char* bytecodeFileName){
+void Frame::loadInstructions(const char* bytecodeFileName){
     //Loading bytecode file to instructions list
     std::ifstream bytecodeFile;
     bytecodeFile.open(bytecodeFileName, std::ios::in);
@@ -52,7 +52,7 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
 }
 
 //Will run instruction which pointed by curInstructionPos
-void VirtualMachine::runInstruction(){
+void Frame::runInstruction(){
     Instruction curInstruction = instructions[curInstructionPos];
     switch(curInstruction.getCommandIndex()){
         case(0): break;
@@ -80,7 +80,7 @@ void VirtualMachine::runInstruction(){
 }
 
 //Load Constant value to stack
-void VirtualMachine::LDC(Instruction &ins){
+void Frame::LDC(Instruction &ins){
 
     Operand *operand = new Operand(ins.getCommandIndex(), ins.getOpStrList());
     stack.push(*operand);
@@ -90,24 +90,24 @@ void VirtualMachine::LDC(Instruction &ins){
 }
 
 //Terminate program
-void VirtualMachine::HALT(Instruction &ins){
+void Frame::HALT(Instruction &ins){
     curInstructionPos = instructions.size();
     return ;
 }
 
-VM_CALCULATION(ADD, +)
-VM_CALCULATION(SUB, -)
-VM_CALCULATION(MUL, *)
-VM_CALCULATION(DIV, /)
+FRAME_CALCULATION(ADD, +)
+FRAME_CALCULATION(SUB, -)
+FRAME_CALCULATION(MUL, *)
+FRAME_CALCULATION(DIV, /)
 
-VM_COMPARISON(GT, >)
-VM_COMPARISON(GE, >=)
-VM_COMPARISON(LT, <)
-VM_COMPARISON(LE, <=)
-VM_COMPARISON(EQ, ==)
-VM_COMPARISON(NEQ, !=)
+FRAME_COMPARISON(GT, >)
+FRAME_COMPARISON(GE, >=)
+FRAME_COMPARISON(LT, <)
+FRAME_COMPARISON(LE, <=)
+FRAME_COMPARISON(EQ, ==)
+FRAME_COMPARISON(NEQ, !=)
 
-void VirtualMachine::ASN(Instruction &ins){
+void Frame::ASN(Instruction &ins){
 
     variable_map[ins.getOpStrList()[0]] = stack.top();
     stack.pop();
@@ -116,7 +116,7 @@ void VirtualMachine::ASN(Instruction &ins){
     return ;
 }
 
-void VirtualMachine::DUP(){
+void Frame::DUP(){
 
     Operand op = stack.top();
     Operand nop = *new Operand(op.type, op.value);
@@ -126,7 +126,7 @@ void VirtualMachine::DUP(){
     return ;
 }
 
-void VirtualMachine::PRT(Instruction &ins){
+void Frame::PRT(Instruction &ins){
 
     Operand op;
     if(ins.getOpStrList().size() == 0){
@@ -155,7 +155,7 @@ void VirtualMachine::PRT(Instruction &ins){
     return ;
 }
 
-void VirtualMachine::run(){
+void Frame::run(){
 
     while(curInstructionPos < instructions.size()){
         runInstruction();

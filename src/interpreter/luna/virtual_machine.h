@@ -28,9 +28,8 @@
         *result = a operation b;\
         Operand *resultOp = new Operand(OP_TYPE::INT, (void *)result);\
         stack.push(*resultOp);\
-        curInstructionPos++;\
     }\
-    return ;}
+    curInstructionPos++;return ;}
 
 #define VM_COMPARISON(name, operation) void VirtualMachine::name(){\
     Operand op1 = stack.top(); stack.pop();\
@@ -47,7 +46,7 @@
     }\
     Operand *resultOp = new Operand(OP_TYPE::BOOL, (void *)result);\
     stack.push(*resultOp);\
-    curInstructionPos++;}
+    curInstructionPos++;return ;}
 
 class VirtualMachine{
 private:

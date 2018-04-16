@@ -126,6 +126,7 @@ void VirtualMachine::PRT(){
         default: break;
     }
     curInstructionPos++;
+    return ;
 }
 
 void VirtualMachine::run(){

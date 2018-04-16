@@ -90,7 +90,7 @@ void Frame::CALL(Instruction &ins){
 void Frame::RET(){
     Operand op = stack.top();
     vmFrameReturnCallBack(op);
-    instructionPos++;
+    instructionPos = instructions.end();
 }
 
 FRAME_CALCULATION(ADD, +)
@@ -120,7 +120,7 @@ void Frame::JZ(Instruction &ins){
         throw err.c_str();
     }else{
         if(op.getValue<bool>()){
-            instructionPos++;  
+            instructionPos++;
         }else{
             int des = std::stoi(ins.getOpStrList()[0]);
             instructionPos = instructions.begin() + des;
@@ -196,8 +196,13 @@ bool Frame::operator < (const Frame & cmp) const{
 void Frame::run(){
     instructionPos = instructions.begin();
     while(instructionPos != instructions.end()){
-        //std::cout << frameName << " " << instructionPos->getCommandIndex() << std::endl;
+
+        #ifdef __LUNA__DEBUG
+        RUN_AND_LOG_INSTRUCTION((*instructionPos));
+        #endif
+        #ifndef __LUNA__DEBUG
         runInstruction(*instructionPos);
+        #endif
     }
 }
 

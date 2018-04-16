@@ -1,0 +1,29 @@
+febonacci
+LDV 0
+LDC 1
+EQ
+JZ 6
+LDC 1
+RET
+LDV 0
+LDC 2
+EQ
+JZ 12
+LDC 1
+RET
+LDV 0
+LDC 1
+SUB
+CALL febonacci 1
+LDV 0
+LDC 2
+SUB
+CALL febonacci 1
+ADD
+RET
+main
+LDC 3
+CALL febonacci 1
+ASN x
+PRT x
+HALT

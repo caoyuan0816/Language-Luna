@@ -2,7 +2,7 @@ main
 LDC 1
 ASN i
 LDV i
-LDC 5
+LDC 3
 LE
 JZ 12
 PRT i

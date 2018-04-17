@@ -49,7 +49,7 @@ Z [z]
 {R}{E}{T}{U}{R}{N} return(RETURN);
 {I}{F}    return(IF);
 {I}{N}    return(IN);
-{M}{A}{I}{N}  return(MAIN);
+{M}{A}{I}{N}  return(MAIN);//TODO: maybe should be modified
 {T}{H}{E}{N}   return(THEN);
 {W}{H}{I}{L}{E} return(WHILE);
 {I}{N}{T} return(INT);

@@ -11,32 +11,32 @@ int line_no = 1;
 int commenteof();
 %}
 
-A [aA]
-B [bB]
-C [cC]
-D [dD]
-E [eE]
-F [fF]
-G [gG]
-H [hH]
-I [iI]
-J [jJ]
-K [kK]
-L [lL]
-M [mM]
-N [nN]
-O [oO]
-P [pP]
-Q [qQ]
-R [rR]
-S [sS]
-T [tT]
-U [uU]
-V [vV]
-W [wW]
-X [xX]
-Y [yY]
-Z [zZ]
+A [a]
+B [b]
+C [c]
+D [d]
+E [e]
+F [f]
+G [g]
+H [h]
+I [i]
+J [j]
+K [k]
+L [l]
+M [m]
+N [n]
+O [o]
+P [p]
+Q [q]
+R [r]
+S [s]
+T [t]
+U [u]
+V [v]
+W [w]
+X [x]
+Y [y]
+Z [z]
 
 %%
 
@@ -76,7 +76,6 @@ Z [zZ]
 "]"    return(RBRAC);
 [0-9]+"."[0-9]+   return(REALNUMBER);
 ")"    return(RPAREN);
-";"    return(SEMICOLON);
 "/"    return(SLASH);
 "*"    return(STAR);
 "++"   return(INCO);
@@ -103,26 +102,6 @@ Z [zZ]
     if (c==0) break;
   }
 }
-
-"(*"   |
-"{"    { register int c;
-     while ((c = input()))
-     {
-      if (c == '}')
-       break;
-      else if (c == '*')
-      {
-       if ((c = input()) == ')')
-        break;
-       else
-        unput (c);
-      }
-      else if (c == '\n')
-       line_no++;
-      else if (c == 0)
-       commenteof();
-     }
-    }
 
 [ \t\f]    ;
 

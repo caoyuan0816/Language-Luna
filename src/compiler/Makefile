@@ -1,4 +1,3 @@
-#Makefile for pascal compiler
 #
 FLEX=flex
 FLEXFLAGS=

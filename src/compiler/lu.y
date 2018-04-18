@@ -6,29 +6,35 @@
  * BNF of Luna language
  */
 #include "global.h"
-
 #include <stdio.h>
-
 extern int openFile(int argc, char** argv);
 int errorOccur;
 %}
-
+%union{
+struct ast* node;
+}
 %token LIST ASSIGNMENT COLON COMMA DIGSEQ
 %token DO ELSE END EQUAL FOR FUNCTION RETURN
 %token GE GT IDENTIFIER IF IN LBRAC LE LPAREN LT MINUS
-%token NOTEQUAL PFILE PLUS MAIN RBRAC //TODO: MAIN
+%token NOTEQUAL PFILE PLUS MAIN RBRAC
 %token REALNUMBER RPAREN SEMICOLON SLASH STAR THEN
 %token INT DOUBLE BOOL WHILE
 %token INCO DECO
 %token FALSE TRUE
 
+%type <node> block statement_list
+
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
 %%
-//TODO: MAIN
-file : functiondef_list MAIN LPAREN variable comma variable RPAREN block END |
-	functiondef_list MAIN LPAREN RPAREN block END
+file : 
+		functiondef_list MAIN LPAREN variable comma variable RPAREN block END 
+	|	functiondef_list MAIN LPAREN RPAREN block END
 	; 
 
-block : statement_list |
+block : 
+		statement_list {$$=newast("block",1,$1);}
+	|
 	;
 
 statement_list : statement_list statement |

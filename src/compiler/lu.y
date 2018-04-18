@@ -91,7 +91,7 @@ assign_statement :
 unary_assign : identifier unaryop
 	;
 
-identifier_assign : identifier ASSIGNMENT assign_type
+identifier_assign : identifier ASSIGNMENT assign_type {$$ = newast("assig",3, $1, "asn", $3)} //node 可以这样设
 	;
 
 define_assign : variable ASSIGNMENT assign_type
@@ -103,8 +103,7 @@ assign_type : expression |
 	list_expression
 	;
 
-variable : type identifier {
-	}|
+variable : type identifier {}|
 	error {
 	  printf("variable definition error\n");
 	}

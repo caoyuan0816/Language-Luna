@@ -27,7 +27,7 @@ struct ast* node;
 %type <node> functioncall assign_statement unary_assign identifier_assign  define_assign 
 %type <node> assign_type  variable argument_list 
 %type <node> expression_list bool_expression expression  list_expression math_expression 
-%type <node> term functiondef_list functiondef return_statement
+%type <node> term functiondef_list functiondef funcbody return_statement
 %type <node> paramlist addop mulop unaryop boolop 
 %type <node> type bool_type int_type double_type list_type num_id num int_list int_num identifier comma 
 
@@ -76,10 +76,12 @@ for_statement :
 	;
 
 
-if_statement : IF LPAREN bool_expression RPAREN block else_statement END {$$=newast("loop_statement",7,$1,$2,$3,$4,$5,$6,$7);}
+if_statement : IF LPAREN bool_expression RPAREN block else_statement END {$$=newast("if_statement",7,$1,$2,$3,$4,$5,$6,$7);}
 	;
 
-else_statement : ELSE block |
+else_statement : 
+		ELSE block {$$=newast("else_statement",2,$1,$2);}
+	|
 	;
 
 assign_statement : 
@@ -88,144 +90,177 @@ assign_statement :
 	|	unary_assign {$$=newast("assign_statement",1,$1);}
 	;
 
-unary_assign : identifier unaryop
+unary_assign : 
+		identifier unaryop {$$=newast("unary_assign",2,$1,$2);}
 	;
 
-identifier_assign : identifier ASSIGNMENT assign_type {$$ = newast("assig",3, $1, "asn", $3)} //node 可以这样设
+identifier_assign : 
+		identifier ASSIGNMENT assign_type {$$=newast("identifier_assign",3,$1,$2,$3);}
 	;
 
-define_assign : variable ASSIGNMENT assign_type
+define_assign : 
+		variable ASSIGNMENT assign_type {$$=newast("define_assign",3,$1,$2,$3);}
 	;
 
-assign_type : expression |
-	TRUE |
-	FALSE |
-	list_expression
+assign_type : 
+		expression {$$=newast("assign_type",1,$1);}
+	|	TRUE {$$=newast("assign_type",1,$1);}
+	|	FALSE {$$=newast("assign_type",1,$1);}
+	|	list_expression {$$=newast("assign_type",1,$1);}
 	;
 
-variable : type identifier {}|
-	error {
-	  printf("variable definition error\n");
-	}
+variable : 
+		type identifier {$$=newast("variable",1,$1);}
+	|	error {
+			printf("variable definition error\n");
+		}
 	;
 
-functioncall : identifier argument_list
+functioncall : 
+		identifier argument_list {$$=newast("functioncall",1,$1);}
 	;
 
-argument_list : LPAREN RPAREN |
-	LPAREN expression_list RPAREN
+argument_list : 
+		LPAREN RPAREN {$$=newast("argument_list",2,$1,$2);}
+	|	LPAREN expression_list RPAREN {$$=newast("argument_list",3,$1,$2,$3);}
 	;
 
-expression_list : expression_list comma expression |
-	expression
+expression_list : 
+		expression_list comma expression {$$=newast("expression_list",3,$1,$2,$3);}
+	|	expression {$$=newast("expression_list",1,$1);}
 	;
 
-bool_expression : FALSE |
-	TRUE |
-	expression boolop expression
+bool_expression : 
+		FALSE {$$=newast("bool_expression",1,$1);}
+	|	TRUE {$$=newast("bool_expression",1,$1);}
+	|	expression boolop expression {$$=newast("bool_expression",3,$1,$2,$3);}
 	;
 
-expression : math_expression {
-	} |
-	functioncall |
-	error {
-	  printf("expression error detected!\n");
-	}
+expression : 
+		math_expression {$$=newast("expression",1,$1);} 
+	|	functioncall {$$=newast("expression",1,$1);}
+	|	error {
+			printf("expression error detected!\n");
+		}
 	;
 
-list_expression : LBRAC int_list RBRAC |
-	LBRAC RBRAC
+list_expression : 
+		LBRAC int_list RBRAC {$$=newast("list_expression",3,$1,$2,$3);}
+	|	LBRAC RBRAC {$$=newast("list_expression",2,$1,$2);}
 	;
 
-math_expression : math_expression addop term |
-	term
+math_expression : 
+		math_expression addop term {$$=newast("math_expression",3,$1,$2,$3);}
+	|	term {$$=newast("math_expression",1,$1);}
 	;
 
-term : term mulop num_id |
-	num_id {
-	}
+term : 
+		term mulop num_id {$$=newast("term",3,$1,$2,$3);}
+	|	num_id {} 
 	;
 
-functiondef_list : functiondef_list functiondef|
+functiondef_list : 
+		functiondef_list functiondef {$$=newast("functiondef",2,$1,$2);}
+	|
 	;
 
-functiondef : FUNCTION variable funcbody{
+functiondef : 
+		FUNCTION variable funcbody{
 	
 	}
 	;
 
-funcbody : LPAREN paramlist RPAREN block return_statement END
+funcbody : 
+		LPAREN paramlist RPAREN block return_statement END {$$=newast("funcbody",6,$1,$2,$3,$4,$5,$6);}
 	;
 
-return_statement : RETURN num_id {
+return_statement : 
+		RETURN num_id {
 	
 	}
 	;
 
-paramlist : paramlist comma type identifier |
-	type identifier |
+paramlist : 
+		paramlist comma type identifier {$$=newast("paramlist",4,$1,$2,$3,$4);}
+	|	type identifier {$$=newast("paramlist",2,$1,$2);}
+	|
 	;
 
-addop : PLUS {$$ = newast("MINUS",0,yylineno} |
-    MINUS {$$ = newast("MINUS",0,yylineno)}
+addop : 
+		PLUS {$$=newast("addop",1,$1);}
+	|	MINUS {$$=newast("addop",1,$1);}
 	; 
 
-mulop : STAR |
-	SLASH
+mulop : 
+		STAR {$$=newast("mulop",1,$1);}
+	|	SLASH {$$=newast("mulop",1,$1);}
 	;
 
-unaryop : INCO |
-	DECO
+unaryop : 
+		INCO {$$=newast("unaryop",1,$1);}
+	|	DECO {$$=newast("unaryop",1,$1);}
 	;
 
-boolop : EQUAL |
-	GE |
-	LE |
-	LT |
-	NOTEQUAL |
-	GT
+boolop : 
+		EQUAL {$$=newast("boolop",1,$1);}
+	|	GE {$$=newast("boolop",1,$1);}
+	|	LE {$$=newast("boolop",1,$1);}
+	|	LT {$$=newast("boolop",1,$1);}
+	|	NOTEQUAL {$$=newast("boolop",1,$1);}
+	|	GT {$$=newast("boolop",1,$1);}
 	;
 
-type : bool_type |
-	int_type |
-	double_type |
-	list_type
+type : 
+		bool_type {$$=newast("type",1,$1);}
+	|	int_type {$$=newast("type",1,$1);}
+	|	double_type {$$=newast("type",1,$1);}
+	|	list_type {$$=newast("type",1,$1);}
 	;
 
-bool_type : BOOL
+bool_type : 
+		BOOL {$$ = newast("bool_type",1,$1);}
 	;
 
-int_type : INT
+int_type : 
+		INT {$$ = newast("int_type",1,$1); $$->type = "int";}
 	;
 
-double_type : DOUBLE {$$ = newast("TYPE",0,yylineno);}
+double_type : 
+		DOUBLE {$$ = newast("double_type",1,$1); $$->type = "double";}
 	;
 
-list_type : LIST
+list_type : 
+		LIST {$$=newast("list_type",1,$1);$$->type = "list";}
 	;
 
-num_id : identifier |
-	num
+num_id : 
+		identifier {$$=newast("num_id",1,$1);}
+	|	num {$$=newast("num_id",1,$1);}
 	;
 
-num : MINUS DIGSEQ |
-	DIGSEQ |
-	MINUS REALNUMBER |
-	REALNUMBER
+num : 
+		MINUS DIGSEQ {$$=newast("num",2,$1,$2);}
+	|	DIGSEQ {$$=newast("num",1,$1);}
+	|	MINUS REALNUMBER {$$=newast("num",2,$1,$2);}
+	|	REALNUMBER {$$=newast("num",1,$1);}
 	;
 
-int_list : int_list comma int_num |
-	int_num
+int_list : 
+		int_list comma int_num {$$=newast("num",3,$1,$2,$3);}
+	|	int_num {$$=newast("num",1,$1);}
 	;
 
-int_num : MINUS DIGSEQ |
-	DIGSEQ
+int_num : 
+		MINUS DIGSEQ {$$=newast("int_num",2,$1,$2);}
+	|	DIGSEQ {$$=newast("int_num",1,$1);}
 	;
 
-identifier : IDENTIFIER {$$ = newast("IDENTIFIER",0,yylineno);}
+identifier : 
+		IDENTIFIER {$$=newast("identifier",1,$1);}
 	;
 
-comma : COMMA {$$ = newast("COMMA",0,yylineno);}
+comma : 
+		COMMA {$$=newast("comma",1,$1);}
 	;
 %%
 

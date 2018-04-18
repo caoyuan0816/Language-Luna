@@ -167,8 +167,8 @@ paramlist : paramlist comma type identifier |
 	type identifier |
 	;
 
-addop : PLUS |
-	MINUS
+addop : PLUS {$$ = newast("MINUS",0,yylineno} |
+    MINUS {$$ = newast("MINUS",0,yylineno)}
 	; 
 
 mulop : STAR |
@@ -226,7 +226,7 @@ int_num : MINUS DIGSEQ |
 identifier : IDENTIFIER
 	;
 
-comma : COMMA
+comma : COMMA {$$ = newast("COMMA",0,yylineno)}
 	;
 %%
 

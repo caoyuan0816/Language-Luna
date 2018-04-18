@@ -198,7 +198,7 @@ bool_type : BOOL
 int_type : INT
 	;
 
-double_type : DOUBLE
+double_type : DOUBLE {$$ = newast("TYPE",0,yylineno);}
 	;
 
 list_type : LIST
@@ -222,10 +222,10 @@ int_num : MINUS DIGSEQ |
 	DIGSEQ
 	;
 
-identifier : IDENTIFIER
+identifier : IDENTIFIER {$$ = newast("IDENTIFIER",0,yylineno);}
 	;
 
-comma : COMMA {$$ = newast("COMMA",0,yylineno)}
+comma : COMMA {$$ = newast("COMMA",0,yylineno);}
 	;
 %%
 

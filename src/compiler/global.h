@@ -16,6 +16,14 @@ struct ast_node {
     struct ast_node *right;
 };
 
+typedef sturct ast_node AST_NODE;
+typedef AST_NODE *AST_TREE;
+
+
+
+
+
+
 
 //for function
 struct ast_function_node // for function calls

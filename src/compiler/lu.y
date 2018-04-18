@@ -21,8 +21,7 @@ struct ast* node;
 %token INT DOUBLE BOOL WHILE
 %token INCO DECO
 %token FALSE TRUE
-
-%type <node> block statement_list
+%type <node> block statement_list  statement
 
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
@@ -34,11 +33,12 @@ file :
 
 block : 
 		statement_list {$$=newast("block",1,$1);}
-	|
+	|	{$$=newast("statement_list",0,-1);}
 	;
 
-statement_list : statement_list statement |
-	statement
+statement_list : 
+		statement_list statement{$$=newast("statement_list",2,$1,$2);} 
+	|	statement{$$=newast("statement_list",1,$1);}
 	;
 
 statement : assign_statement |

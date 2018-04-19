@@ -6,6 +6,10 @@
  * BNF of Luna language
  */
 #include <stdio.h>
+#if YYBISON
+union YYSTYPE;
+int yylex(union YYSTYPE *, void *);
+#endif
 
 extern int openFile(int argc, char** argv);
 int errorOccur;

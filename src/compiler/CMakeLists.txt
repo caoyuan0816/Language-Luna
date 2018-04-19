@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 3.9.1)
 project (LUNA_COMPILER)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 #Setting flex and bison
 FIND_PACKAGE(BISON REQUIRED)
 
@@ -28,3 +30,5 @@ ENDIF()
 
 
 add_executable(lunac  ${BisonOutput} ${FlexOutput})
+
+install(TARGETS lunac DESTINATION bin)

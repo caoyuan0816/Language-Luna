@@ -1,0 +1,3 @@
+main(int argc, list argv)
+    print(1)
+end

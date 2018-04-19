@@ -5,7 +5,7 @@
  */
 
 #include <stdio.h>
-#include "luna.tab.h"
+#include "tokens.h"
 int line_no = 1;
 int commenteof();
 %}

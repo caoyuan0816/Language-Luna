@@ -5,8 +5,6 @@
  * Luna grammar in Yacc format, based originally on
  * BNF of Luna language
  */
-#include "global.h"
-
 #include <stdio.h>
 
 extern int openFile(int argc, char** argv);

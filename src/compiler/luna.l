@@ -5,8 +5,7 @@
  */
 
 #include <stdio.h>
-#include "global.h"
-#include "rule.h"
+#include "luna.tab.h"
 int line_no = 1;
 int commenteof();
 %}

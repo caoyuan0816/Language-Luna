@@ -22,7 +22,7 @@ typedef enum {
   argument_list_NodeKind, functioncall_NodeKind, define_assign_NodeKind,
   identifier_assign_NodeKind, unary_assign_NodeKind, else_statement_NodeKind,
   if_statement_NodeKind, math_expression_NodeKind, loop_statement_NodeKind, int_num_NodeKind,
-    for_statement_NodeKind, 
+    do_statement_NodeKind, for_statement_NodeKind, file_NodeKind
 } NodeKind;
 
 typedef enum {

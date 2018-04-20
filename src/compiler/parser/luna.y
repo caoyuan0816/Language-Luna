@@ -24,33 +24,95 @@ int yylex();
 
 %%
 //TODO: MAIN
-file : functiondef_list MAIN LPAREN variable COMMA variable RPAREN block END |
-	functiondef_list MAIN LPAREN RPAREN block END
-	; 
+file : functiondef_list MAIN LPAREN variable COMMA variable RPAREN block END{
+    $$ = makeNewNdoe();
+    $$->nodeKind = file_NodeKind;
+    TreeNode *temp = $1;
+    $$->child = temp;
+    currentline = $1->line_no;
+    $$->line_no = currentline;
+    temp->sibling = $4;
+    $4->sibling = $6;
+    if($8 != NULL){
+        $6->sibling = $8;
+    }else{}
+    
+    free($2);
+    free($3);
+    free($5);
+    free($7);
+    free($9);
+    } |
+    functiondef_list MAIN LPAREN RPAREN block END {
+        $$ = makeNewNdoe();
+        $$->nodeKind = file_NodeKind;
+        TreeNode *temp = $1;
+        $$->child = temp;
+        currentline = $1->line_no;
+        $$->line_no = currentline;
+        if($5 != NULL){
+            $1->sibling = $5;
+        }else{}
+        free($2);
+        free($3);
+        free($4);
+        free($6);
 
-block : statement_list |
+    }
 	;
 
-statement_list : statement_list statement |
-	statement
+//TODO: review
+block : statement_list{
+    $$ = $1;
+    } |
+	;
+//TODO: review
+statement_list : statement_list statement{
+    if($1 = NULL){
+        TreeNode *temp = $1;
+        while(temp->sibling != NULL){
+            temp = temp->sibling;
+        }
+        temp->sibling = $2;
+        $$ = $1;
+    }else{
+        $$ = $2;
+    }
+    } |
+    statement{
+        $$ = $1;
+    }
 	;
 
-statement : assign_statement |
-	functioncall |
-	do_statement |
-	loop_statement |
-	if_statement |
+//TODO: review
+statement : assign_statement {
+    $$ = $1;
+    }|
+    functioncall{
+    $$ = $1;} |
+    do_statement{
+    $$ = $1;} |
+    loop_statement{
+        $$ = $1;} |
+    if_statement{
+        $$ = $1;} |
 	error {
 	  printf("statement error detected\n");
 	  printf("line number: %d\n", $$->line_no);
 	}
 	;
-
+//TODO: review
 do_statement : DO block END{
-    
+    $$ = makeNewNode();
+    $$->nodeKind = do_statement_NodeKind;
+    $$->child = $2;
+    currentline = $1->line_no;
+    $$->line_no = currentline;
+    free($1);
+    free($3);
     }
 	;
-//need to review
+//TODO: review
 loop_statement : WHILE LPAREN bool_expression RPAREN DO block END{
     $$ = makeNewNode();
     $$->nodeKind = loop_statement_NodeKind;
@@ -78,7 +140,7 @@ loop_statement : WHILE LPAREN bool_expression RPAREN DO block END{
     }
     ;
     
-    //need to review
+    //TODO: review
     for_statement : ASSIGNMENT int_num COMMA int_num COMMA int_num DO block END{
         $$ = makeNewNode();
         $$->nodeKind = for_statement_NodeKind;
@@ -311,20 +373,21 @@ list_expression : LBRAC int_list RBRAC{
 	}
 	;
 
-//TODO: reconsider
+// renewed
+//TODE: review
 math_expression : math_expression addop term{
-	TreeNode *temp = makeNewNode();
-	temp->nodeKind = term_NodeKind;
-	temp->child = $3;
-	$2->sibling = temp;
-	temp->sibling = $1;
-	$$ = $2;
-	}|
-	term{
-	$$ = makeNewNode();
-	$$->nodeKind = term_NodeKind;
-        $$->child = $1;
-	}
+    if($1 != NULL){
+        TreeNode *temp = $1
+        while(temp->sibling != NULL){
+            temp = temp->sibling;
+        }
+        temp->sibling = $2;
+        $2->sibling = $3;
+        $$ = $1;
+    }else{
+        $$ = $2;
+        $2->sibling = $3;
+    }
 	;
 
 //TODO: reconsider

@@ -24,7 +24,7 @@ int yylex();
 
 %%
 //TODO: MAIN
-file : functiondef_list MAIN LPAREN variable comma variable RPAREN block END |
+file : functiondef_list MAIN LPAREN variable COMMA variable RPAREN block END |
 	functiondef_list MAIN LPAREN RPAREN block END
 	; 
 
@@ -53,7 +53,7 @@ loop_statement : WHILE LPAREN bool_expression RPAREN DO block END |
 	FOR identifier for_statement
 	;
 
-for_statement : ASSIGNMENT int_num comma int_num comma int_num DO block END |
+for_statement : ASSIGNMENT int_num COMMA int_num COMMA int_num DO block END |
 	IN list_expression DO block END |
 	IN identifier DO block END
 	;
@@ -105,7 +105,7 @@ argument_list : LPAREN RPAREN |
 	LPAREN expression_list RPAREN
 	;
 
-expression_list : expression_list comma expression |
+expression_list : expression_list COMMA expression |
 	expression
 	;
 
@@ -143,36 +143,134 @@ functiondef : FUNCTION variable funcbody{
 	}
 	;
 
-funcbody : LPAREN paramlist RPAREN block return_statement END
-	;
-
-return_statement : RETURN num_id {
-	
+funcbody : LPAREN paramlist RPAREN block return_statement END {
+	$$ = makeNewNode();
+	$$->nodeKind = function_body_NodeKind;
+	TreeNode *temp = makeNewNode();
+	$$->child = temp;
+	temp->nodeKind = parameter_list_NodeKind;
+	temp->child = $2;
+	currentline = $1->line_no;
+	$$->line_no = currentline;
+	if ($4!=NULL){
+	  temp->sibling = $4;
+	  $4->sibling = $5;
+	} else {
+	  temp->sibling = $5;
+	}
+	free($1);
+	free($3);
+	free($6);
+	}|
+	LPAREN RPAREN block return_statement END{
+	$$ = makeNewNode();
+	$$->nodeKind = function_body_NodeKind;
+	TreeNode *temp = makeNewNode();
+	$$->child = temp;
+	temp->nodeKind = parameter_list_NodeKind;
+	currentline = $1->line_no;
+	$$->line_no = currentline;
+	if ($3!=NULL){
+	  temp->sibling = $3;
+	  $3->sibling = $4;
+	} else {
+	  temp->sibling = $4;
+	}
+	free($1);
+	free($2);
+	free($5);
 	}
 	;
 
-paramlist : paramlist comma type identifier |
-	type identifier |
+return_statement : RETURN num_id {
+	$$ = makeNewNode();
+	$$->nodeKind = return_NodeKind;
+	$$->child = $1;
+	free($1);
+	}
 	;
 
-addop : PLUS |
-	MINUS
+paramlist : paramlist COMMA variable {
+        $$ = makeNewNode();
+	$$->nodeKind = variable_NodeKind;
+	TreeNode *temp = $1;
+	while (temp->sibling!=NULL){
+	  temp = temp->sibling;
+	}
+	temp->sibling = $3;
+	$$ = $1;
+	free($2);
+	}|
+	variable {
+	$$ = $1;
+	}
+	;
+
+addop : PLUS {
+	$$ = $1;
+	$$->nodeKind = plus_op_NodeKind;
+	currentline = $$->line_no;
+	}|
+	MINUS {
+	$$ = $1;
+	$$->nodeKind = minus_op_NodeKind;
+	currentline = $$->line_no;
+	}
 	; 
 
-mulop : STAR |
-	SLASH
+mulop : STAR {
+	$$ = $1;
+	$$->nodeKind = mul_op_NodeKind;
+	currentline = $$->line_no;
+	}|
+	SLASH {
+	$$->nodeKind = divide_op_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-unaryop : INCO |
-	DECO
+unaryop : INCO {
+	$$ = $1;
+	$$->nodeKind = increase_one_NodeKind;
+	currentline = $$->line_no;
+	}|
+	DECO {
+	$$ = $1;
+	$$->nodeKind = decrease_one_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-boolop : EQUAL |
-	GE |
-	LE |
-	LT |
-	NOTEQUAL |
-	GT
+boolop : EQUAL {
+	$$ = $1;
+	$$->nodeKind = equal_expression_NodeKind;
+	currentline = $$->line_no;
+	}|
+	GE {
+	$$ = $1;
+	$$->nodeKind = greater_equal_NodeKind;
+	currentline = $$->line_no;
+	}|
+	LE {
+	$$ = $1;
+	$$->nodeKind = less_equal_NodeKind;
+	currentline = $$->line_no;
+	}|
+	LT {
+	$$ = $1;
+	$$->nodeKind = less_than_NodeKind;
+	currentline = $$->line_no;
+	}|
+	GT {
+	$$ = $1;
+	$$->nodeKind = greater_than_NodeKind;
+	currentline = $$->line_no;
+	}|	
+	NOTEQUAL {
+	$$ = $1;
+	$$->nodeKind = not_equal_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
 type : bool_type {
@@ -229,20 +327,58 @@ num_id : identifier {
 	}
 	;
 
-num :   int_num |
-	real_num
+num :   int_num {
+	$$ = $1;
+	}|
+	real_num {
+	$$ = $1;
+	}
 	;
 
-int_list : int_list comma int_num |
-	int_num
+int_list : int_list COMMA int_num {
+	$$ = makeNewNode();
+	$$->nodeKind = int_NodeKind;
+	TreeNode *temp = $1;
+	while (temp->sibling!=NULL){
+	  temp = temp->sibling;
+	}
+	temp->sibling = $3;
+	$$ = $1;
+	free($2);
+	}|
+	int_num {
+	$$ = $1;
+	}
 	;
 
-real_num :MINUS REALNUMBER |
-	REALNUMBER
+real_num :MINUS REALNUMBER {
+	$$ = $2;
+	$$->nodeKind = double_NodeKind;
+	currentline = $$->line_no;
+//	printf("negative double: %c%s\n", '-', $$->literal);
+	free($1);
+	}|
+	REALNUMBER {
+	$$ = $1;
+	$$->nodeKind = double_NodeKind;
+	currentline = $$->line_no;
+//	printf("double: %s\n", $$->literal);
+	}
 	;
 
-int_num : MINUS INTNUM |
-	INTNUM
+int_num : MINUS INTNUM {
+	$$ = $2;
+	$$->nodeKind = int_NodeKind;
+	currentline = $$->line_no;
+//	printf("negative int: %c%s\n", '-', $$->literal);
+	free($1);
+	} |
+	INTNUM {
+	$$ = $1;
+	$$->nodeKind = int_NodeKind;
+	currentline = $$->line_no;
+//	printf("int number: %s\n", $$->literal);
+	}
 	;
 
 identifier : IDENTIFIER {
@@ -250,9 +386,6 @@ identifier : IDENTIFIER {
 	$$->nodeKind = id_NodeKind;
 	currentline = $$->line_no;
 	}
-	;
-
-comma : COMMA
 	;
 %%
 

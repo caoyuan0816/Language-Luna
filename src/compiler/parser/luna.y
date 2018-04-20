@@ -5,9 +5,12 @@
  */
 #include "common.h"
 #include <stdio.h>
+
 extern int openFile(int argc, char** argv);
 int errorOccur;
 int currentline = 0;
+int yyerror(char *s);
+int yylex();
 %}
 
 %token LIST ASSIGNMENT COLON COMMA INTNUM
@@ -39,6 +42,7 @@ statement : assign_statement |
 	if_statement |
 	error {
 	  printf("statement error detected\n");
+	  printf("line number: %d\n", $$->line_no);
 	}
 	;
 
@@ -82,10 +86,15 @@ assign_type : expression |
 	;
 
 variable : type identifier {
-
+	$$ = makeNewNode();
+	$$->nodeKind = variable_NodeKind;
+	$$->child = $1;
+	$1->sibling = $2;
+	currentline = $$->line_no;
+	printf("child: %s\tsibling: %s\n", $1->literal, $1->sibling->literal);
 	} |
 	error {
-	  printf("variable definition error\n");
+	  printf("variable definition error in line :%d\n",$$->line_no);
 	}
 	;
 
@@ -166,43 +175,81 @@ boolop : EQUAL |
 	GT
 	;
 
-type : bool_type |
-	int_type |
-	double_type |
-	list_type
+type : bool_type {
+	$$ = $1;
+	currentline = $$->line_no;
+	} |
+	int_type {
+	$$ = $1;
+	currentline = $$->line_no;
+	} |
+	double_type {
+	$$ = $1;
+	currentline = $$->line_no;
+	}|
+	list_type{
+	$$ = $1;
+	currentline = $$->line_no;
+	}
 	;
 
-bool_type : BOOL
+bool_type : BOOL {
+	$$ = $1;
+	$$->nodeKind = bool_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-int_type : INT
+int_type : INT {
+	$$ = $1;
+	$$->nodeKind = int_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-double_type : DOUBLE
+double_type : DOUBLE {
+	$$ = $1;
+	$$->nodeKind = double_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-list_type : LIST
+list_type : LIST {
+	$$ = $1;
+	$$->nodeKind = list_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-num_id : identifier |
-	num
+num_id : identifier {
+	$$ = $1;
+	}|
+	num {
+	$$ = $1;
+	}
 	;
 
-num : MINUS INTNUM |
-	INTNUM |
-	MINUS REALNUMBER |
-	REALNUMBER
+num :   int_num |
+	real_num
 	;
 
 int_list : int_list comma int_num |
 	int_num
 	;
 
+real_num :MINUS REALNUMBER |
+	REALNUMBER
+	;
+
 int_num : MINUS INTNUM |
 	INTNUM
 	;
 
-identifier : IDENTIFIER
+identifier : IDENTIFIER {
+	$$ = $1;
+	$$->nodeKind = id_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
 comma : COMMA

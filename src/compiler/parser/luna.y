@@ -50,15 +50,76 @@ do_statement : DO block END{
     
     }
 	;
-
-loop_statement : WHILE LPAREN bool_expression RPAREN DO block END |
-	FOR identifier for_statement
-	;
-
-for_statement : ASSIGNMENT int_num COMMA int_num COMMA int_num DO block END |
-	IN list_expression DO block END |
-	IN identifier DO block END
-	;
+//need to review
+loop_statement : WHILE LPAREN bool_expression RPAREN DO block END{
+    $$ = makeNewNode();
+    $$->nodeKind = loop_statement_NodeKind;
+    $$->child = $3;
+    currentline = $1->line_no;
+    $$->line_no = currentline;
+    if($6 != NULL){
+        $3->sibling = $6;
+    }else{
+    }
+    free($1);
+    free($2);
+    free($4);
+    free($5);
+    free($6);
+    |
+    FOR identifier for_statement{
+        $$ = makeNewNode();
+        $$->nodeKind = loop_statement_NodeKind;
+        $$->child = $2;
+        currentline = $1->line_no;
+        $$->line_no = currentline;
+        $2->sibling = $3;
+        free($1);
+    }
+    ;
+    
+    //need to review
+    for_statement : ASSIGNMENT int_num COMMA int_num COMMA int_num DO block END{
+        $$ = makeNewNode();
+        $$->nodeKind = for_statement_NodeKind;
+        TreeNode *temp = makeNewNode();
+        $$->child = temp;
+        temp->nodeKind = int_num_NodeKind；
+        temp->sibling = $2;         //sibling or child
+        currentline = $1->line_no;
+        $$->line_no = currentline;
+        temp->sibling = $4;
+        $4->sibling = $6;
+        if($8 != NULL){
+            $6->sibling = $8;
+        }else{
+        }
+        free($1);
+        free($3);
+        free($5);
+        free($8);
+    }|
+    IN list_expression DO block END {
+        $$ = makeNewNode();
+        $$->nodeKind = list_expression_NodeKind;
+        $$->child = $2;
+        $1->sibling = $4;
+        currentline = $$->line_no;
+        free($1);
+        free($3);
+        free($5);
+    }|
+    IN identifier DO block END{
+        $$ = makeNewNode();
+        $$->nodeKind = list_expression_NodeKind;
+        $$->child = $2;
+        $1->sibling = $4;
+        currentline = $$->line_no;
+        free($1);
+        free($3);
+        free($5);
+    }
+    ;
 
 
 if_statement : IF LPAREN bool_expression RPAREN block else_statement END{

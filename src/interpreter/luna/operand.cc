@@ -67,7 +67,7 @@ Operand::Operand(OP_TYPE type, void* value){
 
 Operand::Operand(const Operand &op){
     this->type = op.type;
-
+    
     switch(op.type){
         case(OP_TYPE::BOOL): {
             this->value = (void *) ::operator new(sizeof(bool));

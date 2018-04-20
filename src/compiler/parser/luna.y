@@ -97,19 +97,44 @@ variable : type identifier {
 	  printf("variable definition error in line :%d\n",$$->line_no);
 	}
 	;
-
-functioncall : identifier argument_list
+//need to review
+functioncall : identifier argument_list{
+    $$ = makeNewNode();
+    $$->nodeKind = functioncall_NodeKind;
+    $$->child = $1;
+    $1->sibling = $2;
+    currentline = $$->line_no;
+    }
 	;
-
-argument_list : LPAREN RPAREN |
-	LPAREN expression_list RPAREN
+//need to review
+argument_list : LPAREN RPAREN{
+    $$ = $1; //unsure
+    $$->nodeKind = argument_list_NodeKind;
+    currentline = $$->line_no;
+    $1->sibling = $2;
+    } |
+    LPAREN expression_list RPAREN{
+        $$ = makeNewNode();
+        $$->nodeKind = argument_list_NodeKind;
+        $$->child = $2;
+        free($1);
+        free($3);
+    }
 	;
-
+//need to review
 expression_list : expression_list COMMA expression{
-    
+    $$ = makeNewNode();
+    $$->nodeKind = expression_NodeKind;  //unsure
+    TreeNode *temp = $1;
+    while(temp->sibling != NULL){
+        temp = temp->sibling;
+    }
+    temp->sibling = $3;
+    $$ = $1;
+    free($2);
     } |
 	expression{
-        
+        $$ = $1;
     }
 	;
 //need to review
@@ -153,8 +178,12 @@ list_expression : LBRAC int_list RBRAC{
     free($3);
     } |
     LBRAC RBRAC{
-        free($1);
-        free($2);
+       // free($1);
+        //free($2);  //unsure
+        $$ = $1;
+        $$->nodeKind = brac_NodeKind;
+        currentline = $$->line_no;
+        $1->sibling = $2;
     }
 	;
 //need to review

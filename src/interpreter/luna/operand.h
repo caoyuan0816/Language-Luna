@@ -13,6 +13,8 @@ union OP_VALUE{
     int i;
     double d;
     bool b;
+    uint8_t raw[sizeof(double)];
+    OP_VALUE(): raw{} {}
 };
 
 class Operand{

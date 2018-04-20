@@ -2,7 +2,7 @@
 
 Operand::Operand(){
     type = OP_TYPE::INT;
-    value.i = 0;
+    value.d = 10.0;
     opStr="";
 }
 

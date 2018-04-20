@@ -14,7 +14,7 @@ Frame::~Frame(){
 }
 
 Frame::Frame(std::string frameName,
-        std::function<void(std::string, std::unordered_map<std::string, Operand*> *)> vmRunFrameCallBack,
+        std::function<void(std::string, std::map<std::string, Operand*> *)> vmRunFrameCallBack,
         std::function<void(Operand&)> vmReturnCallBack,
         std::function<void(void)> vmDeleteTopFrameCallBack){
     this->frameName = frameName;
@@ -81,13 +81,11 @@ void Frame::HALT(Instruction &ins){
 }
 
 void Frame::CALL(Instruction &ins){
-    std::unordered_map<std::string, Operand*> *callArgs = new std::unordered_map<std::string, Operand*>();
+    std::map<std::string, Operand*> *callArgs = new std::map<std::string, Operand*>();
     int argn = std::stoi(ins.getOpStrList()[1]);
     for(int i = argn-1; i >= 0; i--){
         //std::cout << "Before: " << &stack.top() <<  " -> " << &(stack.top().value) <<  " " << *(int *)stack.top().value << std::endl;
-        Operand tmp = *new Operand();
-        tmp = stack.top();
-        (*callArgs)[std::to_string(i)] = &tmp;
+        (*callArgs)[std::to_string(i)] = new Operand(stack.top());
         //std::cout << "After insert: " << &(*callArgs)["0"] <<  " -> " << &((*callArgs)["0"].value) << " " << *(int *)(*callArgs)["0"].value << std::endl;
         stack.pop();
     }
@@ -123,12 +121,12 @@ void Frame::JMP(Instruction &ins){
 void Frame::JZ(Instruction &ins){
     Operand op = stack.top();
     stack.pop();
-    if(op.getType() != OP_TYPE::BOOL){
+    if(op.type != OP_TYPE::BOOL){
         std::string err("Type maching error!");
         std::cout << err << std::endl;
         throw err.c_str();
     }else{
-        if(op.getValue<bool>()){
+        if(op.value.b){
             instructionPos++;
         }else{
             int des = std::stoi(ins.getOpStrList()[0]);
@@ -140,9 +138,9 @@ void Frame::JZ(Instruction &ins){
 
 void Frame::ASN(Instruction &ins){
     if(variable_map == NULL){
-        variable_map = new std::unordered_map<std::string, Operand*>();
+        variable_map = new std::map<std::string, Operand*>();
     }
-    (*variable_map)[ins.getOpStrList()[0]] = new Operand(stack.top());
+    (*variable_map)[ins.getOpStrList()[0]] =  new Operand(stack.top());
     stack.pop();
 
     instructionPos++;
@@ -151,9 +149,7 @@ void Frame::ASN(Instruction &ins){
 
 void Frame::DUP(){
 
-    Operand op = stack.top();
-    Operand nop = *new Operand(op.type, op.value);
-    stack.push(nop);
+    stack.push(stack.top());
 
     instructionPos++;
     return ;
@@ -168,15 +164,15 @@ void Frame::PRT(Instruction &ins){
         op = *(*variable_map)[ins.getOpStrList()[0]];
     }
 
-    switch(op.getType()){
+    switch(op.type){
         case(OP_TYPE::INT):
-            LOG(op.getValue<int>())
+            LOG(op.value.i)
             break;
         case(OP_TYPE::DOUBLE):
-            LOG(op.getValue<double>())
+            LOG(op.value.d)
             break;
         case(OP_TYPE::BOOL):
-            if(op.getValue<bool>()){
+            if(op.value.b){
                 LOG("true")
             }else{
                 LOG("false")
@@ -196,7 +192,7 @@ std::string Frame::getName(){
     return this->frameName;
 }
 
-void Frame::setVariableMap(std::unordered_map<std::string, Operand*> *callArgs){
+void Frame::setVariableMap(std::map<std::string, Operand*> *callArgs){
     variable_map = callArgs;
 }
 

@@ -21,7 +21,7 @@ public:
 	
 	VirtualMachine(const char* bytecodeFileName);
 	~VirtualMachine();
-	void runFrame(std::string frameName, std::unordered_map<std::string, Operand*> *callArgs);
+	void runFrame(std::string frameName, std::map<std::string, Operand*> *callArgs);
 	void frameReturn(Operand &op);
 	void deleteTopFrame();
 	void run();

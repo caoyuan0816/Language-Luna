@@ -7,37 +7,27 @@
 
 enum class OP_TYPE: unsigned int{
         BOOL, DOUBLE, INT
-    };
+};
+
+union OP_VALUE{
+    int i;
+    double d;
+    bool b;
+};
 
 class Operand{
 public:
     OP_TYPE type;
-    void* value;
+    OP_VALUE value;
+    std::string opStr;
     
     OP_TYPE checkOpType(std::string opStr);
     Operand();
+    Operand(OP_TYPE type, OP_VALUE value);
     Operand(int commandIndex, std::vector<std::string> opStrList);
-    Operand(OP_TYPE type, void* value);
     Operand(const Operand &op);
     ~Operand();
-    template <class T> T getValue();
-    OP_TYPE getType();
-    bool operator==(const Operand &op) const;
+    bool operator<(const Operand &op) const;
 };
-
-template <class T>
-T Operand::getValue(){
-    return *(T *)value;
-}
-
-//Defining hash function of class Operand
-namespace std{
-    template <>
-    struct hash<Operand>{
-        std::size_t operator()(const Operand& op) const{
-            return (std::hash<void *>()(op.value));
-        }
-    };
-}
 
 #endif

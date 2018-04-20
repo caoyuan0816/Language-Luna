@@ -2,7 +2,7 @@
 #define FRAME_H
 
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include <stack>
 #include <fstream>
 #include <string>
@@ -15,21 +15,15 @@
 #define FRAME_CALCULATION(name, operation) void Frame::name(){\
     Operand op1 = stack.top(); stack.pop();\
     Operand op2 = stack.top(); stack.pop();\
-    if(op1.getType() == OP_TYPE::DOUBLE || op2.getType() == OP_TYPE::DOUBLE){\
-        double a = op1.getValue<double>();\
-        double b = op2.getValue<double>();\
-        void *result = ::operator new(sizeof(double));\
-        *(double *)result = b operation a;\
+    if(op1.type == OP_TYPE::DOUBLE && op2.type == OP_TYPE::DOUBLE){\
+        OP_VALUE result;\
+        result.d = op2.value.d operation op1.value.d;\
         Operand resultOp(OP_TYPE::DOUBLE, result);\
-        ::operator delete(result);\
         stack.push(resultOp);\
     }else{\
-        int a = op1.getValue<int>();\
-        int b = op2.getValue<int>();\
-        void *result = ::operator new(sizeof(int));\
-        *(int *)result = b operation a;\
+        OP_VALUE result;\
+        result.i = op2.value.i operation op1.value.i;\
         Operand resultOp(OP_TYPE::INT, result);\
-        ::operator delete(result);\
         stack.push(resultOp);\
     }\
     instructionPos++; return ;}
@@ -37,19 +31,14 @@
 #define FRAME_COMPARISON(name, operation) void Frame::name(){\
     Operand op1 = stack.top(); stack.pop();\
     Operand op2 = stack.top(); stack.pop();\
-    void *result = ::operator new(sizeof(bool));\
-    if(op1.getType() == OP_TYPE::DOUBLE || op2.getType() == OP_TYPE::DOUBLE){\
-        double a = op1.getValue<double>();\
-        double b = op2.getValue<double>();\
-        *(bool *)result = b operation a;\
+    OP_VALUE result;\
+    if(op1.type == OP_TYPE::DOUBLE && op2.type == OP_TYPE::DOUBLE){\
+        result.b = op2.value.d operation op1.value.d;\
     }else{\
-        int a = op1.getValue<int>();\
-        int b = op2.getValue<int>();\
-        *(bool *)result = b operation a;\
+        result.b = op2.value.i operation op1.value.i;\
     }\
     Operand resultOp(OP_TYPE::BOOL, result);\
     stack.push(resultOp);\
-    ::operator delete(result);\
     instructionPos++; return ;}
 
 class Frame{
@@ -57,9 +46,9 @@ private:
     std::string frameName = "";
     std::vector<Instruction> instructions;
     std::stack<Operand> stack;
-    std::unordered_map<std::string, Operand*> *variable_map = NULL;
+    std::map<std::string, Operand*> *variable_map = NULL;
     std::vector<Instruction>::iterator instructionPos;
-    std::function<void(std::string, std::unordered_map<std::string, Operand*> *)> vmRunFrameCallBack;
+    std::function<void(std::string, std::map<std::string, Operand*> *)> vmRunFrameCallBack;
     std::function<void(Operand&)> vmFrameReturnCallBack;
     std::function<void(void)> vmDeleteTopFrameCallBack;
 
@@ -87,7 +76,7 @@ private:
 public:
     Frame();
     Frame(std::string frameName,
-        std::function<void(std::string, std::unordered_map<std::string, Operand*> *)> vmRunFrameCallBack,
+        std::function<void(std::string, std::map<std::string, Operand*> *)> vmRunFrameCallBack,
         std::function<void(Operand&)> vmReturnCallBack,
         std::function<void(void)> vmDeleteTopFrameCallBack);
     Frame(const Frame &frame);
@@ -95,7 +84,7 @@ public:
     void pushInstruction(Instruction &ins);
     void pushOperand(Operand &op);
     std::string getName();
-    void setVariableMap(std::unordered_map<std::string, Operand*> *callArgs);
+    void setVariableMap(std::map<std::string, Operand*> *callArgs);
     void run();
     bool operator < (const Frame & cmp) const;
 };

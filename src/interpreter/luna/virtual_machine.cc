@@ -49,7 +49,7 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
             	curFrame->pushInstruction(ins);
             }else{//function name, create new
             	curFrame = new Frame(command.c_str(),
-            		[this](std::string frameName, std::unordered_map<std::string, Operand*> *callArgs){return this->runFrame(frameName, callArgs);},
+            		[this](std::string frameName, std::map<std::string, Operand*> *callArgs){return this->runFrame(frameName, callArgs);},
             		[this](Operand &op){return this->frameReturn(op);},
             		[this](){return this->deleteTopFrame();});
             	frameMap[curFrame->getName()] = curFrame;
@@ -64,7 +64,7 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
     return ;
 }
 
-void VirtualMachine::runFrame(std::string frameName, std::unordered_map<std::string, Operand*> *callArgs){
+void VirtualMachine::runFrame(std::string frameName, std::map<std::string, Operand*> *callArgs){
 	//Make a frame copy
 	Frame *curFrame = new Frame();
 	*curFrame = (*frameMap[frameName]);

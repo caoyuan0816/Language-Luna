@@ -75,15 +75,17 @@ void Frame::HALT(Instruction &ins){
 }
 
 void Frame::CALL(Instruction &ins){
-    std::unordered_map<std::string, Operand> callArgs = *new std::unordered_map<std::string, Operand>();
+    std::unordered_map<std::string, Operand> *callArgs = new std::unordered_map<std::string, Operand>();
     int argn = std::stoi(ins.getOpStrList()[1]);
 
     for(int i = argn-1; i >= 0; i--){
-        callArgs[std::to_string(i)] = stack.top();
+        std::cout << "Before: " << &stack.top() <<  " -> " << &(stack.top().value) <<  " " << *(int *)stack.top().value << std::endl;
+        (*callArgs)[std::to_string(i)] = stack.top();
+        std::cout << "After insert: " << &(*callArgs)["0"] <<  " -> " << &((*callArgs)["0"].value) << " " << *(int *)(*callArgs)["0"].value << std::endl;
         stack.pop();
     }
 
-    vmRunFrameCallBack(ins.getOpStrList()[0], &callArgs);
+    vmRunFrameCallBack(ins.getOpStrList()[0], callArgs);
     instructionPos++;
 }
     

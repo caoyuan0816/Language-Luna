@@ -22,7 +22,7 @@ CALL febonacci 1
 ADD
 RET
 main
-LDC 3
+LDC 10
 CALL febonacci 1
 ASN x
 PRT x

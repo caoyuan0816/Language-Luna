@@ -20,7 +20,7 @@
         double b = op2.getValue<double>();\
         double *result = new double;\
         *result = b operation a;\
-        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void *)result);\
+        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void **)result);\
         stack.push(*resultOp);\
     }else{\
         int a = op1.getValue<int>();\

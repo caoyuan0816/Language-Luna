@@ -9,28 +9,25 @@ Operand::Operand(int commandIndex, std::vector<std::string> opStrList){
         case(1): {  //Const values
                     switch(checkOpType(opStrList[0])){
                         case(OP_TYPE::BOOL): {
-                                     bool* value = new bool;
+                                     this->value = (void *) ::operator new(sizeof(bool));
                                      if(opStrList[0] == "true"){
-                                         *value = true;
+                                         *(bool *)value = true;
                                      }else{
-                                         *value = false;
+                                         *(bool *)value = false;
                                      }
                                      this->type = OP_TYPE::BOOL;
-                                     this->value = (void *)value;
                                      break;
                                  }
                         case(OP_TYPE::DOUBLE): {
-                                     double* value = new double;
-                                     *value = std::stod(opStrList[0]);
+                                     this->value = (void *) ::operator new(sizeof(double));
+                                     *(double *)value = std::stod(opStrList[0]);
                                      this->type = OP_TYPE::DOUBLE;
-                                     this->value = (void *)value;
                                      break;
                                  }
                         case(OP_TYPE::INT): {
-                                     int* value = new int;
-                                     *value = std::stoi(opStrList[0]);
+                                     this->value = (void *) ::operator new(sizeof(int));
+                                     *(int *)value = std::stoi(opStrList[0]);
                                      this->type = OP_TYPE::INT;
-                                     this->value = (void *)value;
                                      break;
                                  }
                         default: break;
@@ -43,29 +40,50 @@ Operand::Operand(int commandIndex, std::vector<std::string> opStrList){
 
 Operand::Operand(OP_TYPE type, void* value){
 	this->type = type;
-	this->value = value;
-}
-
-Operand::Operand(const Operand &op){
-    type = op.type;
-    switch(op.type){
+    switch(type){
         case(OP_TYPE::BOOL): {
-            value = new bool;
-            if((*(bool *)op.value)){
-                *(bool *)value = true;
+            this->value = (void *) ::operator new(sizeof(bool));
+            if((*(bool *)value)){
+                *(bool *)this->value = true;
             }else{
-                *(bool *)value = false;
+                *(bool *)this->value = false;
             }
             break;
         }
         case(OP_TYPE::DOUBLE): {
-            value = new double;
-            *(double *)value = double(*(double *)op.value);
+            this->value = (void *) ::operator new(sizeof(double));
+            *(double *)this->value = double(*(double *)value);
             break;
         }
         case(OP_TYPE::INT): {
-            value = new int;
-            *(int *)value = int(*(int *)op.value);
+            this->value = (void *) ::operator new(sizeof(int));
+            *(int *)this->value = int(*(int *)value);
+            break;
+        }
+        default: break;
+    }
+}
+
+Operand::Operand(const Operand &op){
+    this->type = type;
+    switch(op.type){
+        case(OP_TYPE::BOOL): {
+            this->value = (void *) ::operator new(sizeof(bool));
+            if((*(bool *)op.value)){
+                *(bool *)this->value = true;
+            }else{
+                *(bool *)this->value = false;
+            }
+            break;
+        }
+        case(OP_TYPE::DOUBLE): {
+            this->value = (void *) ::operator new(sizeof(double));
+            *(double *)this->value = double(*(double *)op.value);
+            break;
+        }
+        case(OP_TYPE::INT): {
+            this->value = (void *) ::operator new(sizeof(int));
+            *(int *)this->value = int(*(int *)op.value);
             break;
         }
         default: break;
@@ -73,7 +91,8 @@ Operand::Operand(const Operand &op){
 }
 
 Operand::~Operand(){
-    //TODO
+    std::cout << "deleteing: " << this << " -> " << &value << " " << *(int *)value << std::endl;
+    ::operator delete(value);
 }
 
 OP_TYPE Operand::checkOpType(std::string opStr){

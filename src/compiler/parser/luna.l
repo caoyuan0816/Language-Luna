@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include "tokens.h"
+
 int line_no = 1;
 int commenteof();
 %}

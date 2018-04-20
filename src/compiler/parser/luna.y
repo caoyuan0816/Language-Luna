@@ -131,7 +131,9 @@ math_expression : math_expression addop term |
 	;
 
 term : term mulop num_id {
-   
+  |
+num_id {
+    $$ = $1;
 	}
 	;
 //need to review

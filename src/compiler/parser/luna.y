@@ -105,41 +105,97 @@ argument_list : LPAREN RPAREN |
 	LPAREN expression_list RPAREN
 	;
 
-expression_list : expression_list COMMA expression |
-	expression
+expression_list : expression_list COMMA expression{
+    
+    } |
+	expression{
+        
+    }
 	;
-
-bool_expression : FALSE |
-	TRUE |
-	expression boolop expression
+//need to review
+bool_expression : FALSE {
+    $$ = $1;
+    $$->nodeKind = false_NodeKind;
+    currentline = $$->line_no;
+    }|
+    TRUE {
+        $$ = $1;
+        $$->nodeKind = true_NodeKind;
+        currentline = $$->line_no;
+    }|
+    expression boolop expression {
+        $$ = makeNewNode();
+        $$->nodeKind = bool_expression_NodeKind;
+        $$->child = $1;
+        currentline = $1->line_no;
+        $$->line_no = currentline;
+        $1->sibling = $2;
+        $2->sibling = $3;
+    }
 	;
-
+//need to review
 expression : math_expression {
-	} |
-	functioncall |
+    $$ = $1;
+    } |
+	functioncall{
+    $$ = $1;
+    } |
 	error {
 	  printf("expression error detected!\n");
 	}
 	;
-
-list_expression : LBRAC int_list RBRAC |
-	LBRAC RBRAC
+//need to review
+list_expression : LBRAC int_list RBRAC{
+    $$ = makeNewNode();
+    $$->nodeKind = list_expression_NodeKind;
+    $$->child = $2;
+    free($1);
+    free($3);
+    } |
+    LBRAC RBRAC{
+        free($1);
+        free($2);
+    }
 	;
-
-math_expression : math_expression addop term |
-	term
+//need to review
+math_expression : math_expression addop term{
+    $$ = makeNewNode();
+    $$->nodeKind = term_NodeKind;  //unsure
+    TreeNode *temp = $1;
+    while(temp->sibling != NULL){
+        temp = temp->sibling;
+    }
+    temp->sibling = $2;
+    temp = temp->sibling;
+    temp->sibling = $3;
+    $$ = $1;
+    } |
+	term{
+        $$ = $1;
+    }
 	;
-
+//need to review
 term : term mulop num_id {
+    $$ = makeNewNode();
+    $$->nodeKind = num_id_NodeKind; //unsure
+    TreeNode *temp = $1;
+    while(temp->sibling != NULL){
+        temp = temp->sibling;
+    }
+    temp->sibling = $2;
+    temp = temp->sibling;
+    temp->sibling = $3;
+    $$ = $1;
+    }
   |
-num_id {
+  num_id {
     $$ = $1;
 	}
 	;
 //need to review
 functiondef_list : functiondef_list functiondef{
     $$ = makeNewNode();
-    $$->nodeKind = functiondef_list_NodeKind;
+    $$->nodeKind = functiondef_NodeKind;  //unsure
     TreeNode *temp = $1;
     while(temp->sibling != NULL){
         temp = temp->sibling;
@@ -167,11 +223,11 @@ funcbody : LPAREN paramlist RPAREN block return_statement END {
 	TreeNode *temp = makeNewNode();
 	$$->child = temp;
 	temp->nodeKind = parameter_list_NodeKind;
-	temp->child = $2;
+    temp->child = $2;                       //temp->sibling = $2;？
 	currentline = $1->line_no;
 	$$->line_no = currentline;
 	if ($4!=NULL){
-	  temp->sibling = $4;
+        temp->sibling = $4;                  //$2->sibling = $4;？
 	  $4->sibling = $5;
 	} else {
 	  temp->sibling = $5;
@@ -203,13 +259,13 @@ funcbody : LPAREN paramlist RPAREN block return_statement END {
 return_statement : RETURN num_id {
 	$$ = makeNewNode();
 	$$->nodeKind = return_NodeKind;
-	$$->child = $1;
+	$$->child = $2;    //$2
 	free($1);
 	}
 	;
 
 paramlist : paramlist COMMA variable {
-        $$ = makeNewNode();
+    $$ = makeNewNode();
 	$$->nodeKind = variable_NodeKind;
 	TreeNode *temp = $1;
 	while (temp->sibling!=NULL){

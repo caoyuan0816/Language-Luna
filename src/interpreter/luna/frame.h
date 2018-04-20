@@ -54,7 +54,7 @@ private:
     std::string frameName;
     std::vector<Instruction> instructions;
     std::stack<Operand> stack;
-    std::unordered_map<std::string, Operand> variable_map;
+    std::unordered_map<std::string, Operand*> variable_map;
     std::vector<Instruction>::iterator instructionPos;
     std::function<void(std::string, std::unordered_map<std::string, Operand> *)> vmRunFrameCallBack;
     std::function<void(Operand)> vmFrameReturnCallBack;
@@ -90,7 +90,7 @@ public:
     void pushInstruction(Instruction &ins);
     void pushOperand(Operand op);
     std::string getName();
-    void setVariableMap(std::string key, Operand value);
+    void setVariableMap(std::string key, Operand &op);
     void run();
     bool operator < (const Frame & cmp) const;
 };

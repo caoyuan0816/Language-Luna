@@ -65,7 +65,7 @@ Operand::Operand(OP_TYPE type, void* value){
 }
 
 Operand::Operand(const Operand &op){
-    this->type = type;
+    this->type = op.type;
     switch(op.type){
         case(OP_TYPE::BOOL): {
             this->value = (void *) ::operator new(sizeof(bool));
@@ -91,7 +91,7 @@ Operand::Operand(const Operand &op){
 }
 
 Operand::~Operand(){
-    std::cout << "deleteing: " << this << " -> " << &value << " " << *(int *)value << std::endl;
+    //std::cout << "deleteing: " << this << " -> " << &value << " " << *(int *)value << std::endl;
     ::operator delete(value);
 }
 
@@ -110,5 +110,5 @@ OP_TYPE Operand::getType(){
 }
 
 bool Operand::operator==(const Operand &otherOp) const{
-    value == otherOp.value;
+    return value == otherOp.value;
 }

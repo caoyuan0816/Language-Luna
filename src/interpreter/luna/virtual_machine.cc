@@ -61,10 +61,9 @@ void VirtualMachine::runFrame(std::string frameName, std::unordered_map<std::str
 	//Make a frame copy
 	Frame *curFrame = new Frame();
 	*curFrame = *frameMap[frameName];
-	std::cout << "Callback: " << &(*callArgs)["0"] <<  " -> " << &((*callArgs)["0"].value) << " " << *(int *)(*callArgs)["0"].value << std::endl;
+
 	if(callArgs != NULL){
 		for(auto it = callArgs->begin(); it != callArgs->end(); it++){
-			//std::cout << "CallbackFunc: " << &(it->second) <<  " -> " << (it->second.value) << " " << *(int *)it->second.value << std::endl;
 			curFrame->setVariableMap(it->first, it->second);
 		}
 	}
@@ -74,7 +73,6 @@ void VirtualMachine::runFrame(std::string frameName, std::unordered_map<std::str
 }
 
 void VirtualMachine::frameReturn(Operand op){
-	//std::cout << "returnFrame:" << " " << op.getValue<int>() << std::endl;
 	frameStack.pop();
 	frameStack.top()->pushOperand(op);
 }

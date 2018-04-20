@@ -55,7 +55,7 @@ void Frame::runInstruction(Instruction &curInstruction){
 }
 
 void Frame::LDV(Instruction &ins){
-    stack.push(variable_map[ins.getOpStrList()[0]]);
+    stack.push(*variable_map[ins.getOpStrList()[0]]);
     instructionPos++;
 }
 
@@ -79,9 +79,9 @@ void Frame::CALL(Instruction &ins){
     int argn = std::stoi(ins.getOpStrList()[1]);
 
     for(int i = argn-1; i >= 0; i--){
-        std::cout << "Before: " << &stack.top() <<  " -> " << &(stack.top().value) <<  " " << *(int *)stack.top().value << std::endl;
+        //std::cout << "Before: " << &stack.top() <<  " -> " << &(stack.top().value) <<  " " << *(int *)stack.top().value << std::endl;
         (*callArgs)[std::to_string(i)] = stack.top();
-        std::cout << "After insert: " << &(*callArgs)["0"] <<  " -> " << &((*callArgs)["0"].value) << " " << *(int *)(*callArgs)["0"].value << std::endl;
+        //std::cout << "After insert: " << &(*callArgs)["0"] <<  " -> " << &((*callArgs)["0"].value) << " " << *(int *)(*callArgs)["0"].value << std::endl;
         stack.pop();
     }
 
@@ -133,7 +133,7 @@ void Frame::JZ(Instruction &ins){
 
 void Frame::ASN(Instruction &ins){
 
-    variable_map[ins.getOpStrList()[0]] = stack.top();
+    variable_map[ins.getOpStrList()[0]] = new Operand(stack.top());
     stack.pop();
 
     instructionPos++;
@@ -156,7 +156,7 @@ void Frame::PRT(Instruction &ins){
     if(ins.getOpStrList().size() == 0){
         op = stack.top();
     }else{
-        op = variable_map[ins.getOpStrList()[0]];
+        op = *variable_map[ins.getOpStrList()[0]];
     }
 
     switch(op.getType()){
@@ -187,8 +187,8 @@ std::string Frame::getName(){
     return this->frameName;
 }
 
-void Frame::setVariableMap(std::string key, Operand value){
-    variable_map[key] = value;
+void Frame::setVariableMap(std::string key, Operand &op){
+    variable_map[key] = new Operand(op);
 }
 
 bool Frame::operator < (const Frame & cmp) const{

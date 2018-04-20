@@ -46,7 +46,9 @@ statement : assign_statement |
 	}
 	;
 
-do_statement : DO block END
+do_statement : DO block END{
+    
+    }
 	;
 
 loop_statement : WHILE LPAREN bool_expression RPAREN DO block END |
@@ -58,31 +60,100 @@ for_statement : ASSIGNMENT int_num COMMA int_num COMMA int_num DO block END |
 	IN identifier DO block END
 	;
 
-
-if_statement : IF LPAREN bool_expression RPAREN block else_statement END
+//need to review
+if_statement : IF LPAREN bool_expression RPAREN block else_statement END{
+    $$ = makeNewNode();
+    $$->nodeKind = if_statement_NodeKind;
+    TreeNode *temp = makeNewNode();
+    $$->child = temp;
+    temp->nodeKind = bool_expression_NodeKind；
+    temp->sibling = $3;
+    currentline = $1->line_no;
+    $$->line_no = currentline;
+    if($5 != NULL){
+        temp->sibling = $5;
+        $5->sibling = $6;
+    }else{
+        temp->sibling = $6;
+    }
+    free($1);
+    free($2);
+    free($4);
+    free($7);
+    }
 	;
-
-else_statement : ELSE block |
+//need to review
+else_statement : ELSE block {
+    $$ = makeNewNode();
+    $$->nodeKind = else_statement_NodeKind;
+    $$->child = $2;
+    currentline = $$->line_no;
+    free($1);
+    }|
 	;
-
-assign_statement : define_assign |
-	identifier_assign |
-	unary_assign
+//need to review
+assign_statement : define_assign {
+    $$ = $1;
+    $$->nodeKind = define_assign_NodeKind;
+    currentline = $$->line_no;
+    }|
+identifier_assign{
+    $$ = $1;
+    $$->nodeKind = identifier_assign_NodeKind;
+    currentline = $$->line_no;
+    }|
+unary_assign{
+    $$ = $1;
+    $$->nodeKind = unary_assign_NodeKind;
+    currentline = $$->line_no;
+    
+    }
 	;
-
-unary_assign : identifier unaryop
+//need to review
+unary_assign : identifier unaryop{
+    $$ = makeNewNode();
+    $$->nodeKind = unary_assign_NodeKind;
+    $$->child = $1;
+    $1->sibling = $2;
+    currentline = $$->line_no;
+    }
 	;
-
-identifier_assign : identifier ASSIGNMENT assign_type
+//need to review
+identifier_assign : identifier ASSIGNMENT assign_type{
+    $$ = makeNewNode();
+    $$->nodeKind = identifier_assign_NodeKind;
+    $$->child = $1;
+    $1->sibling = $3;
+    currentline = $$->line_no;
+    free($2);
+}
+    }
 	;
-
-define_assign : variable ASSIGNMENT assign_type
+//need to review
+define_assign : variable ASSIGNMENT assign_type{
+    $$ = makeNewNode();
+    $$->nodeKind = define_assign_NodeKind;
+    $$->child = $1;
+    $1->sibling = $3;
+    currentline = $$->line_no;
+    free($2);
+    }
 	;
-
+//need to review
 assign_type : expression |
-	TRUE |
-	FALSE |
-	list_expression
+	TRUE{
+        $$ = $1;
+        $$->nodeKind = true_NodeKind;
+        currentline = $$->line_no;
+    } |
+	FALSE{
+        $$ = $1;
+        $$->nodeKind = false_NodeKind;
+        currentline = $$->line_no;
+    } |
+	list_expression{
+        $$ = $1;
+    }
 	;
 
 variable : type identifier {

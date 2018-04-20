@@ -17,8 +17,8 @@ typedef enum {
   decrease_one_NodeKind, divide_op_NodeKind, mul_op_NodeKind,
   plus_op_NodeKind, minus_op_NodeKind, return_NodeKind,
   function_body_NodeKind, parameter_list_NodeKind，functiondef_NodeKind, num_id_NodeKind
-    , term_NodeKind, list_expression_NodeKind，false_NodeKind，true_NodeKind，expression_NodeKind,
-    brac_NodeKind, argument_list_NodeKind, functioncall_NodeKind
+    , term_NodeKind, list_expression_NodeKind，false_NodeKind，true_NodeKind，bool_expression_NodeKind,
+    brac_NodeKind, argument_list_NodeKind, functioncall_NodeKind, define_assign_NodeKind, identifier_assign_NodeKind, unary_assign_NodeKind, else_statement_NodeKind, if_statement_NodeKind
 } NodeKind;
 
 typedef enum {

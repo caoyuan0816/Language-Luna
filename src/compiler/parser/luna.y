@@ -11,6 +11,7 @@ int errorOccur;
 int currentline = 0;
 int yyerror(char *s);
 int yylex();
+void releaseNode(TreeNode *);
 %}
 
 %token LIST ASSIGNMENT COLON COMMA INTNUM
@@ -24,164 +25,145 @@ int yylex();
 
 %%
 //TODO: MAIN
-file : functiondef_list MAIN LPAREN variable COMMA variable RPAREN block END{
-    $$ = makeNewNdoe();
-    $$->nodeKind = file_NodeKind;
-    TreeNode *temp = $1;
-    $$->child = temp;
-    currentline = $1->line_no;
-    $$->line_no = currentline;
-    temp->sibling = $4;
-    $4->sibling = $6;
-    if($8 != NULL){
-        $6->sibling = $8;
-    }else{}
-    
-    free($2);
-    free($3);
-    free($5);
-    free($7);
-    free($9);
-    } |
-    functiondef_list MAIN LPAREN RPAREN block END {
-        $$ = makeNewNdoe();
-        $$->nodeKind = file_NodeKind;
-        TreeNode *temp = $1;
-        $$->child = temp;
-        currentline = $1->line_no;
-        $$->line_no = currentline;
-        if($5 != NULL){
-            $1->sibling = $5;
-        }else{}
-        free($2);
-        free($3);
-        free($4);
-        free($6);
 
-    }
+file : functiondef_list MAIN LPAREN variable COMMA variable RPAREN block END {
+	TreeNode *temp = makeNewNode();
+	temp->nodeKind = functiondef_list_NodeKind;
+	temp->child = $1;
+	$$ = makeNewNode();
+	temp->nodeKind = file_NodeKind;
+	$$->child = temp;
+	temp = makeNewNode();
+	temp->nodeKind = main_function_NodeKind;
+	temp->child = $4;
+	$4->sibling = $6;
+	$6->sibling = $8;
+	$$->child->sibling = temp;
+	releaseNode($2);
+	releaseNode($3);
+	releaseNode($5);
+	releaseNode($7);
+	releaseNode($9);
+	}|
+	functiondef_list MAIN LPAREN RPAREN block END{
+	TreeNode *temp = makeNewNode();
+	temp->nodeKind = functiondef_list_NodeKind;
+	temp->child = $1;
+	$$ = makeNewNode();
+	temp->nodeKind = file_NodeKind;
+	$$->child = temp;
+	temp = makeNewNode();
+	temp->nodeKind = main_function_NodeKind;
+	temp->child = $5;
+	$$->child->sibling = temp;
+	releaseNode($2);
+	releaseNode($3);
+	releaseNode($4);
+	releaseNode($6);
+	}
 	;
 
-//TODO: review
-block : statement_list{
-    $$ = $1;
-    } |
-	;
-//TODO: review
-statement_list : statement_list statement{
-    if($1 = NULL){
-        TreeNode *temp = $1;
-        while(temp->sibling != NULL){
-            temp = temp->sibling;
-        }
-        temp->sibling = $2;
-        $$ = $1;
-    }else{
-        $$ = $2;
-    }
-    } |
-    statement{
-        $$ = $1;
-    }
+block : statement_list {
+	$$ = makeNewNode();
+	$$->nodeKind = block_NodeKind;
+	$$->child = $1;
+	currentline = $$->line_no;
+	}|
 	;
 
-//TODO: review
+statement_list : statement_list statement {
+	if ($1!=NULL){
+	  TreeNode *temp = $1;
+	  while(temp->sibling!=NULL){
+	    temp = temp->sibling;
+	  }
+	  temp->sibling = $2;
+	  $$ = $1;
+	} else {
+	  $$ = $2;
+	}
+	}|
+	statement{
+	$$ = $1;
+	}
+	;
+
 statement : assign_statement {
-    $$ = $1;
-    }|
-    functioncall{
-    $$ = $1;} |
-    do_statement{
-    $$ = $1;} |
-    loop_statement{
-        $$ = $1;} |
-    if_statement{
-        $$ = $1;} |
+	$$ = $1;
+	}|
+	functioncall {
+	$$ = $1;
+	}|
+	do_statement {
+	$$ = $1;
+	}|
+	loop_statement {
+	$$ = $1;
+	}|
+	if_statement {
+	$$ = $1;
+	}|
 	error {
 	  printf("statement error detected\n");
 	  printf("line number: %d\n", $$->line_no);
 	}
 	;
-//TODO: review
+
 do_statement : DO block END{
-    $$ = makeNewNode();
-    $$->nodeKind = do_statement_NodeKind;
-    $$->child = $2;
-    currentline = $1->line_no;
-    $$->line_no = currentline;
-    free($1);
-    free($3);
-    }
+	$$ = makeNewNode();
+	$$->nodeKind = do_statement_NodeKind;
+	$$->child = $2;
+	releaseNode($1);
+	releaseNode($3);
+	}
 	;
-//TODO: review
-loop_statement : WHILE LPAREN bool_expression RPAREN DO block END{
-    $$ = makeNewNode();
-    $$->nodeKind = loop_statement_NodeKind;
-    $$->child = $3;
-    currentline = $1->line_no;
-    $$->line_no = currentline;
-    if($6 != NULL){
-        $3->sibling = $6;
-    }else{
-    }
-    free($1);
-    free($2);
-    free($4);
-    free($5);
-    free($6);
-    |
-    FOR identifier for_statement{
-        $$ = makeNewNode();
-        $$->nodeKind = loop_statement_NodeKind;
-        $$->child = $2;
-        currentline = $1->line_no;
-        $$->line_no = currentline;
-        $2->sibling = $3;
-        free($1);
-    }
-    ;
-    
-    //TODO: review
-    for_statement : ASSIGNMENT int_num COMMA int_num COMMA int_num DO block END{
-        $$ = makeNewNode();
-        $$->nodeKind = for_statement_NodeKind;
-        TreeNode *temp = makeNewNode();
-        $$->child = temp;
-        temp->nodeKind = int_num_NodeKind；
-        temp->sibling = $2;         //sibling or child
-        currentline = $1->line_no;
-        $$->line_no = currentline;
-        temp->sibling = $4;
-        $4->sibling = $6;
-        if($8 != NULL){
-            $6->sibling = $8;
-        }else{
-        }
-        free($1);
-        free($3);
-        free($5);
-        free($8);
-    }|
-    IN list_expression DO block END {
-        $$ = makeNewNode();
-        $$->nodeKind = list_expression_NodeKind;
-        $$->child = $2;
-        $1->sibling = $4;
-        currentline = $$->line_no;
-        free($1);
-        free($3);
-        free($5);
-    }|
-    IN identifier DO block END{
-        $$ = makeNewNode();
-        $$->nodeKind = list_expression_NodeKind;
-        $$->child = $2;
-        $1->sibling = $4;
-        currentline = $$->line_no;
-        free($1);
-        free($3);
-        free($5);
-    }
-    ;
+
+loop_statement : WHILE LPAREN bool_expression RPAREN DO block END {
+	$$ = makeNewNode();
+	$$->nodeKind = while_statement_NodeKind;
+	$$->child = $3;
+	$3->sibling = $6;
+	releaseNode($1);
+	releaseNode($2);
+	releaseNode($4);
+	releaseNode($5);
+	releaseNode($7);
+	}|
+	FOR identifier for_statement{
+	$$ = makeNewNode();
+	$$->nodeKind = for_statement_NodeKind;
+	$$->child = $2;
+	$2->sibling = $3;
+	releaseNode($1);
+	}
+	;
+
+for_statement : ASSIGNMENT int_num COMMA int_num COMMA int_num DO block END {
+	$$ = $2;
+	$2->sibling = $4;
+	$4->sibling = $6;
+	$6->sibling = $8;
+	releaseNode($1);
+	releaseNode($3);
+	releaseNode($5);
+	releaseNode($7);
+	releaseNode($9);
+	}|
+	IN list_expression DO block END {
+	$$ = $2;
+	$2->sibling = $4;
+	releaseNode($1);
+	releaseNode($3);
+	releaseNode($5);
+	}|
+	IN identifier DO block END{
+	$$ = $2;
+	$2->sibling = $4;
+	releaseNode($1);
+	releaseNode($3);
+	releaseNode($5);
+	}
+	;
 
 
 if_statement : IF LPAREN bool_expression RPAREN block else_statement END{
@@ -197,10 +179,10 @@ if_statement : IF LPAREN bool_expression RPAREN block else_statement END{
 	} else {
           temp->sibling = $6;
 	}
-	free($1);
-	free($2);
-	free($4);
-	free($7);
+	releaseNode($1);
+	releaseNode($2);
+	releaseNode($4);
+	releaseNode($7);
 	}
 	;
 
@@ -209,7 +191,7 @@ else_statement : ELSE block {
 	$$->nodeKind = else_statement_NodeKind;
 	$$->child = $2;
 	currentline = $$->line_no;
-	free($1);
+	releaseNode($1);
 	}|
 	;
 
@@ -239,7 +221,7 @@ identifier_assign : identifier ASSIGNMENT assign_type{
 	$$->child = $1;
 	$1->sibling = $3;
 	currentline = $$->line_no;
-	free($2);
+	releaseNode($2);
 	}
 	;
 
@@ -249,7 +231,7 @@ define_assign : variable ASSIGNMENT assign_type{
 	$$->child = $1;
 	$1->sibling = $3;
 	currentline = $$->line_no;
-	free($2);
+	releaseNode($2);
 	}
 	;
 
@@ -276,8 +258,8 @@ variable : type identifier {
 	$$->nodeKind = variable_NodeKind;
 	$$->child = $1;
 	$1->sibling = $2;
-	currentline = $$->line_no;
-	printf("child: %s\tsibling: %s\n", $1->literal, $1->sibling->literal);
+	currentline = $1->line_no;
+	printf("%d child: %s\tsibling: %s\n",$1->line_no, $1->literal, $1->sibling->literal);
 	} |
 	error {
 	  printf("variable definition error in line :%d\n",$$->line_no);
@@ -297,16 +279,16 @@ argument_list : LPAREN RPAREN{
 	$$ = makeNewNode();
 	$$->nodeKind = argument_list_NodeKind;
 	currentline = $$->line_no;
-	free($1);
-	free($2);
+	releaseNode($1);
+	releaseNode($2);
 	}|
 	LPAREN expression_list RPAREN{
 	$$ = makeNewNode();
 	$$->nodeKind = argument_list_NodeKind;
 	$$->child = $2;
 	currentline = $$->line_no;
-	free($1);
-	free($3);
+	releaseNode($1);
+	releaseNode($3);
 	}
 	;
 
@@ -317,7 +299,7 @@ expression_list : expression_list COMMA expression{
 	}
 	temp->sibling = $3;
 	$$ = $1;
-	free($2);
+	releaseNode($2);
 	} |
 	expression{
 	$$ = $1;
@@ -362,32 +344,31 @@ list_expression : LBRAC int_list RBRAC{
 	$$ = makeNewNode();
 	$$->nodeKind = list_expression_NodeKind;
 	$$->child = $2;
-	free($1);
-	free($3);
+	releaseNode($1);
+	releaseNode($3);
 	}|
 	LBRAC RBRAC{
 	$$ = makeNewNode();
 	$$->nodeKind = list_expression_NodeKind;
-        free($1);
-        free($2);
+        releaseNode($1);
+        releaseNode($2);
 	}
 	;
 
-// renewed
-//TODE: review
+//TODO: reconsider
 math_expression : math_expression addop term{
-    if($1 != NULL){
-        TreeNode *temp = $1
-        while(temp->sibling != NULL){
-            temp = temp->sibling;
-        }
-        temp->sibling = $2;
-        $2->sibling = $3;
-        $$ = $1;
-    }else{
-        $$ = $2;
-        $2->sibling = $3;
-    }
+	TreeNode *temp = makeNewNode();
+	temp->nodeKind = term_NodeKind;
+	temp->child = $3;
+	$2->sibling = temp;
+	temp->sibling = $1;
+	$$ = $2;
+	}|
+	term{
+	$$ = makeNewNode();
+	$$->nodeKind = term_NodeKind;
+        $$->child = $1;
+	}
 	;
 
 //TODO: reconsider
@@ -421,6 +402,11 @@ functiondef_list : functiondef_list functiondef{
 	  $$ = $2;
 	}
 	}|
+	functiondef{
+	$$ = $1;
+	}|{
+	printf("empty functiondef\n");
+	}
 	;
 
 functiondef : FUNCTION variable funcbody{
@@ -428,8 +414,9 @@ functiondef : FUNCTION variable funcbody{
 	$$->nodeKind = functiondef_NodeKind;
 	$$->child = $2;
 	$2->sibling = $3;
-	currentline = $$->line_no;
-	free($1);
+	currentline = $1->line_no;
+	$$->line_no = currentline;
+	releaseNode($1);
 	}
 	;
 
@@ -448,9 +435,9 @@ funcbody : LPAREN paramlist RPAREN block return_statement END {
 	} else {
 	  temp->sibling = $5;
 	}
-	free($1);
-	free($3);
-	free($6);
+	releaseNode($1);
+	releaseNode($3);
+	releaseNode($6);
 	}|
 	LPAREN RPAREN block return_statement END{
 	$$ = makeNewNode();
@@ -466,9 +453,9 @@ funcbody : LPAREN paramlist RPAREN block return_statement END {
 	} else {
 	  temp->sibling = $4;
 	}
-	free($1);
-	free($2);
-	free($5);
+	releaseNode($1);
+	releaseNode($2);
+	releaseNode($5);
 	}
 	;
 
@@ -476,7 +463,7 @@ return_statement : RETURN num_id {
 	$$ = makeNewNode();
 	$$->nodeKind = return_NodeKind;
 	$$->child = $2;
-	free($1);
+	releaseNode($1);
 	}
 	;
 
@@ -491,7 +478,7 @@ paramlist : paramlist COMMA variable {
 	} else {
 	  $$ = $3;
 	}
-	free($2);
+	releaseNode($2);
 	}|
 	variable {
 	$$ = $1;
@@ -640,7 +627,7 @@ int_list : int_list COMMA int_num {
 	} else {
 	  $$ = $3;
 	}
-	free($2);
+	releaseNode($2);
 	}|
 	int_num {
 	$$ = $1;
@@ -651,13 +638,12 @@ real_num :MINUS REALNUMBER {
 	$$ = $2;
 	$$->nodeKind = double_NodeKind;
 	currentline = $$->line_no;
-	free($1);
+	releaseNode($1);
 	}|
 	REALNUMBER {
 	$$ = $1;
 	$$->nodeKind = double_NodeKind;
 	currentline = $$->line_no;
-//	printf("double: %s\n", $$->literal);
 	}
 	;
 
@@ -665,14 +651,12 @@ int_num : MINUS INTNUM {
 	$$ = $2;
 	$$->nodeKind = int_NodeKind;
 	currentline = $$->line_no;
-//	printf("negative int: %c%s\n", '-', $$->literal);
-	free($1);
+	releaseNode($1);
 	} |
 	INTNUM {
 	$$ = $1;
 	$$->nodeKind = int_NodeKind;
 	currentline = $$->line_no;
-//	printf("int number: %s\n", $$->literal);
 	}
 	;
 

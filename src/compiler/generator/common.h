@@ -21,8 +21,9 @@ typedef enum {
   true_NodeKind, bool_expression_NodeKind, brac_NodeKind, expression_NodeKind,
   argument_list_NodeKind, functioncall_NodeKind, define_assign_NodeKind,
   identifier_assign_NodeKind, unary_assign_NodeKind, else_statement_NodeKind,
-  if_statement_NodeKind, math_expression_NodeKind, loop_statement_NodeKind, int_num_NodeKind,
-    do_statement_NodeKind, for_statement_NodeKind, file_NodeKind
+  if_statement_NodeKind, math_expression_NodeKind, functiondef_list_NodeKind,
+  file_NodeKind, main_function_NodeKind, block_NodeKind,
+  do_statement_NodeKind, while_statement_NodeKind, for_statement_NodeKind
 } NodeKind;
 
 typedef enum {

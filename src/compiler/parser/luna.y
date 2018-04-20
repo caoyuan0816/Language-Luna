@@ -130,17 +130,33 @@ math_expression : math_expression addop term |
 	term
 	;
 
-term : term mulop num_id |
-	num_id {
+term : term mulop num_id {
+   
 	}
 	;
-
-functiondef_list : functiondef_list functiondef|
+//need to review
+functiondef_list : functiondef_list functiondef{
+    $$ = makeNewNode();
+    $$->nodeKind = functiondef_list_NodeKind;
+    TreeNode *temp = $1;
+    while(temp->sibling != NULL){
+        temp = temp->sibling;
+    }
+    temp->sibling = $2;
+    $$ = $1;
+    }|
 	;
 
+
+//need to review
 functiondef : FUNCTION variable funcbody{
-	
-	}
+    $$ = makeNewNode();
+    $$->nodeKind = functiondef_NodeKind;
+    $$->child = $2;
+    $2->sibling = $3;
+    currentline = $$->line_no;
+    free($1);
+    }
 	;
 
 funcbody : LPAREN paramlist RPAREN block return_statement END {

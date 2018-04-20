@@ -1,17 +1,16 @@
-%{
-/*
- * grammar.y
+%{/* luna.y
  *
  * Luna grammar in Yacc format, based originally on
  * BNF of Luna language
  */
+#include "common.h"
 #include <stdio.h>
-
 extern int openFile(int argc, char** argv);
 int errorOccur;
+int currentline = 0;
 %}
 
-%token LIST ASSIGNMENT COLON COMMA DIGSEQ
+%token LIST ASSIGNMENT COLON COMMA INTNUM
 %token DO ELSE END EQUAL FOR FUNCTION RETURN
 %token GE GT IDENTIFIER IF IN LBRAC LE LPAREN LT MINUS
 %token NOTEQUAL PFILE PLUS MAIN RBRAC //TODO: MAIN
@@ -83,7 +82,8 @@ assign_type : expression |
 	;
 
 variable : type identifier {
-	}|
+
+	} |
 	error {
 	  printf("variable definition error\n");
 	}
@@ -188,8 +188,8 @@ num_id : identifier |
 	num
 	;
 
-num : MINUS DIGSEQ |
-	DIGSEQ |
+num : MINUS INTNUM |
+	INTNUM |
 	MINUS REALNUMBER |
 	REALNUMBER
 	;
@@ -198,8 +198,8 @@ int_list : int_list comma int_num |
 	int_num
 	;
 
-int_num : MINUS DIGSEQ |
-	DIGSEQ
+int_num : MINUS INTNUM |
+	INTNUM
 	;
 
 identifier : IDENTIFIER

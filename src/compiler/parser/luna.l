@@ -5,10 +5,12 @@
  */
 
 #include <stdio.h>
+#include "common.h"
 #include "tokens.h"
 
 int line_no = 1;
 int commenteof();
+int makeThisNode(int type);
 %}
 
 A [a]
@@ -40,46 +42,46 @@ Z [z]
 
 %%
 
-{L}{I}{S}{T}   return(LIST);
-{D}{O}    return(DO);
-{E}{L}{S}{E}   return(ELSE);
-{E}{N}{D}   return(END);
-{F}{O}{R}   return(FOR);
-{F}{U}{N}{C}{T}{I}{O}{N} return(FUNCTION);
-{R}{E}{T}{U}{R}{N} return(RETURN);
-{I}{F}    return(IF);
-{I}{N}    return(IN);
-{M}{A}{I}{N}  return(MAIN);//TODO: maybe should be modified
-{T}{H}{E}{N}   return(THEN);
-{W}{H}{I}{L}{E} return(WHILE);
-{I}{N}{T} return(INT);
-{D}{O}{U}{B}{L}{E} return(DOUBLE);
-{B}{O}{O}{L} return(BOOL);
-{T}{R}{U}{E} return(TRUE);
-{F}{A}{L}{S}{E} return(FALSE);
-[a-zA-Z]([a-zA-Z0-9])*  return(IDENTIFIER);
+{L}{I}{S}{T}   return makeThisNode(LIST);
+{D}{O}    return makeThisNode(DO);
+{E}{L}{S}{E}   return makeThisNode(ELSE);
+{E}{N}{D}   return makeThisNode(END);
+{F}{O}{R}   return makeThisNode(FOR);
+{F}{U}{N}{C}{T}{I}{O}{N} return makeThisNode(FUNCTION);
+{R}{E}{T}{U}{R}{N} return makeThisNode(RETURN);
+{I}{F}    return makeThisNode(IF);
+{I}{N}    return makeThisNode(IN);
+{M}{A}{I}{N}  return makeThisNode(MAIN);//TODO: maybe should be modified
+{T}{H}{E}{N}   return makeThisNode(THEN);
+{W}{H}{I}{L}{E} return makeThisNode(WHILE);
+{I}{N}{T} return makeThisNode(INT);
+{D}{O}{U}{B}{L}{E} return makeThisNode(DOUBLE);
+{B}{O}{O}{L} return makeThisNode(BOOL);
+{T}{R}{U}{E} return makeThisNode(TRUE);
+{F}{A}{L}{S}{E} return makeThisNode(FALSE);
+[a-zA-Z]([a-zA-Z0-9])*  return makeThisNode(IDENTIFIER);
 
-"="    return(ASSIGNMENT);
-":"    return(COLON);
-","    return(COMMA);
-[0-9]+    return(DIGSEQ);
-"=="    return(EQUAL);
-">="    return(GE);
-">"    return(GT);
-"["    return(LBRAC);
-"<="    return(LE);
-"("    return(LPAREN);
-"<"    return(LT);
-"-"    return(MINUS);
-"!="    return(NOTEQUAL);
-"+"    return(PLUS);
-"]"    return(RBRAC);
-[0-9]+"."[0-9]+   return(REALNUMBER);
-")"    return(RPAREN);
-"/"    return(SLASH);
-"*"    return(STAR);
-"++"   return(INCO);
-"--"   return(DECO);
+"="    return makeThisNode(ASSIGNMENT);
+":"    return makeThisNode(COLON);
+","    return makeThisNode(COMMA);
+[0-9]+    return makeThisNode(INTNUM);
+"=="    return makeThisNode(EQUAL);
+">="    return makeThisNode(GE);
+">"    return makeThisNode(GT);
+"["    return makeThisNode(LBRAC);
+"<="    return makeThisNode(LE);
+"("    return makeThisNode(LPAREN);
+"<"    return makeThisNode(LT);
+"-"    return makeThisNode(MINUS);
+"!="    return makeThisNode(NOTEQUAL);
+"+"    return makeThisNode(PLUS);
+"]"    return makeThisNode(RBRAC);
+[0-9]+"."[0-9]+   return makeThisNode(REALNUMBER);
+")"    return makeThisNode(RPAREN);
+"/"    return makeThisNode(SLASH);
+"*"    return makeThisNode(STAR);
+"++"   return makeThisNode(INCO);
+"--"   return makeThisNode(DECO);
 
 "/*" {
   register int c;
@@ -113,6 +115,16 @@ Z [z]
     }
 
 %%
+
+int makeThisNode(int type){
+  yylval = makeNewNode();
+  yylval->line_no = line_no;
+
+  yylval->literal = (char *)malloc(sizeof(char) * strlen(yytext) + 1);
+  strcpy(yylval->literal, yytext);
+
+  return type;
+}
 
 int commenteof()
 {

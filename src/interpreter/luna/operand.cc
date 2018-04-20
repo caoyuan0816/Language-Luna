@@ -1,7 +1,8 @@
 #include "operand.h"
 
 Operand::Operand(){
-
+    this->value = NULL;
+    this->type = OP_TYPE::BOOL;
 }
 
 Operand::Operand(int commandIndex, std::vector<std::string> opStrList){
@@ -11,22 +12,22 @@ Operand::Operand(int commandIndex, std::vector<std::string> opStrList){
                         case(OP_TYPE::BOOL): {
                                      this->value = (void *) ::operator new(sizeof(bool));
                                      if(opStrList[0] == "true"){
-                                         *(bool *)value = true;
+                                         *(bool *)this->value = true;
                                      }else{
-                                         *(bool *)value = false;
+                                         *(bool *)this->value = false;
                                      }
                                      this->type = OP_TYPE::BOOL;
                                      break;
                                  }
                         case(OP_TYPE::DOUBLE): {
                                      this->value = (void *) ::operator new(sizeof(double));
-                                     *(double *)value = std::stod(opStrList[0]);
+                                     *(double *)this->value = std::stod(opStrList[0]);
                                      this->type = OP_TYPE::DOUBLE;
                                      break;
                                  }
                         case(OP_TYPE::INT): {
                                      this->value = (void *) ::operator new(sizeof(int));
-                                     *(int *)value = std::stoi(opStrList[0]);
+                                     *(int *)this->value = std::stoi(opStrList[0]);
                                      this->type = OP_TYPE::INT;
                                      break;
                                  }
@@ -66,6 +67,7 @@ Operand::Operand(OP_TYPE type, void* value){
 
 Operand::Operand(const Operand &op){
     this->type = op.type;
+
     switch(op.type){
         case(OP_TYPE::BOOL): {
             this->value = (void *) ::operator new(sizeof(bool));

@@ -5,7 +5,13 @@ VirtualMachine::VirtualMachine(const char* bytecodeFileName){
 }
 
 VirtualMachine::~VirtualMachine(){
-
+	for(auto it = frameMap.begin(); it != frameMap.end(); it++){
+		delete it->second;
+	}
+	while(!frameStack.empty()){
+		delete frameStack.top();
+		frameStack.pop();
+	}
 }
 
 void VirtualMachine::loadInstructions(const char* bytecodeFileName){
@@ -39,12 +45,13 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
             auto res = std::find(Instruction::INSTRUCTION_LIST, Instruction::INSTRUCTION_LIST + 20, command);
             if(res != Instruction::INSTRUCTION_LIST + 20){
             	int commandIndex = res - Instruction::INSTRUCTION_LIST;
-            	Instruction *ins = new Instruction(commandIndex, opStrList);
-            	curFrame->pushInstruction(*ins);
+            	Instruction ins(commandIndex, opStrList);
+            	curFrame->pushInstruction(ins);
             }else{//function name, create new
             	curFrame = new Frame(command.c_str(),
-            		[this](std::string frameName, std::unordered_map<std::string, Operand> *callArgs){return this->runFrame(frameName, callArgs);},
-            		[this](Operand op){return this->frameReturn(op);});
+            		[this](std::string frameName, std::unordered_map<std::string, Operand*> *callArgs){return this->runFrame(frameName, callArgs);},
+            		[this](Operand &op){return this->frameReturn(op);},
+            		[this](){return this->deleteTopFrame();});
             	frameMap[curFrame->getName()] = curFrame;
             }
         }
@@ -57,28 +64,33 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
     return ;
 }
 
-void VirtualMachine::runFrame(std::string frameName, std::unordered_map<std::string, Operand> *callArgs){
+void VirtualMachine::runFrame(std::string frameName, std::unordered_map<std::string, Operand*> *callArgs){
 	//Make a frame copy
 	Frame *curFrame = new Frame();
-	*curFrame = *frameMap[frameName];
+	*curFrame = (*frameMap[frameName]);
 
-	if(callArgs != NULL){
-		for(auto it = callArgs->begin(); it != callArgs->end(); it++){
-			curFrame->setVariableMap(it->first, it->second);
-		}
-	}
+	curFrame->setVariableMap(callArgs);
 
 	frameStack.push(curFrame);
-	curFrame->run();
+	frameStack.top()->run();
 }
 
-void VirtualMachine::frameReturn(Operand op){
+void VirtualMachine::frameReturn(Operand &op){
+	Frame *tmp = frameStack.top();
 	frameStack.pop();
-	frameStack.top()->pushOperand(op);
+	if(!frameStack.empty()){
+		frameStack.top()->pushOperand(op);
+	}
+	frameStack.push(tmp);
+}
+
+void VirtualMachine::deleteTopFrame(){
+
+	delete frameStack.top();
+	frameStack.pop();
 }
 
 void VirtualMachine::run(){
-
 	if(frameMap.find("main") != frameMap.end()){
 		runFrame(std::string("main"), NULL);
 	}else{
@@ -86,7 +98,6 @@ void VirtualMachine::run(){
         std::cout << err << std::endl;
         throw err.c_str();
 	}
-	
 
     return ;
 }

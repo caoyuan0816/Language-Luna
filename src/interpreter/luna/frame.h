@@ -18,46 +18,50 @@
     if(op1.getType() == OP_TYPE::DOUBLE || op2.getType() == OP_TYPE::DOUBLE){\
         double a = op1.getValue<double>();\
         double b = op2.getValue<double>();\
-        double *result = new double;\
-        *result = b operation a;\
-        Operand *resultOp = new Operand(OP_TYPE::DOUBLE, (void **)result);\
-        stack.push(*resultOp);\
+        void *result = ::operator new(sizeof(double));\
+        *(double *)result = b operation a;\
+        Operand resultOp(OP_TYPE::DOUBLE, result);\
+        ::operator delete(result);\
+        stack.push(resultOp);\
     }else{\
         int a = op1.getValue<int>();\
         int b = op2.getValue<int>();\
-        int *result = new int;\
-        *result = b operation a;\
-        Operand *resultOp = new Operand(OP_TYPE::INT, (void *)result);\
-        stack.push(*resultOp);\
+        void *result = ::operator new(sizeof(int));\
+        *(int *)result = b operation a;\
+        Operand resultOp(OP_TYPE::INT, result);\
+        ::operator delete(result);\
+        stack.push(resultOp);\
     }\
     instructionPos++; return ;}
 
 #define FRAME_COMPARISON(name, operation) void Frame::name(){\
     Operand op1 = stack.top(); stack.pop();\
     Operand op2 = stack.top(); stack.pop();\
-    bool *result = new bool;\
+    void *result = ::operator new(sizeof(bool));\
     if(op1.getType() == OP_TYPE::DOUBLE || op2.getType() == OP_TYPE::DOUBLE){\
         double a = op1.getValue<double>();\
         double b = op2.getValue<double>();\
-        *result = b operation a;\
+        *(bool *)result = b operation a;\
     }else{\
         int a = op1.getValue<int>();\
         int b = op2.getValue<int>();\
-        *result = b operation a;\
+        *(bool *)result = b operation a;\
     }\
-    Operand *resultOp = new Operand(OP_TYPE::BOOL, (void *)result);\
-    stack.push(*resultOp);\
+    Operand resultOp(OP_TYPE::BOOL, result);\
+    stack.push(resultOp);\
+    ::operator delete(result);\
     instructionPos++; return ;}
 
 class Frame{
 private:
-    std::string frameName;
+    std::string frameName = "";
     std::vector<Instruction> instructions;
     std::stack<Operand> stack;
-    std::unordered_map<std::string, Operand*> variable_map;
+    std::unordered_map<std::string, Operand*> *variable_map = NULL;
     std::vector<Instruction>::iterator instructionPos;
-    std::function<void(std::string, std::unordered_map<std::string, Operand> *)> vmRunFrameCallBack;
-    std::function<void(Operand)> vmFrameReturnCallBack;
+    std::function<void(std::string, std::unordered_map<std::string, Operand*> *)> vmRunFrameCallBack;
+    std::function<void(Operand&)> vmFrameReturnCallBack;
+    std::function<void(void)> vmDeleteTopFrameCallBack;
 
     void runInstruction(Instruction &curInstruction);
     void LDV(Instruction &ins);
@@ -83,14 +87,15 @@ private:
 public:
     Frame();
     Frame(std::string frameName,
-        std::function<void(std::string, std::unordered_map<std::string, Operand> *)> vmRunFrameCallBack,
-        std::function<void(Operand)> vmReturnCallBack);
+        std::function<void(std::string, std::unordered_map<std::string, Operand*> *)> vmRunFrameCallBack,
+        std::function<void(Operand&)> vmReturnCallBack,
+        std::function<void(void)> vmDeleteTopFrameCallBack);
     Frame(const Frame &frame);
     ~Frame();
     void pushInstruction(Instruction &ins);
-    void pushOperand(Operand op);
+    void pushOperand(Operand &op);
     std::string getName();
-    void setVariableMap(std::string key, Operand &op);
+    void setVariableMap(std::unordered_map<std::string, Operand*> *callArgs);
     void run();
     bool operator < (const Frame & cmp) const;
 };

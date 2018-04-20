@@ -4,28 +4,34 @@ Frame::Frame(){
 
 }
 
+Frame::~Frame(){
+    if(variable_map != NULL){
+        for(auto it = (*variable_map).begin(); it != (*variable_map).end(); it++){
+            ::operator delete(it->second);
+        }
+        delete variable_map;
+    }  
+}
+
 Frame::Frame(std::string frameName,
-        std::function<void(std::string, std::unordered_map<std::string, Operand> *)> vmRunFrameCallBack,
-        std::function<void(Operand)> vmReturnCallBack){
+        std::function<void(std::string, std::unordered_map<std::string, Operand*> *)> vmRunFrameCallBack,
+        std::function<void(Operand&)> vmReturnCallBack,
+        std::function<void(void)> vmDeleteTopFrameCallBack){
     this->frameName = frameName;
     this->vmRunFrameCallBack = vmRunFrameCallBack;
     this->vmFrameReturnCallBack = vmReturnCallBack;
+    this->vmDeleteTopFrameCallBack = vmDeleteTopFrameCallBack;
 }
 
 Frame::Frame(const Frame &frame){
     frameName = frame.frameName;
     for(auto it = frame.instructions.begin(); it != frame.instructions.end(); it++){
-        Instruction ins = *new Instruction();
-        ins = *it;
-        instructions.push_back(ins);
+        instructions.push_back(*it);
+        std::cout << (instructions.end() - 1)->getCommandIndex() << std::endl;
     }
+    instructionPos = instructions.begin();
 }
 
-Frame::~Frame(){
-    for(auto it = instructions.begin(); it != instructions.end(); it++){
-        //TODO
-    }
-}
 
 //Will run instruction which pointed by curInstruction
 void Frame::runInstruction(Instruction &curInstruction){
@@ -55,15 +61,15 @@ void Frame::runInstruction(Instruction &curInstruction){
 }
 
 void Frame::LDV(Instruction &ins){
-    stack.push(*variable_map[ins.getOpStrList()[0]]);
+    stack.push(*(*variable_map)[ins.getOpStrList()[0]]);
     instructionPos++;
 }
 
 //Load Constant value to stack
 void Frame::LDC(Instruction &ins){
 
-    Operand *operand = new Operand(ins.getCommandIndex(), ins.getOpStrList());
-    stack.push(*operand);
+    Operand operand(ins.getCommandIndex(), ins.getOpStrList());
+    stack.push(operand);
 
     instructionPos++;
     return ;
@@ -75,22 +81,23 @@ void Frame::HALT(Instruction &ins){
 }
 
 void Frame::CALL(Instruction &ins){
-    std::unordered_map<std::string, Operand> *callArgs = new std::unordered_map<std::string, Operand>();
+    std::unordered_map<std::string, Operand*> *callArgs = new std::unordered_map<std::string, Operand*>();
     int argn = std::stoi(ins.getOpStrList()[1]);
-
     for(int i = argn-1; i >= 0; i--){
         //std::cout << "Before: " << &stack.top() <<  " -> " << &(stack.top().value) <<  " " << *(int *)stack.top().value << std::endl;
-        (*callArgs)[std::to_string(i)] = stack.top();
+        Operand tmp = *new Operand();
+        tmp = stack.top();
+        (*callArgs)[std::to_string(i)] = &tmp;
         //std::cout << "After insert: " << &(*callArgs)["0"] <<  " -> " << &((*callArgs)["0"].value) << " " << *(int *)(*callArgs)["0"].value << std::endl;
         stack.pop();
     }
-
     vmRunFrameCallBack(ins.getOpStrList()[0], callArgs);
     instructionPos++;
 }
     
 void Frame::RET(){
     Operand op = stack.top();
+    stack.pop();
     vmFrameReturnCallBack(op);
     instructionPos = instructions.end();
 }
@@ -132,8 +139,10 @@ void Frame::JZ(Instruction &ins){
 }
 
 void Frame::ASN(Instruction &ins){
-
-    variable_map[ins.getOpStrList()[0]] = new Operand(stack.top());
+    if(variable_map == NULL){
+        variable_map = new std::unordered_map<std::string, Operand*>();
+    }
+    (*variable_map)[ins.getOpStrList()[0]] = new Operand(stack.top());
     stack.pop();
 
     instructionPos++;
@@ -156,7 +165,7 @@ void Frame::PRT(Instruction &ins){
     if(ins.getOpStrList().size() == 0){
         op = stack.top();
     }else{
-        op = *variable_map[ins.getOpStrList()[0]];
+        op = *(*variable_map)[ins.getOpStrList()[0]];
     }
 
     switch(op.getType()){
@@ -187,8 +196,8 @@ std::string Frame::getName(){
     return this->frameName;
 }
 
-void Frame::setVariableMap(std::string key, Operand &op){
-    variable_map[key] = new Operand(op);
+void Frame::setVariableMap(std::unordered_map<std::string, Operand*> *callArgs){
+    variable_map = callArgs;
 }
 
 bool Frame::operator < (const Frame & cmp) const{
@@ -196,18 +205,26 @@ bool Frame::operator < (const Frame & cmp) const{
 }
 
 void Frame::run(){
+    bool returnFlag = false;
     instructionPos = instructions.begin();
     while(instructionPos != instructions.end()){
 
+        if((*instructionPos).getCommandIndex() == 3){
+            returnFlag = true;
+        }
         #ifdef __LUNA__DEBUG
         RUN_AND_LOG_INSTRUCTION((*instructionPos));
         #endif
         #ifndef __LUNA__DEBUG
         runInstruction(*instructionPos);
         #endif
+        if(returnFlag){
+            vmDeleteTopFrameCallBack(); 
+            returnFlag = false;
+        }
     }
 }
 
-void Frame::pushOperand(Operand op){
+void Frame::pushOperand(Operand &op){
     stack.push(op);
 }

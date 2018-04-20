@@ -9,15 +9,21 @@ Instruction::Instruction(){
     
 }
 
+Instruction::~Instruction(){
+
+}
+
 Instruction::Instruction(int commandIndex, std::vector<std::string> opStrList){
     this->commandIndex = commandIndex;
-    this->opStrList = opStrList;
+    for(auto it = opStrList.begin(); it != opStrList.end(); it++){
+        this->opStrList.push_back(*it);
+    }
 }
 
 Instruction::Instruction(const Instruction &ins){
     commandIndex = ins.commandIndex;
     for(auto it = ins.opStrList.begin(); it != ins.opStrList.end(); it++){
-        opStrList.push_back(std::string(*it));
+        opStrList.push_back(*it);
     }
 }
 

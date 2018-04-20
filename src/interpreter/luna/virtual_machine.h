@@ -13,7 +13,6 @@
 //Singleton class
 class VirtualMachine{
 private:
-	std::vector<Instruction> instructions;
 	std::stack<Frame*> frameStack;
 	std::map<std::string, Frame*> frameMap;
 	void loadInstructions(const char* bytecodeFileName);
@@ -22,8 +21,9 @@ public:
 	
 	VirtualMachine(const char* bytecodeFileName);
 	~VirtualMachine();
-	void runFrame(std::string frameName, std::unordered_map<std::string, Operand> *callArgs);
-	void frameReturn(Operand op);
+	void runFrame(std::string frameName, std::unordered_map<std::string, Operand*> *callArgs);
+	void frameReturn(Operand &op);
+	void deleteTopFrame();
 	void run();
 };
 

@@ -26,4 +26,5 @@ LDC 3
 CALL febonacci 1
 ASN x
 PRT x
-HALT
+LDC 0
+RET

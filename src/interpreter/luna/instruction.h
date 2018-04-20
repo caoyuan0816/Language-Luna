@@ -15,6 +15,7 @@ private:
 public:
 	static std::string const INSTRUCTION_LIST[];
 	Instruction();
+	~Instruction();
     Instruction(int commandIndex, std::vector<std::string> opStrList);
     Instruction(const Instruction &ins);
     int getCommandIndex();

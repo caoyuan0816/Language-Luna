@@ -52,4 +52,6 @@ typedef struct treeNode {
 TreeNode *makeNewNode();
 void releaseNode(TreeNode *t);
 
+extern char nodeKindStr[][40];
+
 #endif // GLOBAL_H_

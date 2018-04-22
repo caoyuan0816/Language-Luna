@@ -41,7 +41,21 @@ void releaseNode(TreeNode *t) {
 }
 
 char nodeKindStr[][40] = {
-  "varibale"
+  "variable", "int", "double", "list",
+  "bool", "id", "equal_expression",
+  "greater_equal", "less_equal", "greater_than",
+  "less_than", "not_equal", "increase_one",
+  "decrease_one", "divide_op", "mul_op",
+  "plus_op", "minus_op", "return",
+  "function_body", "parameter_list", "functiondef",
+  "num_id", "term", "list_expression",
+  "false", "true", "bool_expression", "brac",
+  "expression", "argument_list", "functioncall",
+  "define_assign", "identifier_assign", "unary_assign", 
+  "else_statement", "if_statement", 
+  "math_expression", "functiondef_list",
+  "file", "main_function", "block",
+  "do_statement", "while_statement", "for_statement"
 };
 
 int errorOccur = 0;

@@ -103,6 +103,7 @@ Z [z]
   while ((c=input())!='\n'){
     if (c==0) break;
   }
+  line_no++;
 }
 
 [ \t\f]    ;

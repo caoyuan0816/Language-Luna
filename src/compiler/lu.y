@@ -1,266 +1,669 @@
-%{
-/*
- * grammar.y
+%{/* luna.y
  *
  * Luna grammar in Yacc format, based originally on
  * BNF of Luna language
  */
-#include "global.h"
+#include "common.h"
 #include <stdio.h>
 extern int openFile(int argc, char** argv);
 int errorOccur;
+int currentline = 0;
+int yyerror(char *s);
+int yylex();
+void releaseNode(TreeNode *);
 %}
-%union{
-struct ast* node;
-}
-%token <node> LIST ASSIGNMENT COLON COMMA DIGSEQ
-%token <node> DO ELSE END EQUAL FOR FUNCTION RETURN
-%token <node> GE GT IDENTIFIER IF IN LBRAC LE LPAREN LT MINUS
-%token <node> NOTEQUAL PFILE PLUS MAIN RBRAC
-%token <node> REALNUMBER RPAREN SEMICOLON SLASH STAR THEN
-%token <node> INT DOUBLE BOOL WHILE
-%token <node> INCO DECO
-%token <node> FALSE TRUE
 
-%type <node> file block 
-%type <node> statement_list  statement do_statement loop_statement  for_statement if_statement else_statement 
-%type <node> functioncall assign_statement unary_assign identifier_assign  define_assign 
-%type <node> assign_type  variable argument_list 
-%type <node> expression_list bool_expression expression  list_expression math_expression 
-%type <node> term functiondef_list functiondef funcbody return_statement
-%type <node> paramlist addop mulop unaryop boolop 
-%type <node> type bool_type int_type double_type list_type num_id num int_list int_num identifier comma 
+%token LIST ASSIGNMENT COLON COMMA INTNUM
+%token DO ELSE END EQUAL FOR FUNCTION RETURN
+%token GE GT IDENTIFIER IF IN LBRAC LE LPAREN LT MINUS
+%token NOTEQUAL PFILE PLUS MAIN RBRAC //TODO: MAIN
+%token REALNUMBER RPAREN SEMICOLON SLASH STAR THEN
+%token INT DOUBLE BOOL WHILE
+%token INCO DECO
+%token FALSE TRUE
 
-%nonassoc LOWER_THAN_ELSE
-%nonassoc ELSE
 %%
-file : 
-		functiondef_list MAIN LPAREN variable comma variable RPAREN block END {$$=newast("file",9,$1,$2,$3,$4,$5,$6.$7,$8,$9);} 
-	|	functiondef_list MAIN LPAREN RPAREN block END {$$=newast("file",6,$1,$2,$3,$4,$5,$6);} 
-	; 
+//TODO: MAIN
 
-block : 
-		statement_list {$$=newast("block",1,$1);}
-	|	{$$=newast("statement_list",0,-1);}
-	;
-
-statement_list : 
-		statement_list statement{$$=newast("statement_list",2,$1,$2);} 
-	|	statement{$$=newast("statement_list",1,$1);}
-	;
-
-statement : 
-		assign_statement {$$=newast("statement",1,$1);}  
-	|	functioncall {$$=newast("statement",1,$1);}  
-	|	do_statement {$$=newast("statement",1,$1);}  
-	|	loop_statement {$$=newast("statement",1,$1);}  
-	|	if_statement {$$=newast("statement",1,$1);}  
-	|	error {
-			printf("statement error detected\n");
-		}
-	;
-
-do_statement : 
-		DO block END {$$=newast("do_statement",3,$1,$2,$3);}
-	;
-
-loop_statement : 
-		WHILE LPAREN bool_expression RPAREN DO block END {$$=newast("loop_statement",7,$1,$2,$3,$4,$5,$6,$7);}
-	|	FOR identifier for_statement {$$=newast("loop_statement",3,$1,$2,$3);}
-	;
-
-for_statement : 
-		ASSIGNMENT int_num comma int_num comma int_num DO block END {$$=newast("for_statement",9,$1,$2,$3,$4,$5,$6,$7,$8,$9);}
-	|	IN list_expression DO block END {$$=newast("for_statement",5,$1,$2,$3,$4,$5);}
-	|	IN identifier DO block END {$$=newast("for_statement",5,$1,$2,$3,$4,$5);}
-	;
-
-
-if_statement : IF LPAREN bool_expression RPAREN block else_statement END {$$=newast("if_statement",7,$1,$2,$3,$4,$5,$6,$7);}
-	;
-
-else_statement : 
-		ELSE block {$$=newast("else_statement",2,$1,$2);}
-	|
-	;
-
-assign_statement : 
-		define_assign {$$=newast("assign_statement",1,$1);}
-	|	identifier_assign {$$=newast("assign_statement",1,$1);}
-	|	unary_assign {$$=newast("assign_statement",1,$1);}
-	;
-
-unary_assign : 
-		identifier unaryop {$$=newast("unary_assign",2,$1,$2);}
-	;
-
-identifier_assign : 
-		identifier ASSIGNMENT assign_type {$$=newast("identifier_assign",3,$1,$2,$3);}
-	;
-
-define_assign : 
-		variable ASSIGNMENT assign_type {$$=newast("define_assign",3,$1,$2,$3);}
-	;
-
-assign_type : 
-		expression {$$=newast("assign_type",1,$1);}
-	|	TRUE {$$=newast("assign_type",1,$1);}
-	|	FALSE {$$=newast("assign_type",1,$1);}
-	|	list_expression {$$=newast("assign_type",1,$1);}
-	;
-
-variable : 
-		type identifier {$$=newast("variable",1,$1);}
-	|	error {
-			printf("variable definition error\n");
-		}
-	;
-
-functioncall : 
-		identifier argument_list {$$=newast("functioncall",1,$1);}
-	;
-
-argument_list : 
-		LPAREN RPAREN {$$=newast("argument_list",2,$1,$2);}
-	|	LPAREN expression_list RPAREN {$$=newast("argument_list",3,$1,$2,$3);}
-	;
-
-expression_list : 
-		expression_list comma expression {$$=newast("expression_list",3,$1,$2,$3);}
-	|	expression {$$=newast("expression_list",1,$1);}
-	;
-
-bool_expression : 
-		FALSE {$$=newast("bool_expression",1,$1);}
-	|	TRUE {$$=newast("bool_expression",1,$1);}
-	|	expression boolop expression {$$=newast("bool_expression",3,$1,$2,$3);}
-	;
-
-expression : 
-		math_expression {$$=newast("expression",1,$1);} 
-	|	functioncall {$$=newast("expression",1,$1);}
-	|	error {
-			printf("expression error detected!\n");
-		}
-	;
-
-list_expression : 
-		LBRAC int_list RBRAC {$$=newast("list_expression",3,$1,$2,$3);}
-	|	LBRAC RBRAC {$$=newast("list_expression",2,$1,$2);}
-	;
-
-math_expression : 
-		math_expression addop term {$$=newast("math_expression",3,$1,$2,$3);}
-	|	term {$$=newast("math_expression",1,$1);}
-	;
-
-term : 
-		term mulop num_id {$$=newast("term",3,$1,$2,$3);}
-	|	num_id {} 
-	;
-
-functiondef_list : 
-		functiondef_list functiondef {$$=newast("functiondef",2,$1,$2);}
-	|
-	;
-
-functiondef : 
-		FUNCTION variable funcbody{
-	
+file : functiondef_list MAIN LPAREN variable COMMA variable RPAREN block END {
+	TreeNode *temp = makeNewNode();
+	temp->nodeKind = functiondef_list_NodeKind;
+	temp->child = $1;
+	$$ = makeNewNode();
+	temp->nodeKind = file_NodeKind;
+	$$->child = temp;
+	temp = makeNewNode();
+	temp->nodeKind = main_function_NodeKind;
+	temp->child = $4;
+	$4->sibling = $6;
+	$6->sibling = $8;
+	$$->child->sibling = temp;
+	releaseNode($2);
+	releaseNode($3);
+	releaseNode($5);
+	releaseNode($7);
+	releaseNode($9);
+	}|
+	functiondef_list MAIN LPAREN RPAREN block END{
+	TreeNode *temp = makeNewNode();
+	temp->nodeKind = functiondef_list_NodeKind;
+	temp->child = $1;
+	$$ = makeNewNode();
+	temp->nodeKind = file_NodeKind;
+	$$->child = temp;
+	temp = makeNewNode();
+	temp->nodeKind = main_function_NodeKind;
+	temp->child = $5;
+	$$->child->sibling = temp;
+	releaseNode($2);
+	releaseNode($3);
+	releaseNode($4);
+	releaseNode($6);
 	}
 	;
 
-funcbody : 
-		LPAREN paramlist RPAREN block return_statement END {$$=newast("funcbody",6,$1,$2,$3,$4,$5,$6);}
+block : statement_list {
+	$$ = makeNewNode();
+	$$->nodeKind = block_NodeKind;
+	$$->child = $1;
+	currentline = $$->line_no;
+	}|
 	;
 
-return_statement : 
-		RETURN num_id {
-	
+statement_list : statement_list statement {
+	if ($1!=NULL){
+	  TreeNode *temp = $1;
+	  while(temp->sibling!=NULL){
+	    temp = temp->sibling;
+	  }
+	  temp->sibling = $2;
+	  $$ = $1;
+	} else {
+	  $$ = $2;
+	}
+	}|
+	statement{
+	$$ = $1;
 	}
 	;
 
-paramlist : 
-		paramlist comma type identifier {$$=newast("paramlist",4,$1,$2,$3,$4);}
-	|	type identifier {$$=newast("paramlist",2,$1,$2);}
-	|
+statement : assign_statement {
+	$$ = $1;
+	}|
+	functioncall {
+	$$ = $1;
+	}|
+	do_statement {
+	$$ = $1;
+	}|
+	loop_statement {
+	$$ = $1;
+	}|
+	if_statement {
+	$$ = $1;
+	}|
+	error {
+	  printf("statement error detected\n");
+	  printf("line number: %d\n", $$->line_no);
+	}
 	;
 
-addop : 
-		PLUS {$$=newast("addop",1,$1);}
-	|	MINUS {$$=newast("addop",1,$1);}
+do_statement : DO block END{
+	$$ = makeNewNode();
+	$$->nodeKind = do_statement_NodeKind;
+	$$->child = $2;
+	releaseNode($1);
+	releaseNode($3);
+	}
+	;
+
+loop_statement : WHILE LPAREN bool_expression RPAREN DO block END {
+	$$ = makeNewNode();
+	$$->nodeKind = while_statement_NodeKind;
+	$$->child = $3;
+	$3->sibling = $6;
+	releaseNode($1);
+	releaseNode($2);
+	releaseNode($4);
+	releaseNode($5);
+	releaseNode($7);
+	}|
+	FOR identifier for_statement{
+	$$ = makeNewNode();
+	$$->nodeKind = for_statement_NodeKind;
+	$$->child = $2;
+	$2->sibling = $3;
+	releaseNode($1);
+	}
+	;
+
+for_statement : ASSIGNMENT int_num COMMA int_num COMMA int_num DO block END {
+	$$ = $2;
+	$2->sibling = $4;
+	$4->sibling = $6;
+	$6->sibling = $8;
+	releaseNode($1);
+	releaseNode($3);
+	releaseNode($5);
+	releaseNode($7);
+	releaseNode($9);
+	}|
+	IN list_expression DO block END {
+	$$ = $2;
+	$2->sibling = $4;
+	releaseNode($1);
+	releaseNode($3);
+	releaseNode($5);
+	}|
+	IN identifier DO block END{
+	$$ = $2;
+	$2->sibling = $4;
+	releaseNode($1);
+	releaseNode($3);
+	releaseNode($5);
+	}
+	;
+
+
+if_statement : IF LPAREN bool_expression RPAREN block else_statement END{
+	$$ = makeNewNode();
+	$$->nodeKind = if_statement_NodeKind;
+	TreeNode *temp = $3;
+	$$->child = temp;
+	currentline = $1->line_no;
+	$$->line_no = currentline;
+	if($5 != NULL){
+	  temp->sibling = $5;
+	  $5->sibling = $6;
+	} else {
+          temp->sibling = $6;
+	}
+	releaseNode($1);
+	releaseNode($2);
+	releaseNode($4);
+	releaseNode($7);
+	}
+	;
+
+else_statement : ELSE block {
+	$$ = makeNewNode();
+	$$->nodeKind = else_statement_NodeKind;
+	$$->child = $2;
+	currentline = $$->line_no;
+	releaseNode($1);
+	}|
+	;
+
+assign_statement : define_assign {
+	$$ = $1;
+	}|
+identifier_assign{
+	$$ = $1;
+	}|
+unary_assign{
+	$$ = $1; 
+	}
+	;
+
+unary_assign : identifier unaryop{
+	$$ = makeNewNode();
+	$$->nodeKind = unary_assign_NodeKind;
+	$$->child = $2;
+	$2->sibling = $1;
+	currentline = $$->line_no;
+	}
+	;
+
+identifier_assign : identifier ASSIGNMENT assign_type{
+	$$ = makeNewNode();
+	$$->nodeKind = identifier_assign_NodeKind;
+	$$->child = $1;
+	$1->sibling = $3;
+	currentline = $$->line_no;
+	releaseNode($2);
+	}
+	;
+
+define_assign : variable ASSIGNMENT assign_type{
+	$$ = makeNewNode();
+	$$->nodeKind = define_assign_NodeKind;
+	$$->child = $1;
+	$1->sibling = $3;
+	currentline = $$->line_no;
+	releaseNode($2);
+	}
+	;
+
+assign_type : expression {
+	$$ = $1;
+	}|
+	TRUE{
+	$$ = $1;
+	$$->nodeKind = true_NodeKind;
+        currentline = $$->line_no;
+	} |	
+	FALSE{
+	$$ = $1;
+	$$->nodeKind = false_NodeKind;
+	currentline = $$->line_no;
+	} |
+	list_expression{
+	$$ = $1;
+	}
+	;
+
+variable : type identifier {
+	$$ = makeNewNode();
+	$$->nodeKind = variable_NodeKind;
+	$$->child = $1;
+	$1->sibling = $2;
+	currentline = $1->line_no;
+	printf("%d child: %s\tsibling: %s\n",$1->line_no, $1->literal, $1->sibling->literal);
+	} |
+	error {
+	  printf("variable definition error in line :%d\n",$$->line_no);
+	}
+	;
+
+functioncall : identifier argument_list{
+	$$ = makeNewNode();
+	$$->nodeKind = functioncall_NodeKind;
+	$$->child = $1;
+	$1->sibling = $2;
+	currentline = $$->line_no;
+	}
+	;
+
+argument_list : LPAREN RPAREN{
+	$$ = makeNewNode();
+	$$->nodeKind = argument_list_NodeKind;
+	currentline = $$->line_no;
+	releaseNode($1);
+	releaseNode($2);
+	}|
+	LPAREN expression_list RPAREN{
+	$$ = makeNewNode();
+	$$->nodeKind = argument_list_NodeKind;
+	$$->child = $2;
+	currentline = $$->line_no;
+	releaseNode($1);
+	releaseNode($3);
+	}
+	;
+
+expression_list : expression_list COMMA expression{
+	TreeNode *temp = $1;
+	while(temp->sibling != NULL){
+          temp = temp->sibling;
+	}
+	temp->sibling = $3;
+	$$ = $1;
+	releaseNode($2);
+	} |
+	expression{
+	$$ = $1;
+	}
+	;
+
+bool_expression : FALSE {
+	$$ = $1;
+	$$->nodeKind = false_NodeKind;
+	currentline = $$->line_no;
+	}|
+	TRUE {
+	$$ = $1;
+	$$->nodeKind = true_NodeKind;
+	currentline = $$->line_no;
+	}|
+	expression boolop expression {
+	$$ = makeNewNode();
+	$$->nodeKind = bool_expression_NodeKind;
+	$$->child = $2;
+	currentline = $2->line_no;
+	$$->line_no = currentline;
+	$2->sibling = $1;
+	$1->sibling = $3;
+	}
+	;
+
+expression : math_expression {
+	$$ = makeNewNode();
+	$$->nodeKind = math_expression_NodeKind;
+	$$->child = $1;
+	} |
+	functioncall{
+	$$ = $1;
+	} |
+	error {
+	  printf("expression error detected!\n");
+	}
+	;
+
+list_expression : LBRAC int_list RBRAC{
+	$$ = makeNewNode();
+	$$->nodeKind = list_expression_NodeKind;
+	$$->child = $2;
+	releaseNode($1);
+	releaseNode($3);
+	}|
+	LBRAC RBRAC{
+	$$ = makeNewNode();
+	$$->nodeKind = list_expression_NodeKind;
+        releaseNode($1);
+        releaseNode($2);
+	}
+	;
+
+//TODO: reconsider
+math_expression : math_expression addop term{
+	TreeNode *temp = makeNewNode();
+	temp->nodeKind = term_NodeKind;
+	temp->child = $3;
+	$2->sibling = temp;
+	temp->sibling = $1;
+	$$ = $2;
+	}|
+	term{
+	$$ = makeNewNode();
+	$$->nodeKind = term_NodeKind;
+        $$->child = $1;
+	}
+	;
+
+//TODO: reconsider
+term : term mulop num_id {
+	TreeNode *temp = $2;
+	if (temp->sibling!=NULL){
+	  printf("%d The operator %s already has a sibling: %s\n", temp->line_no, temp->literal, temp->sibling->literal);
+	}
+	temp->sibling = $3;
+	if ($3->sibling!=NULL){
+	  printf("%d The number %s already has a sibling: %s\n", temp->line_no, temp->literal, temp->sibling->literal);
+	}
+	$3->sibling = $1;
+	$$ = $2;
+	}
+	|
+	num_id {
+	$$ = $1;
+	}
+	;
+
+functiondef_list : functiondef_list functiondef{
+	if ($1!=NULL){
+	  TreeNode *temp = $1;
+	  while(temp->sibling != NULL){
+	    temp = temp->sibling;
+	  }
+	  temp->sibling = $2;
+	  $$ = $1;
+	} else {
+	  $$ = $2;
+	}
+	}|
+	functiondef{
+	$$ = $1;
+	}|{
+	printf("empty functiondef\n");
+	}
+	;
+
+functiondef : FUNCTION variable funcbody{
+	$$ = makeNewNode();
+	$$->nodeKind = functiondef_NodeKind;
+	$$->child = $2;
+	$2->sibling = $3;
+	currentline = $1->line_no;
+	$$->line_no = currentline;
+	releaseNode($1);
+	}
+	;
+
+funcbody : LPAREN paramlist RPAREN block return_statement END {
+	$$ = makeNewNode();
+	$$->nodeKind = function_body_NodeKind;
+	TreeNode *temp = makeNewNode();
+	$$->child = temp;
+	temp->nodeKind = parameter_list_NodeKind;
+        temp->child = $2;
+	currentline = $1->line_no;
+	$$->line_no = currentline;
+	if ($4!=NULL){
+        temp->sibling = $4;
+	  $4->sibling = $5;
+	} else {
+	  temp->sibling = $5;
+	}
+	releaseNode($1);
+	releaseNode($3);
+	releaseNode($6);
+	}|
+	LPAREN RPAREN block return_statement END{
+	$$ = makeNewNode();
+	$$->nodeKind = function_body_NodeKind;
+	TreeNode *temp = makeNewNode();
+	$$->child = temp;
+	temp->nodeKind = parameter_list_NodeKind;
+	currentline = $1->line_no;
+	$$->line_no = currentline;
+	if ($3!=NULL){
+	  temp->sibling = $3;
+	  $3->sibling = $4;
+	} else {
+	  temp->sibling = $4;
+	}
+	releaseNode($1);
+	releaseNode($2);
+	releaseNode($5);
+	}
+	;
+
+return_statement : RETURN num_id {
+	$$ = makeNewNode();
+	$$->nodeKind = return_NodeKind;
+	$$->child = $2;
+	releaseNode($1);
+	}
+	;
+
+paramlist : paramlist COMMA variable {
+	if ($1!=NULL){
+	  TreeNode *temp = $1;
+	  while (temp->sibling!=NULL){
+	    temp = temp->sibling;
+	  }
+	  temp->sibling = $3;
+	  $$ = $1;
+	} else {
+	  $$ = $3;
+	}
+	releaseNode($2);
+	}|
+	variable {
+	$$ = $1;
+	}
+	;
+
+addop : PLUS {
+	$$ = $1;
+	$$->nodeKind = plus_op_NodeKind;
+	currentline = $$->line_no;
+	}|
+	MINUS {
+	$$ = $1;
+	$$->nodeKind = minus_op_NodeKind;
+	currentline = $$->line_no;
+	}
 	; 
 
-mulop : 
-		STAR {$$=newast("mulop",1,$1);}
-	|	SLASH {$$=newast("mulop",1,$1);}
+mulop : STAR {
+	$$ = $1;
+	$$->nodeKind = mul_op_NodeKind;
+	currentline = $$->line_no;
+	}|
+	SLASH {
+	$$->nodeKind = divide_op_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-unaryop : 
-		INCO {$$=newast("unaryop",1,$1);}
-	|	DECO {$$=newast("unaryop",1,$1);}
+unaryop : INCO {
+	$$ = $1;
+	$$->nodeKind = increase_one_NodeKind;
+	currentline = $$->line_no;
+	}|
+	DECO {
+	$$ = $1;
+	$$->nodeKind = decrease_one_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-boolop : 
-		EQUAL {$$=newast("boolop",1,$1);}
-	|	GE {$$=newast("boolop",1,$1);}
-	|	LE {$$=newast("boolop",1,$1);}
-	|	LT {$$=newast("boolop",1,$1);}
-	|	NOTEQUAL {$$=newast("boolop",1,$1);}
-	|	GT {$$=newast("boolop",1,$1);}
+boolop : EQUAL {
+	$$ = $1;
+	$$->nodeKind = equal_expression_NodeKind;
+	currentline = $$->line_no;
+	}|
+	GE {
+	$$ = $1;
+	$$->nodeKind = greater_equal_NodeKind;
+	currentline = $$->line_no;
+	}|
+	LE {
+	$$ = $1;
+	$$->nodeKind = less_equal_NodeKind;
+	currentline = $$->line_no;
+	}|
+	LT {
+	$$ = $1;
+	$$->nodeKind = less_than_NodeKind;
+	currentline = $$->line_no;
+	}|
+	GT {
+	$$ = $1;
+	$$->nodeKind = greater_than_NodeKind;
+	currentline = $$->line_no;
+	}|	
+	NOTEQUAL {
+	$$ = $1;
+	$$->nodeKind = not_equal_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-type : 
-		bool_type {$$=newast("type",1,$1);}
-	|	int_type {$$=newast("type",1,$1);}
-	|	double_type {$$=newast("type",1,$1);}
-	|	list_type {$$=newast("type",1,$1);}
+type : bool_type {
+	$$ = $1;
+	currentline = $$->line_no;
+	} |
+	int_type {
+	$$ = $1;
+	currentline = $$->line_no;
+	} |
+	double_type {
+	$$ = $1;
+	currentline = $$->line_no;
+	}|
+	list_type{
+	$$ = $1;
+	currentline = $$->line_no;
+	}
 	;
 
-bool_type : 
-		BOOL {$$ = newast("bool_type",1,$1);}
+bool_type : BOOL {
+	$$ = $1;
+	$$->nodeKind = bool_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-int_type : 
-		INT {$$ = newast("int_type",1,$1); $$->type = "int";}
+int_type : INT {
+	$$ = $1;
+	$$->nodeKind = int_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-double_type : 
-		DOUBLE {$$ = newast("double_type",1,$1); $$->type = "double";}
+double_type : DOUBLE {
+	$$ = $1;
+	$$->nodeKind = double_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-list_type : 
-		LIST {$$=newast("list_type",1,$1);$$->type = "list";}
+list_type : LIST {
+	$$ = $1;
+	$$->nodeKind = list_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-num_id : 
-		identifier {$$=newast("num_id",1,$1);}
-	|	num {$$=newast("num_id",1,$1);}
+num_id : identifier {
+	$$ = $1;
+	}|
+	num {
+	$$ = $1;
+	}
 	;
 
-num : 
-		MINUS DIGSEQ {$$=newast("num",2,$1,$2);}
-	|	DIGSEQ {$$=newast("num",1,$1);}
-	|	MINUS REALNUMBER {$$=newast("num",2,$1,$2);}
-	|	REALNUMBER {$$=newast("num",1,$1);}
+num :   int_num {
+	$$ = $1;
+	}|
+	real_num {
+	$$ = $1;
+	}
 	;
 
-int_list : 
-		int_list comma int_num {$$=newast("num",3,$1,$2,$3);}
-	|	int_num {$$=newast("num",1,$1);}
+int_list : int_list COMMA int_num {
+	$$ = makeNewNode();
+	$$->nodeKind = int_NodeKind;
+	if ($1!=NULL){
+	  TreeNode *temp = $1;
+	  while (temp->sibling!=NULL){
+	    temp = temp->sibling;
+	  }
+	  temp->sibling = $3;
+	  $$ = $1;
+	} else {
+	  $$ = $3;
+	}
+	releaseNode($2);
+	}|
+	int_num {
+	$$ = $1;
+	}
 	;
 
-int_num : 
-		MINUS DIGSEQ {$$=newast("int_num",2,$1,$2);}
-	|	DIGSEQ {$$=newast("int_num",1,$1);}
+real_num :MINUS REALNUMBER {
+	$$ = $2;
+	$$->nodeKind = double_NodeKind;
+	currentline = $$->line_no;
+	releaseNode($1);
+	}|
+	REALNUMBER {
+	$$ = $1;
+	$$->nodeKind = double_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-identifier : 
-		IDENTIFIER {$$=newast("identifier",1,$1);}
+int_num : MINUS INTNUM {
+	$$ = $2;
+	$$->nodeKind = int_NodeKind;
+	currentline = $$->line_no;
+	releaseNode($1);
+	} |
+	INTNUM {
+	$$ = $1;
+	$$->nodeKind = int_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 
-comma : 
-		COMMA {$$=newast("comma",1,$1);}
+identifier : IDENTIFIER {
+	$$ = $1;
+	$$->nodeKind = id_NodeKind;
+	currentline = $$->line_no;
+	}
 	;
 %%
 

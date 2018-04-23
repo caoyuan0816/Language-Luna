@@ -6,7 +6,6 @@
 function int sum(int x, int y)
 	int z = 0
 	z = x + y
-	end
 	return z
 end
 
@@ -20,9 +19,11 @@ end
 
 function int sum2(list arr)
 	int res = 0
+	int index = 0
 	for x in arr do
 		res = res + x
 		if(res > 10)
+			index ++
 		end
 	end  
 	return res
@@ -30,9 +31,10 @@ end
 
 function int sum3(list arr)
 	int res = 0
+	int index = 0
 	for x in arr do
 		while(res < 10) do
-		res = res + x
+			index --
 		end
 	end  
 	return res
@@ -40,14 +42,17 @@ end
 
 main(int argc, list argv)
 	int res =0
+	res = sum(2,3)
+	//res = 5
+	print(res)
 	list arr = [2,4,3,6,8,6]
 	res = sum(arr)
 	//res = 29
 	print(res)
 	res = sum2(arr)
-	//res = 9
+	//res = 2
 	print(res)
 	res = sum3(arr)
-	//res = 9
+	//res = -2
 	print(res)
 end

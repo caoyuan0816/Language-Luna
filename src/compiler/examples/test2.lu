@@ -18,9 +18,36 @@ function int sum(list arr)
 	return res
 end
 
+function int sum2(list arr)
+	int res = 0
+	for x in arr do
+		res = res + x
+		if(res > 10)
+		end
+	end  
+	return res
+end
+
+function int sum3(list arr)
+	int res = 0
+	for x in arr do
+		while(res < 10) do
+		res = res + x
+		end
+	end  
+	return res
+end
+
 main(int argc, list argv)
 	int res =0
 	list arr = [2,4,3,6,8,6]
 	res = sum(arr)
+	//res = 29
+	print(res)
+	res = sum2(arr)
+	//res = 9
+	print(res)
+	res = sum3(arr)
+	//res = 9
 	print(res)
 end

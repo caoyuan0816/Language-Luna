@@ -22,3 +22,5 @@ main(int argc, list argv)
 	int res =0
 	list arr = [2,4,3,6,8,6]
 	res = sum(arr)
+	print(res)
+end

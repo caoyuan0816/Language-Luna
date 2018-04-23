@@ -84,88 +84,151 @@ void releaseNode(TreeNode *t) {
             switch (t->nodeKind) {
 			
 				case "variable_NodeKind"
-                    printf("ldv ");
-					t->child
+					t->variable_NodeKind
+					variable_NodeKind->child
 					child->sibling
 					t->line_no
+					printf("ldv %s", sibling->literal);
                     break;
 				
 				case "int_NodeKind":
-					printf("ldc %s", t->line_no );
 					t->int_NodeKind
-					int_NodeKind->line_no
+					int_NodeKind->type
+					t->line_no
+					printf("int %d", t->literal);
                     break;
 
                 case "double_NodeKind":
-					printf("ldc %s", t->line_no );
-					double_NodeKind->type	
+					t->double_NodeKind
+					double_NodeKind->type
+					t->line_no	
+					printf("double %lf", t->literal);
                     break;
                 
 				case "list_NodeKind":
-					list_NodeKind->line_no
-					list_NodeKind->child
-					printf("ldc %s ", t->line_no );
+					t->list_NodeKind
+					list_NodeKind->type
+					t->line_no
+					printf("list %s", t->literal);
                     break;	
 					
 				case "bool_NodeKind":
+					t->bool_NodeKind
+					bool_NodeKind->type
+					t->line_no
+					printf("bool %s", t->literal);
                     break;
 					
 				case "id_NodeKind":
-                    printf("%d %s", seqNum++, "ldv" );
+					t->id_NodeKind
+					t->line_no
+					printf("%s", t->literal);
                     break;
 					
 				case "equal_expression_NodeKind":
+					t->equal_expression_NodeKind
+					t->line_no
+					printf("eq %s", t->literal);
                     break;
 				
 				case "greater_equal_NodeKind":
-                    printf("ge" );
+                    t->greater_equal_NodeKind
+					t->line_no
+					printf("ge %s", t->literal);
                     break;
 					
 				case "less_equal_NodeKind":
-                    printf("%d %s", seqNum++, "le" );
+                    t->less_equal_NodeKind
+					t->line_no
+					printf("le %s", t->literal);
                     break;
 				
 
                 case "greater_than_NodeKind":
-                    printf("%d %s", seqNum++, "gt" );
+                    t->greater_equal_NodeKind
+					t->line_no
+					printf("gt %s", t->literal);
                     break;
                     
                 case "less_than_NodeKind":
-                    printf("%d %s", seqNum++, "lt" );
+                    t->less_equal_NodeKind
+					t->line_no
+					printf("lt %s", t->literal);
                     break;
 				
                 case "not_equal_NodeKind":
-                    printf("%d %s", seqNum++, "neq" );
+                    t->not_equal_NodeKind
+					t->line_no
+					printf("neq %s", t->literal);
                     break;
 					
 				case "increase_one_NodeKind":
+                    t->increase_one_NodeKind
+					t->line_no
+					printf("inco %s", t->literal);
                     break;
 					
 				case "decrease_one_NodeKind":
+                    t->decrease_one_NodeKind
+					t->line_no
+					printf("deco %s", t->literal);
                     break;
 					
 				case "divide_op_NodeKind":
+				    t->divide_op_NodeKind
+					t->line_no
+					printf("div %s", t->literal);
+                    break;
+					
+				case "mul_op_NodeKind":
+				    t->mul_op_NodeKind
+					t->line_no
+					printf("mul %s", t->literal);
                     break;
 					
 				case "plus_op_NodeKind":
+				    t->plus_op_NodeKind
+					t->line_no
+					printf("add %s", t->literal);
                     break;
 					
 				case "minus_op_NodeKind":
+				    t->minus_op_NodeKind
+					t->line_no
+					printf("sub %s", t->literal);
                     break;
 
 				case "return_NodeKind":
+					t->minus_op_NodeKind
+					t->child
+					t->line_no
+					node_1->line_no
+					releaseNode(minus_op_NodeKind)
                     break;					
 
 				case "function_body_NodeKind":
+					t->function_body_NodeKind
+					t->child=temp
                     break;
 
 				case "parameter_list_NodeKind":
+					temp->parameter_list_NodeKind
+					t->line_no
                     break;					
 
 				case "functiondef_NodeKind":
+					t->function_body_NodeKind
+					t->child
+					child->sibling
+					function_body_NodeKind->line_no
+					t->line_no
+					releaseNode(function_body_NodeKind)
                     break;	
  
 				case "num_id_NodeKind":
+					t->num_id_NodeKind
+					printf("%s", t->literal)
+					
                     break;	
 
 				case "term_NodeKind":
@@ -175,15 +238,20 @@ void releaseNode(TreeNode *t) {
                     break;	
 
 				case "false_NodeKind":
+					t->false_NodeKind
+					t->line_no
                     break;	
 
 				case "true_NodeKind":
+					t->true_NodeKind
                     break;	
 
 				case "bool_expression_NodeKind":
                     break;	
 
 				case "brac_NodeKind":
+					t->brac_NodeKind
+					printf("(",")")
                     break;	
 
 				case "expression_NodeKind":
@@ -193,6 +261,10 @@ void releaseNode(TreeNode *t) {
                     break;
 
 				case "functioncall_NodeKind":
+					t->functioncall_NodeKind
+					t->child
+					child->sibling
+					t->line_no
                     break;
 
 				case "define_assign_NodeKind":
@@ -202,6 +274,10 @@ void releaseNode(TreeNode *t) {
                     break;
 
 				case "unary_assign_NodeKind":
+					t->unary_assign_NodeKind
+					t->child
+					child->sibling
+					t->line_no
                     break;
 
 				case "else_statement_NodeKind":
@@ -231,7 +307,7 @@ void releaseNode(TreeNode *t) {
 				case "while_statement_NodeKind":
                     break;
 
-					
+    
                 default:
                     break;
                     

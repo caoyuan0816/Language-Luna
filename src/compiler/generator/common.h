@@ -1,3 +1,10 @@
+/**
+*@file common.h
+*@brief Define AST tree nodes.
+*@version 1.0
+*@author Lei Zhang, Zelin Bao
+*@date
+*/
 #ifndef COMMON_H_
 #define COMMON_H_
 
@@ -9,6 +16,9 @@
 
 #define YYSTYPE TreeNode *
 
+/**
+* \enum Define tree node name
+*/
 typedef enum {
   variable_NodeKind, int_NodeKind, double_NodeKind, list_NodeKind,
   bool_NodeKind, id_NodeKind, equal_expression_NodeKind,
@@ -26,20 +36,26 @@ typedef enum {
   do_statement_NodeKind, while_statement_NodeKind, for_statement_NodeKind
 } NodeKind;
 
+/**
+* \enum Define type name
+*/
 typedef enum {
   _integer, _double, _boolean, _list
 } TableNodeType;
 
+/**
+* \struct Define the node from AST
+*/
 typedef struct treeNode {
-  struct treeNode *child;
-  struct treeNode *sibling;
-  int line_no;
+  struct treeNode *child; /**< Left child */
+  struct treeNode *sibling; /**< Right child */
+  int line_no; /**< Line number */
   char *literal;
   NodeKind nodeKind;
 
   char *label;
   int size;
-  int level;
+  int level; /**< The level of tree */
   int leveltofather;
 
   int computable;

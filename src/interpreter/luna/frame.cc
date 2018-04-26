@@ -1,3 +1,10 @@
+/**
+*@file frame.cc
+*@brief Design frame of assembly language 
+*@version 1.0
+*@author Yuan Cao
+*@date 04/20/2018
+*/
 #include "frame.h"
 
 Frame::Frame(){
@@ -33,7 +40,9 @@ Frame::Frame(const Frame &frame){
 }
 
 
-//Will run instruction which pointed by curInstruction
+/**
+* \brief Will run instruction which pointed by curInstruction
+*/
 void Frame::runInstruction(Instruction &curInstruction){
     switch(curInstruction.getCommandIndex()){
         case(0): LDV(curInstruction); break;
@@ -60,12 +69,17 @@ void Frame::runInstruction(Instruction &curInstruction){
     }
 }
 
+/**
+* \brief Load variable value to stack
+*/
 void Frame::LDV(Instruction &ins){
     stack.push(*(*variable_map)[ins.getOpStrList()[0]]);
     instructionPos++;
 }
 
-//Load Constant value to stack
+/**
+* \brief Load constant value to stack
+*/
 void Frame::LDC(Instruction &ins){
 
     Operand operand(ins.getCommandIndex(), ins.getOpStrList());
@@ -75,11 +89,16 @@ void Frame::LDC(Instruction &ins){
     return ;
 }
 
-//Terminate program
+/**
+* \brief Define terminate program instruction
+*/
 void Frame::HALT(Instruction &ins){
     exit(0);
 }
 
+/**
+* \brief Define function call instruction
+*/
 void Frame::CALL(Instruction &ins){
     std::map<std::string, Operand*> *callArgs = new std::map<std::string, Operand*>();
     int argn = std::stoi(ins.getOpStrList()[1]);
@@ -92,7 +111,10 @@ void Frame::CALL(Instruction &ins){
     vmRunFrameCallBack(ins.getOpStrList()[0], callArgs);
     instructionPos++;
 }
-    
+
+/**
+* \brief Define function call and return instruction
+*/  
 void Frame::RET(){
     Operand op = stack.top();
     stack.pop();
@@ -100,6 +122,9 @@ void Frame::RET(){
     instructionPos = instructions.end();
 }
 
+/**
+* \brief Define operators
+*/
 FRAME_CALCULATION(ADD, +)
 FRAME_CALCULATION(SUB, -)
 FRAME_CALCULATION(MUL, *)
@@ -112,12 +137,18 @@ FRAME_COMPARISON(LE, <=)
 FRAME_COMPARISON(EQ, ==)
 FRAME_COMPARISON(NEQ, !=)
 
+/**
+* \brief Define jump instruction. Jump to the specified line of instrction.
+*/ 
 void Frame::JMP(Instruction &ins){
     int des = std::stoi(ins.getOpStrList()[0]);
     instructionPos = instructions.begin() + des;
     return ;
 }
 
+/**
+* \brief Jump if zero
+*/
 void Frame::JZ(Instruction &ins){
     Operand op = stack.top();
     stack.pop();
@@ -136,6 +167,9 @@ void Frame::JZ(Instruction &ins){
     return ;
 }
 
+/**
+* \brief Define assignment statement.
+*/
 void Frame::ASN(Instruction &ins){
     if(variable_map == NULL){
         variable_map = new std::map<std::string, Operand*>();
@@ -147,6 +181,9 @@ void Frame::ASN(Instruction &ins){
     return ;
 }
 
+/**
+* \brief Duplicate the top item on the stack
+*/
 void Frame::DUP(){
 
     stack.push(stack.top());
@@ -155,6 +192,9 @@ void Frame::DUP(){
     return ;
 }
 
+/**
+* \brief Give the value in the bx register to ax register.
+*/
 void Frame::PRT(Instruction &ins){
 
     Operand op;

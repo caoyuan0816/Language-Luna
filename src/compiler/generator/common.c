@@ -1,15 +1,4 @@
-/**
-*@file common.c
-*@brief Traverse the tree nodes. And transform the tree in to a compilation.
-*@version 1.0
-*@author Lei Zhang
-*@date
-*/
 #include "common.h"
-
-/**
-* \brief create abstract syntax trees
-*/
 TreeNode *makeNewNode(){
   TreeNode * t = (TreeNode *)malloc(sizeof(TreeNode));
   if (t == NULL) {
@@ -17,8 +6,8 @@ TreeNode *makeNewNode(){
     exit(1);
   }
 
-  t->child = NULL; /**< left child*/
-  t->sibling = NULL; /**< right child*/
+  t->child = NULL;
+  t->sibling = NULL;
   t->line_no = 0;
   t->literal = NULL;
   t->label = NULL;
@@ -51,9 +40,6 @@ void releaseNode(TreeNode *t) {
   free(t);
 }
 
-/**
-* \brief node name
-*/
 char nodeKindStr[][40] = {
   "variable", "int", "double", "list",
   "bool", "id", "equal_expression",

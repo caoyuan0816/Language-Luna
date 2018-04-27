@@ -4,6 +4,7 @@
  * BNF of Luna language
  */
 #include "common.h"
+#include "symbolTable.h"
 #include <stdio.h>
 
 #define WIDTH (4)
@@ -754,6 +755,9 @@ int main(int argc, char** argv){
   yyparse();
   int uncle[200]={0};
   printThisTree(tree, uncle, 0);
+  FuncTable *funcTable = makeNewFuncTable();
+  int line =0;
+  codeGen(tree, funcTable, &line);
   return 0;
 }
 

@@ -1,21 +1,21 @@
-febonacci
-LDV 0
+febonacci x
+LDV x
 LDC 1
 EQ
 JZ 6
 LDC 1
 RET
-LDV 0
+LDV x
 LDC 2
 EQ
 JZ 12
 LDC 1
 RET
-LDV 0
+LDV x
 LDC 1
 SUB
 CALL febonacci 1
-LDV 0
+LDV x
 LDC 2
 SUB
 CALL febonacci 1

@@ -44,6 +44,7 @@
 class Frame{
 private:
     std::string frameName = "";
+    std::vector<std::string> functionArgumentsName;
     std::vector<Instruction> instructions;
     std::stack<Operand> stack;
     std::map<std::string, Operand*> *variable_map = NULL;
@@ -75,7 +76,7 @@ private:
     void PRT(Instruction &ins);
 public:
     Frame();
-    Frame(std::string frameName,
+    Frame(std::string frameName, std::vector<std::string> functionArgumentsName,
         std::function<void(std::string, std::map<std::string, Operand*> *)> vmRunFrameCallBack,
         std::function<void(Operand&)> vmReturnCallBack,
         std::function<void(void)> vmDeleteTopFrameCallBack);

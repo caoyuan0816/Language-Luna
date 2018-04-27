@@ -17,10 +17,10 @@ Frame::~Frame(){
             ::operator delete(it->second);
         }
         delete variable_map;
-    }  
+    }
 }
 
-Frame::Frame(std::string frameName,
+Frame::Frame(std::string frameName, std::vector<std::string> functionArgumentsName,
         std::function<void(std::string, std::map<std::string, Operand*> *)> vmRunFrameCallBack,
         std::function<void(Operand&)> vmReturnCallBack,
         std::function<void(void)> vmDeleteTopFrameCallBack){
@@ -28,6 +28,7 @@ Frame::Frame(std::string frameName,
     this->vmRunFrameCallBack = vmRunFrameCallBack;
     this->vmFrameReturnCallBack = vmReturnCallBack;
     this->vmDeleteTopFrameCallBack = vmDeleteTopFrameCallBack;
+    this->functionArgumentsName = functionArgumentsName;
 }
 
 Frame::Frame(const Frame &frame){
@@ -233,7 +234,18 @@ std::string Frame::getName(){
 }
 
 void Frame::setVariableMap(std::map<std::string, Operand*> *callArgs){
-    variable_map = callArgs;
+    if(callArgs != NULL){
+        std::map<std::string, Operand*> *tmp = new std::map<std::string, Operand*>();
+        for(auto it = callArgs->begin(); it != callArgs->end(); it++){
+            (*tmp)[functionArgumentsName[std::stoi(it->first)]] = new Operand(it->second->type, it->second->value);
+        }
+        variable_map = tmp;
+
+        for(auto it = (*callArgs).begin(); it != (*callArgs).end(); it++){
+            ::operator delete(it->second);
+        }
+        delete callArgs;
+    }
 }
 
 bool Frame::operator < (const Frame & cmp) const{

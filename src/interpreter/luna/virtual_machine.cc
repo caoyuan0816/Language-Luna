@@ -42,13 +42,14 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
             }else{
                 opStrList.push_back(line);
             }
+
             auto res = std::find(Instruction::INSTRUCTION_LIST, Instruction::INSTRUCTION_LIST + 20, command);
             if(res != Instruction::INSTRUCTION_LIST + 20){
             	int commandIndex = res - Instruction::INSTRUCTION_LIST;
             	Instruction ins(commandIndex, opStrList);
             	curFrame->pushInstruction(ins);
             }else{//function name, create new
-            	curFrame = new Frame(command.c_str(),
+            	curFrame = new Frame(command.c_str(), opStrList,
             		[this](std::string frameName, std::map<std::string, Operand*> *callArgs){return this->runFrame(frameName, callArgs);},
             		[this](Operand &op){return this->frameReturn(op);},
             		[this](){return this->deleteTopFrame();});

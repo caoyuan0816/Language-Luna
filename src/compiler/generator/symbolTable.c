@@ -216,7 +216,7 @@ void funcGen(TreeNode *tree, FuncTable *funcTable, int *line) {
   if (tree->nodeKind == functiondef_NodeKind){
     //TODO: dulplicate function def check
     funcTable->returnNode = tree->child;
-    printf("function :%s ",funcTable->returnNode->child->sibling->literal);
+    printf("function :%s \n",funcTable->returnNode->child->sibling->literal);
     TreeNode *temp = tree->child->sibling;
     // temp is funcbody
     if (temp->nodeKind == function_body_NodeKind){
@@ -225,7 +225,7 @@ void funcGen(TreeNode *tree, FuncTable *funcTable, int *line) {
           addParam(temp->child, funcTable->paramTable);
         }
         temp = temp->child->sibling;
-        if (temp!=block_NodeKind) printf("error detecting block: %d\n", temp->line_no);
+        if (temp->nodeKind != block_NodeKind) printf("error detecting block: %d\n", temp->line_no);
         funcTable->blockTable = makeNewBlockTable();
         blockGen(temp, funcTable, funcTable->blockTable, line);
       }

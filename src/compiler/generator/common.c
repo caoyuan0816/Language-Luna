@@ -19,6 +19,9 @@ TreeNode *makeNewNode(){
   t->computable = 0;
   t->result = 0;
   t->type = 0;
+
+  t->start_ins_line = -1;
+  t->end_ins_line = -1;
   return t;
 }
 

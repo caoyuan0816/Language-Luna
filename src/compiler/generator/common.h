@@ -46,6 +46,9 @@ typedef struct treeNode {
   int result;
   int type;
 
+  int start_ins_line;
+  int end_ins_line;
+
   TableNodeType tableType;
 } TreeNode;
 

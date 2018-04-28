@@ -1,9 +1,9 @@
 #include "instruction.h"
 
-//Size 20
+//Size 19
 std::string const Instruction::INSTRUCTION_LIST[] =
 {"LDV", "LDC", "HALT", "CALL", "RET", "ADD", "SUB", "MUL", "DIV", "GT",
- "GE", "LT", "LE", "EQ", "NEQ", "JMP", "JZ", "ASN", "DUP", "PRT"};
+ "GE", "LT", "LE", "EQ", "NEQ", "JMP", "JZ", "ASN", "DUP"};
 
 Instruction::Instruction(){
     

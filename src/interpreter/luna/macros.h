@@ -7,13 +7,29 @@
 #define LOGI(x) std::cout << x << " ";
 #define LOGE(x) std::cerr << x << std::endl;
 
+#define LOG_OPERAND(OP) switch(OP.type){\
+                            case(OP_TYPE::INT):\
+                                std::cout << OP.value.i;\
+                                break;\
+                            case(OP_TYPE::DOUBLE):\
+                                std::cout << OP.value.d;\
+                                break;\
+                            case(OP_TYPE::BOOL):\
+                                if(OP.value.b){\
+                                    std::cout << "true";\
+                                }else{\
+                                    std::cout << "false";\
+                                }\
+                                break;\
+                            default: break;}
+
 #define RUN_AND_LOG_INSTRUCTION(ins) std::string line;\
         std::getline(std::cin, line);\
-        if(variable_map != NULL && variable_map->find("0") != variable_map->end()){\
-            std::cout <<  frameName << "(" << (*variable_map)["0"]->value.i << "): ";\
-        }else{\
-            std::cout <<  frameName << ": ";\
-        }\
+        std::cout << frameName << "(";\
+        for(auto it = functionArgumentsName.begin(); it != functionArgumentsName.end(); it++){\
+            LOG_OPERAND((*((*variable_map)[*it])))\
+            if(it != functionArgumentsName.end() - 1){std::cout << ", ";}}\
+        std::cout << ") ";\
         std::cout << instructionPos-instructions.begin() << " ";\
 		std::cout << Instruction::INSTRUCTION_LIST[ins.getCommandIndex()] << " ";\
 		if(ins.getCommandIndex() == 3) std::cout << std::endl;\

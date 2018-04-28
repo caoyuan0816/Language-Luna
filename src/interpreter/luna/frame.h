@@ -1,6 +1,7 @@
 #ifndef FRAME_H
 #define FRAME_H
 
+#include <iostream>
 #include <vector>
 #include <map>
 #include <stack>
@@ -73,7 +74,6 @@ private:
     void JZ(Instruction &ins);
     void ASN(Instruction &ins);
     void DUP();
-    void PRT(Instruction &ins);
 public:
     Frame();
     Frame(std::string frameName, std::vector<std::string> functionArgumentsName,
@@ -84,6 +84,7 @@ public:
     ~Frame();
     void pushInstruction(Instruction &ins);
     void pushOperand(Operand &op);
+    void run_print();
     std::string getName();
     void setVariableMap(std::map<std::string, Operand*> *callArgs);
     void run();

@@ -65,7 +65,6 @@ void Frame::runInstruction(Instruction &curInstruction){
         case(16): JZ(curInstruction); break;
         case(17): ASN(curInstruction); break;
         case(18): DUP(); break;
-        case(19): PRT(curInstruction); break;
         default: HALT(curInstruction); break;
     }
 }
@@ -103,13 +102,16 @@ void Frame::HALT(Instruction &ins){
 void Frame::CALL(Instruction &ins){
     std::map<std::string, Operand*> *callArgs = new std::map<std::string, Operand*>();
     int argn = std::stoi(ins.getOpStrList()[1]);
-    for(int i = argn-1; i >= 0; i--){
-        //std::cout << "Before: " << &stack.top() <<  " -> " << &(stack.top().value) <<  " " << *(int *)stack.top().value << std::endl;
+    for(int i = 0; i < argn; i++){
         (*callArgs)[std::to_string(i)] = new Operand(stack.top());
-        //std::cout << "After insert: " << &(*callArgs)["0"] <<  " -> " << &((*callArgs)["0"].value) << " " << *(int *)(*callArgs)["0"].value << std::endl;
         stack.pop();
     }
+    // Run new frame by VM callback function
     vmRunFrameCallBack(ins.getOpStrList()[0], callArgs);
+
+    if(ins.getOpStrList()[0] != "print"){
+        vmDeleteTopFrameCallBack();
+    }
     instructionPos++;
 }
 
@@ -196,32 +198,12 @@ void Frame::DUP(){
 /**
 * \brief Give the value in the bx register to ax register.
 */
-void Frame::PRT(Instruction &ins){
+void Frame::run_print(){
 
-    Operand op;
-    if(ins.getOpStrList().size() == 0){
-        op = stack.top();
-    }else{
-        op = *(*variable_map)[ins.getOpStrList()[0]];
+    for(int i = 0; i < variable_map->size(); i++){
+        LOG_OPERAND((*((*variable_map)[std::to_string(i)])))
+        std::cout << std::endl;
     }
-
-    switch(op.type){
-        case(OP_TYPE::INT):
-            LOG(op.value.i)
-            break;
-        case(OP_TYPE::DOUBLE):
-            LOG(op.value.d)
-            break;
-        case(OP_TYPE::BOOL):
-            if(op.value.b){
-                LOG("true")
-            }else{
-                LOG("false")
-            }
-            break;
-        default: break;
-    }
-    instructionPos++;
     return ;
 }
 
@@ -235,16 +217,21 @@ std::string Frame::getName(){
 
 void Frame::setVariableMap(std::map<std::string, Operand*> *callArgs){
     if(callArgs != NULL){
-        std::map<std::string, Operand*> *tmp = new std::map<std::string, Operand*>();
-        for(auto it = callArgs->begin(); it != callArgs->end(); it++){
-            (*tmp)[functionArgumentsName[std::stoi(it->first)]] = new Operand(it->second->type, it->second->value);
-        }
-        variable_map = tmp;
+        if(frameName == "print"){
+            variable_map = callArgs;
+        }else{
+            std::map<std::string, Operand*> *tmp = new std::map<std::string, Operand*>();
+            for(auto it = callArgs->begin(); it != callArgs->end(); it++){
+                (*tmp)[functionArgumentsName[std::stoi(it->first)]] = new Operand(it->second->type, it->second->value);
+            }
+            variable_map = tmp;
 
-        for(auto it = (*callArgs).begin(); it != (*callArgs).end(); it++){
-            ::operator delete(it->second);
+            // callArgs map now useless, delete it
+            for(auto it = (*callArgs).begin(); it != (*callArgs).end(); it++){
+                ::operator delete(it->second);
+            }
+            delete callArgs;
         }
-        delete callArgs;
     }
 }
 
@@ -253,23 +240,15 @@ bool Frame::operator < (const Frame & cmp) const{
 }
 
 void Frame::run(){
-    bool returnFlag = false;
     instructionPos = instructions.begin();
     while(instructionPos != instructions.end()){
 
-        if((*instructionPos).getCommandIndex() == 3){
-            returnFlag = true;
-        }
         #ifdef __LUNA__DEBUG
         RUN_AND_LOG_INSTRUCTION((*instructionPos));
         #endif
         #ifndef __LUNA__DEBUG
         runInstruction(*instructionPos);
         #endif
-        if(returnFlag){
-            vmDeleteTopFrameCallBack(); 
-            returnFlag = false;
-        }
     }
 }
 

@@ -1,4 +1,4 @@
-febonacci x
+fibonacci x
 LDV x
 LDC 1
 EQ
@@ -14,17 +14,16 @@ RET
 LDV x
 LDC 1
 SUB
-CALL febonacci 1
+CALL fibonacci 1
 LDV x
 LDC 2
 SUB
-CALL febonacci 1
+CALL fibonacci 1
 ADD
 RET
 main
 LDC 3
-CALL febonacci 1
-ASN x
-PRT x
+CALL fibonacci 1
+CALL print 1
 LDC 0
 RET

@@ -43,8 +43,8 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
                 opStrList.push_back(line);
             }
 
-            auto res = std::find(Instruction::INSTRUCTION_LIST, Instruction::INSTRUCTION_LIST + 20, command);
-            if(res != Instruction::INSTRUCTION_LIST + 20){
+            auto res = std::find(Instruction::INSTRUCTION_LIST, Instruction::INSTRUCTION_LIST + 19, command);
+            if(res != Instruction::INSTRUCTION_LIST + 19){
             	int commandIndex = res - Instruction::INSTRUCTION_LIST;
             	Instruction ins(commandIndex, opStrList);
             	curFrame->pushInstruction(ins);
@@ -56,6 +56,12 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
             	frameMap[curFrame->getName()] = curFrame;
             }
         }
+        //Add function print to frameMap
+        std::vector<std::string> opStrList;
+        frameMap["print"] = new Frame("print", opStrList,
+                    [this](std::string frameName, std::map<std::string, Operand*> *callArgs){return this->runFrame(frameName, callArgs);},
+                    [this](Operand &op){return this->frameReturn(op);},
+                    [this](){return this->deleteTopFrame();});
     }else{
         std::string err("Cannot open bytecode file: ");
         err.append(bytecodeFileName);
@@ -72,8 +78,12 @@ void VirtualMachine::runFrame(std::string frameName, std::map<std::string, Opera
 
 	curFrame->setVariableMap(callArgs);
 
-	frameStack.push(curFrame);
-	frameStack.top()->run();
+    if(frameName == "print"){
+        curFrame->run_print();
+    }else{
+        frameStack.push(curFrame);
+        frameStack.top()->run();
+    }
 }
 
 void VirtualMachine::frameReturn(Operand &op){

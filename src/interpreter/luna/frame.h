@@ -21,12 +21,26 @@
         result.d = op2.value.d operation op1.value.d;\
         Operand resultOp(OP_TYPE::DOUBLE, result);\
         stack.push(resultOp);\
-    }else{\
+    }else if(op1.type == OP_TYPE::DOUBLE && op2.type == OP_TYPE::INT){\
+        OP_VALUE result;\
+        result.d = (double)(op2.value.i operation op1.value.d);\
+        Operand resultOp(OP_TYPE::DOUBLE, result);\
+        stack.push(resultOp);\
+    }else if(op1.type == OP_TYPE::INT && op2.type == OP_TYPE::DOUBLE){\
+        OP_VALUE result;\
+        result.d = (double)(op2.value.d operation op1.value.i);\
+        Operand resultOp(OP_TYPE::DOUBLE, result);\
+        stack.push(resultOp);\
+    }else if(op1.type == OP_TYPE::INT && op2.type == OP_TYPE::INT){\
         OP_VALUE result;\
         result.i = op2.value.i operation op1.value.i;\
         Operand resultOp(OP_TYPE::INT, result);\
         stack.push(resultOp);\
-    }\
+    }else{\
+        OP_VALUE result;\
+        result.i = 0;\
+        Operand resultOp(OP_TYPE::INT, result);\
+        stack.push(resultOp);}\
     instructionPos++; return ;}
 
 #define FRAME_COMPARISON(name, operation) void Frame::name(){\

@@ -87,27 +87,34 @@ id ::= [a-z|A-Z]
 ```
 ## Byte Code
 ```
-1.  
-
-2. assignment operation  
+1. Assignment Instrction 
 LDV  /*Load the variable into stack*/
 LDC  /*Load the constant into stack*/
 ASN  /*Assignment instruction*/
 DUP  /*Duplicate the top item on the stack*/
-3. arithmetic operation  
+
+2. Arithmetic instrction  
 ADD  /*Addition*/
 SUB  /*Subtraction*/
 MUL  /*Multiplication*/
 DIV  /*Division*/
+
+3. Compare instruction
 GT  /*Greater than*/
 GE  /*Greater than or equal to*/
 LT  /*Less than*/
 LE  /*Less than or equal to*/
 EQ  /*Equal to*/
 NEQ /*Not equal to*/
+
+4. Jump intrution
 JMP  /*Jump to specified number of line*/
 JZ  /*Jump if zero*/
+
+5. Output instruction
 HALT  /*The stack element is out of the stack and output*/
+
+6. Function call instrction
 RET  /*Function call and return*/
 CALL /*Call function*/
 

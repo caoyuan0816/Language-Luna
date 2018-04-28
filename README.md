@@ -88,28 +88,30 @@ id ::= [a-z|A-Z]
 ## Byte Code
 ```
 1.  
+
 2. assignment operation  
-ldv  
-ldc  
-asn  
-dup  
+LDV  /*Load the variable into stack*/
+LDC  /*Load the constant into stack*/
+ASN  /*Assignment instruction*/
+DUP  /*Duplicate the top item on the stack*/
 3. arithmetic operation  
-add  
-sub  
-mul  
-div  
-4. logic operation  
-and   
-or  
-not  
-jmp  
-jz  
-halt  
-ret
+ADD  /*Addition*/
+SUB  /*Subtraction*/
+MUL  /*Multiplication*/
+DIV  /*Division*/
+GT  /*Greater than*/
+GE  /*Greater than or equal to*/
+LT  /*Less than*/
+LE  /*Less than or equal to*/
+EQ  /*Equal to*/
+NEQ /*Not equal to*/
+JMP  /*Jump to specified number of line*/
+JZ  /*Jump if zero*/
+HALT  /*The stack element is out of the stack and output*/
+RET  /*Function call and return*/
+CALL /*Call function*/
+
 ```
-
-
-
 
 ## How to write a Luna program
 Here are some examples to start Luna programming:

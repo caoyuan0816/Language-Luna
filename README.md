@@ -48,10 +48,11 @@ Luna is a lightweight, static typing, lua-like programming language. Luna provid
 
 ## Grammar 
 A means 0 or more As, and [A] means an optional A
-program ::= {functiondef} "main" '(' [var ',' var] ')' block "end"
-block ::= {stat} [retstat]
-stat ::= ';' |
-         var '=' expr |
+```
+program ::= {functiondef} "main" '(' [var ',' var] ')' block "end" 
+block ::= {stat} [retstat] 
+stat ::= ';' | 
+         var '=' expr | 
          var '=' list_expr|
          id '=' expr |
          id unary_op |
@@ -83,7 +84,7 @@ num ::= ['-'] digit{digit}
 floatnum ::= num | num '.' digit{digit}
 digit ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 id ::= [a-z|A-Z]
-
+```
 ## Byte Code
 `1.  
 2. assignment operation  

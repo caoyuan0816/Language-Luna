@@ -3,7 +3,7 @@
 ## Team Members
 - Zelin Bao
 - Yuan Cao
-- Yiru Hu
+- Yiru Hu (yiruhu@asu.edu)
 - Zhang Lei
 
 ## Language Luna

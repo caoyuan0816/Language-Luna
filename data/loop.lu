@@ -1,0 +1,12 @@
+main()
+    for i = 0, 5, 1 do
+        print(i)
+    end
+
+    int i = 0
+    while (i < 5)
+    do
+       print(i)
+       i++
+    end
+end

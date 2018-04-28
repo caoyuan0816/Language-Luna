@@ -6,9 +6,9 @@
 - @yiruhu, Yiru Hu 
 - @lanzhige, Zhang Lei
 
-# System Requirement
+## System Requirement
 ## Platform
--Ubuntu(native)
+- Ubuntu(native)
 
 ## Language Luna
 Luna is a lightweight, static typing, lua-like programming language. Luna provide a Flex and Bison based compiler and a stack based interpreter which called `lunac` and `luna`.

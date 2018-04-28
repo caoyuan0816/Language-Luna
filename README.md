@@ -1,4 +1,4 @@
-# Laanguage Luna
+# Language Luna
 
 ## Team Members
 - Yuan Cao [(@caoyuan0816)](https://github.com/caoyuan0816)
@@ -15,7 +15,7 @@ Luna is a lightweight, static typing, lua-like programming language. Luna provid
 ### Platform
 - Linux
 - MacOS
-- Windows (git-bash)
+- Windows (git-bash) (not recommend)
 
 ### Prerequierment
 - cmake (with c & c++ compiler support) (with c++11 feature)
@@ -101,37 +101,45 @@ identifier : IDENTIFIER ;
 ```
 ### Byte Code
 ```
-1. Assignment Instrction 
-LDV  /*Load the variable into stack*/
-LDC  /*Load the constant into stack*/
-ASN  /*Assignment instruction*/
-DUP  /*Duplicate the top item on the stack*/
-
-2. Arithmetic instrction  
-ADD  /*Addition*/
-SUB  /*Subtraction*/
-MUL  /*Multiplication*/
-DIV  /*Division*/
-
-3. Compare instruction
-GT  /*Greater than*/
-GE  /*Greater than or equal to*/
-LT  /*Less than*/
-LE  /*Less than or equal to*/
-EQ  /*Equal to*/
-NEQ /*Not equal to*/
-
-4. Jump intrution
-JMP  /*Jump to specified number of line*/
-JZ  /*Jump if zero*/
-
-5. Output instruction
-HALT  /*The stack element is out of the stack and output*/
-
-6. Function call instrction
-RET  /*Function call and return*/
-CALL /*Call function*/
-
+------------------------------------------------------------------------------
+1. Assignment Instrctions 
+------------------------------------------------------------------------------
+LDV a        | Operand: 1        | Load the variable into stack using given name
+LDC 10       | Operand: 1        | Load the constant into stack
+ASN x        | Operand: 1        | Assign top element of stack to given variable name
+DUP          | Operand: 0        | Duplicate the top element of stack
+---------------------------------------------------------------------
+2. Arithmetic Instrctions (Pop two elements from stack, add them, push result back)
+---------------------------------------------------------------------
+ADD          | Operand: 0        | Addition.
+SUB          | Operand: 0        | Substraction.
+MUL          | Operand: 0        | Multiplication.
+DIV          | Operand: 0        | Division.
+---------------------------------------------------------------------
+3. Comparison Instructions (Pop two elements from stack, check relationship between them, push result back.
+)
+---------------------------------------------------------------------
+GT           | Operand: 0        | a > b
+GE           | Operand: 0        | a >= b
+LT           | Operand: 0        | a < b
+LE           | Operand: 0        | a <= b
+EQ           | Operand: 0        | a == b
+NEQ          | Operand: 0        | a != b
+---------------------------------------------------------------------
+4. Jump Instructions
+---------------------------------------------------------------------
+JMP 10       | Operand: 1        | No condition jump, jump to given line
+JZ 10        | Operand: 1        | Jump if zero, if top element of stack is zero, jump
+---------------------------------------------------------------------
+5. Function Call Instrctions
+---------------------------------------------------------------------
+RET          | Operand: 0        | Return to parent function
+CALL fun 1   | Operand: 2        | Call function by function name and arguments number
+---------------------------------------------------------------------
+6. Output Instructions
+---------------------------------------------------------------------
+HALT         | Operand: 0        | Immediately terminate program  
+---------------------------------------------------------------------
 ```
 
 ## Examples

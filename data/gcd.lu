@@ -13,7 +13,7 @@ function int gcd(int x, int y)
 end
 
 main()
-  int a = 98
-  int b = 56
+  int a = 128
+  int b = 64
   print(gcd(a,b))
 end

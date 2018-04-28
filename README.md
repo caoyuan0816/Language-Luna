@@ -52,7 +52,8 @@ We use _doxygen_ to comments our code and create a documentation.
 ## Language Design
 ### Grammar 
 ```
-file : functiondef_list MAIN LPAREN variable COMMA variable RPAREN block END | functiondef_list MAIN LPAREN RPAREN block END ;
+file : functiondef_list MAIN LPAREN variable COMMA variable RPAREN block END |
+       functiondef_list MAIN LPAREN RPAREN block END ;
 block : statement_list | ;
 statement_list : statement_list statement | statement ;
 statement : assign_statement | functioncall | do_statement | loop_statement | if_statement | return_statement;

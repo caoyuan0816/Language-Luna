@@ -171,9 +171,8 @@ void functioncall(const TreeNode *tree, const FuncTable *funcTable, BlockTable *
     temp = temp->child;
     expressionList(temp, funcTable, blockTable, line, checkFlag, &paramNum);
   }
-  if (checkFlag==0){
-    FUNC_CALL_CMD(tree->child->literal, paramNum);
-  }
+
+  FUNC_CALL_CMD(tree->child->literal, paramNum);
 }
 
 void mathExpression(const TreeNode *tree, const FuncTable *funcTable, BlockTable *blockTable, int *line, int checkFlag){
@@ -233,12 +232,12 @@ void identifierAssign(const TreeNode *tree, const FuncTable *funcTable, BlockTab
   checkIdentifier(identifier->literal, funcTable, identifier->line_no, checkFlag);
   switch (assign->nodeKind){
     case true_NodeKind:
-      OUTPUT_CMD("LDC 1");
+      OUTPUT_CMD("LDC true");
       OUTPUT_CMD_P("ASN %s", identifier->literal);
       break;
 
     case false_NodeKind:
-      OUTPUT_CMD("LDC 0");
+      OUTPUT_CMD("LDC false");
       OUTPUT_CMD_P("ASN %s", identifier->literal);
       break;
 
@@ -270,12 +269,12 @@ void defineAssign(const TreeNode *tree, const FuncTable *funcTable, BlockTable *
   }
   switch (assign->nodeKind){
     case true_NodeKind:
-      OUTPUT_CMD("LDC 1");
+      OUTPUT_CMD("LDC true");
       OUTPUT_CMD_P("ASN %s", identifier->literal);
       break;
 
     case false_NodeKind:
-      OUTPUT_CMD("LDC 0");
+      OUTPUT_CMD("LDC false");
       OUTPUT_CMD_P("ASN %s", identifier->literal);
       break;
 
@@ -309,11 +308,11 @@ void boolExpression(const TreeNode *tree, const FuncTable *funcTable, BlockTable
   if (tree == NULL || funcTable == NULL || blockTable==NULL) NULL_ERROR
   switch(tree->nodeKind){
     case true_NodeKind:
-      OUTPUT_CMD("LDC 1");
+      OUTPUT_CMD("LDC true");
       break;
 
     case false_NodeKind:
-      OUTPUT_CMD("LDC 0");
+      OUTPUT_CMD("LDC false");
       break;
 
     case bool_expression_NodeKind:
@@ -400,7 +399,7 @@ void forStatement(const TreeNode *tree, const FuncTable *funcTable, BlockTable *
       OUTPUT_CMD_P("LDC %s", temp->sibling->sibling->sibling->literal);
       OUTPUT_CMD("ADD");
       OUTPUT_CMD_P("JMP %d", temp->start_ins_line);
-      if (checkFlag ==1){
+      if (checkFlag == 1){
         temp->end_ins_line = *line;
       }
 
@@ -551,7 +550,7 @@ void codeGen(TreeNode *tree, FuncTable *funcTable, int *line, char *inputFilePat
       }
     }
   }
-  fprint(out_fp, "HALT\n");
+  fprintf(out_fp, "HALT\n");
 
   //Closing output file
   fclose(out_fp);

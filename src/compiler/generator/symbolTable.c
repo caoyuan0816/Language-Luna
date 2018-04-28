@@ -551,6 +551,7 @@ void codeGen(TreeNode *tree, FuncTable *funcTable, int *line, char *inputFilePat
       }
     }
   }
+  fprint(out_fp, "HALT\n");
 
   //Closing output file
   fclose(out_fp);

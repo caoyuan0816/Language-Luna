@@ -52,41 +52,51 @@ We use _doxygen_ to comments our code and create a documentation.
 ## Language Design
 ### Grammar 
 ```
-program ::= {functiondef} "main" '(' [var ',' var] ')' block "end" 
-block ::= {stat} [retstat] 
-stat ::= ';' | 
-         var '=' expr | 
-         var '=' list_expr|
-         id '=' expr |
-         id unary_op |
-         functioncall |
-         "do" block "end" |
-         "while" '(' exp ')' "do" block "end" |
-         "if" '(' exp ')' block ["else" block] "end" |
-         "for" id "in" id "do" block "end" |
-         "for" id "in" list_expr "do" block "end" |
-         "for" id '=' num ',' num ',' num "do" block "end
-retstat ::= "return" id
-var ::= type id
-functioncall ::= id args
-args ::= '(' [explist] ')'
-explist ::= expr | expr ',' explist
-exp ::= "false" | "true" | expr boolop expr
-expr ::= term {expr_op term} | functioncall
-list_expr ::= '[' [num] {',' num} ']'
-term ::= num {term_op num}
-functiondef ::= type "function" funcbody
-funcbody ::= '(' [parlist] ')' block "end"
-parlist ::= '...' | type id {',' type id}
-expr_op ::= '+' | '-'
-term_op ::= '*' | '/'
-unary_op ::= '++' | '--'
-boolop ::= '<' | '<=' | '>' | ">=" | "==" | "!="
-type ::= "bool" | "int" | "double" | "list"
-num ::= ['-'] digit{digit}
-floatnum ::= num | num '.' digit{digit}
-digit ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
-id ::= [a-z|A-Z]
+file : functiondef_list MAIN LPAREN variable COMMA variable RPAREN block END | functiondef_list MAIN LPAREN RPAREN block END ;
+block : statement_list | ;
+statement_list : statement_list statement | statement ;
+statement : assign_statement | functioncall | do_statement | loop_statement | if_statement | return_statement;
+do_statement : DO block END ;
+loop_statement : WHILE LPAREN bool_expression RPAREN DO block END | FOR identifier for_statement ;
+for_statement : ASSIGNMENT int_num COMMA int_num COMMA int_num DO block END |
+                IN list_expression DO block END |
+                IN identifier DO block END ;
+if_statement : IF LPAREN bool_expression RPAREN block else_statement END;
+else_statement : ELSE block | ;
+assign_statement : define_assign | identifier_assign | unary_assign;
+unary_assign : identifier unaryop ;
+identifier_assign : identifier ASSIGNMENT assign_type ;
+define_assign : variable ASSIGNMENT assign_type ;
+assign_type : expression | TRUE | FALSE | list_expression ;
+variable : type identifier ;
+functioncall : identifier argument_list ;
+argument_list : LPAREN RPAREN | LPAREN expression_list RPAREN ;
+expression_list : expression_list COMMA expression ;
+bool_expression : FALSE | TRUE | expression boolop expression ;
+expression : math_expression ;
+list_expression : LBRAC int_list RBRAC | LBRAC RBRAC ;
+math_expression : math_expression addop term | term ;
+term : term mulop num_id | num_id | functioncall ;
+functiondef_list : functiondef_list functiondef ;
+functiondef : FUNCTION variable funcbody ;
+funcbody : LPAREN paramlist RPAREN block END | LPAREN RPAREN block END ;
+return_statement : RETURN expression ;
+paramlist : paramlist COMMA variable | ;
+addop : PLUS | MINUS ; 
+mulop : STAR | SLASH ;
+unaryop : INCO | DECO ;
+boolop : EQUAL | GE | LE | LT | GT | NOTEQUAL ;
+type : bool_type | int_type | double_type | list_type ;
+bool_type : BOOL ;
+int_type : INT ;
+double_type : DOUBLE ;
+list_type : LIST ;
+num_id : identifier | num ;
+num :   int_num | real_num ;
+int_list : int_list COMMA int_num | int_num ;
+real_num :MINUS REALNUMBER | REALNUMBER ;
+int_num : MINUS INTNUM | INTNUM ;
+identifier : IDENTIFIER ;
 ```
 ### Byte Code
 ```

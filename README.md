@@ -1,10 +1,10 @@
 # SER502-Spring2018-Team4
 
 ## Team Members
-- Zelin Bao
-- Yuan Cao
-- Yiru Hu (yiruhu@asu.edu)
-- Zhang Lei
+- @baozelin, Zelin Bao
+- @caoyuan0816, Yuan Cao
+- @yiruhu, Yiru Hu (yiruhu@asu.edu)
+- @lanzhige, Zhang Lei
 
 ## Language Luna
 Luna is a lightweight, static typing, lua-like programming language. Luna provide a Flex and Bison based compiler and a stack based interpreter which called `lunac` and `luna`.

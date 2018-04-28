@@ -32,7 +32,7 @@ We use bison to  analyze a sequence of tokens to determine its grammatical struc
 [valgrind](http://valgrind.org/) is an instrumentation framework for building dynamic analysis tools. There are Valgrind tools that can automatically detect many memory management and threading bugs, and profile your programs in detail. You can also use Valgrind to build new tools. <br />
 (todo ..descirpt ..)
 
-## Install Directions
+## Install Luna
 -  Download SER502-Spring2018-Team4-master.zip from Github
    ~$ wget https://github.com/lanzhige/SER502-Spring2018-Team4/archive/master.zip
 -  ~$ tar xvf master.tar.gz 
@@ -46,9 +46,43 @@ We use bison to  analyze a sequence of tokens to determine its grammatical struc
 ## Language Luna
 Luna is a lightweight, static typing, lua-like programming language. Luna provide a Flex and Bison based compiler and a stack based interpreter which called `lunac` and `luna`.
 
-## Grammar Rule
-
-
+## Grammar 
+A means 0 or more As, and [A] means an optional A
+program ::= {functiondef} "main" '(' [var ',' var] ')' block "end"
+block ::= {stat} [retstat]
+stat ::= ';' |
+         var '=' expr |
+         var '=' list_expr|
+         id '=' expr |
+         id unary_op |
+         functioncall |
+         "do" block "end" |
+         "while" '(' exp ')' "do" block "end" |
+         "if" '(' exp ')' block ["else" block] "end" |
+         "for" id "in" id "do" block "end" |
+         "for" id "in" list_expr "do" block "end" |
+         "for" id '=' num ',' num ',' num "do" block "end
+retstat ::= "return" id
+var ::= type id
+functioncall ::= id args
+args ::= '(' [explist] ')'
+explist ::= expr | expr ',' explist
+exp ::= "false" | "true" | expr boolop expr
+expr ::= term {expr_op term} | functioncall
+list_expr ::= '[' [num] {',' num} ']'
+term ::= num {term_op num}
+functiondef ::= type "function" funcbody
+funcbody ::= '(' [parlist] ')' block "end"
+parlist ::= '...' | type id {',' type id}
+expr_op ::= '+' | '-'
+term_op ::= '*' | '/'
+unary_op ::= '++' | '--'
+boolop ::= '<' | '<=' | '>' | ">=" | "==" | "!="
+type ::= "bool" | "int" | "double" | "list"
+num ::= ['-'] digit{digit}
+floatnum ::= num | num '.' digit{digit}
+digit ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+id ::= [a-z|A-Z]
 
 ## Byte Code
 `1.  

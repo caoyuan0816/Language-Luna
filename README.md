@@ -6,8 +6,8 @@
 - @yiruhu, Yiru Hu 
 - @lanzhige, Zhang Lei
 
-#System Requirement
-##Platform
+# System Requirement
+## Platform
 -Ubuntu(native)
 
 ## Language Luna

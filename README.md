@@ -1,25 +1,39 @@
 # SER502-Spring2018-Team4
 
 ## Team Members
-- @baozelin, Zelin Bao
-- @caoyuan0816, Yuan Cao
-- @yiruhu, Yiru Hu 
-- @lanzhige, Zhang Lei
+- [@baozelin](https://github.com/caoyuan0816), Zelin Bao
+- [@caoyuan0816](https://github.com/yiruhu), Yuan Cao
+- [@yiruhu](https://github.com/lanzhige), Yiru Hu 
+- [@lanzhige](https://github.com/baozelin), Zhang Lei
 
-## Implement plan
-Zelin Bao: bytecode generator, help documents and testing<br />
-Yuan Cao: interpreter and bash scripts<br />
-Yiru Hu: bytecode generator, help documents and testing<br />
-Lei Zhang: scanner, parser and cmake files
+## YouTube Video Link
 
-## System Requirement
-## Platform
-- Linux (native)
+## Language Luna
+Luna is a lightweight, static typing, lua-like programming language. Luna provide a Flex and Bison based compiler and a stack based interpreter which called `lunac` and `luna`.
 
-## Tools
-[Doxygen](https://en.wikipedia.org/wiki/Doxygen), a tool for writing software reference documentation. The documentation is written within code, and is thus relatively easy to keep up to date. Doxygen can cross reference documentation and code, so that the reader of a document can easily refer to the actual code. <br />
-We use _doxygen_ to comments our code and create a documentation.
+## Compile and Install Luna
+### Platform
+- Linux
+- MacOS
+- Windows (git-bash)
 
+### Prerequierment
+- cmake (with c & c++ compiler support) (with c++11 feature)
+- flex
+- bison
+- git (to clone project, you can also download project from [here](https://github.com/lanzhige/SER502-Spring2018-Team4/archive/master.zip))
+
+### Fetch Project Source Code
+- `git clone ://github.com/lanzhige/SER502-Spring2018-Team4.git`
+- `cd SER502-Spring2017-Team10`
+
+### Compile
+- `./build.sh`, if the build process is failed, there will be an error message in the screen.
+
+### Install
+- `cd build && sudo make install && cd ..`, now you can use `luna` and `lunac` anywhere.
+
+## Tools We used to Develop Language Luna
 [CMake](https://cmake.org/)  is an open-source, cross-platform family of tools designed to build, test and package software. CMake is used to control the software compilation process using simple platform and compiler independent configuration files, and generate native makefiles and workspaces that can be used in the compiler environment of your choice.<br />
 We use CMake to generate the makefiles.
 
@@ -32,21 +46,11 @@ We use bison to  analyze a sequence of tokens to determine its grammatical struc
 [valgrind](http://valgrind.org/) is an instrumentation framework for building dynamic analysis tools. There are Valgrind tools that can automatically detect many memory management and threading bugs, and profile your programs in detail. You can also use Valgrind to build new tools. <br />
 (todo ..descirpt ..)
 
-## Install Luna
--  Download SER502-Spring2018-Team4-master.zip from Github
-   ~$ wget https://github.com/lanzhige/SER502-Spring2018-Team4/archive/master.zip
--  ~$ tar xvf master.tar.gz 
--  Make sure your current dir is `.../SER502-Spring2018-Team4/src/interpreter`
-- ~$ ./build.sh
+[Doxygen](https://en.wikipedia.org/wiki/Doxygen), a tool for writing software reference documentation. The documentation is written within code, and is thus relatively easy to keep up to date. Doxygen can cross reference documentation and code, so that the reader of a document can easily refer to the actual code. <br />
+We use _doxygen_ to comments our code and create a documentation.
 
-## Build and Run Directions
-
-## YouTube Video Link
-
-## Language Luna
-Luna is a lightweight, static typing, lua-like programming language. Luna provide a Flex and Bison based compiler and a stack based interpreter which called `lunac` and `luna`.
-
-## Grammar 
+## Language Design
+### Grammar 
 A means 0 or more As, and [A] means an optional A
 ```
 program ::= {functiondef} "main" '(' [var ',' var] ')' block "end" 
@@ -85,7 +89,7 @@ floatnum ::= num | num '.' digit{digit}
 digit ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 id ::= [a-z|A-Z]
 ```
-## Byte Code
+### Byte Code
 ```
 1. Assignment Instrction 
 LDV  /*Load the variable into stack*/
@@ -120,14 +124,64 @@ CALL /*Call function*/
 
 ```
 
-## How to write a Luna program
-Here are some examples to start Luna programming:
+## Examples
+### Fibonacci (`./data/fibonacci.lu`)
 ```
-//return sum of two values
-function int sum(int x, int y)
-    int z = 0
-    z = x + y
-    return z
+function int fibonacci(int n)
+    if (n==1)
+        return 1
+    end
+    if (n==2)
+        return 1
+    end
+    return fibonacci(n-2) + fibonacci(n-1) //Recursion call
 end
 
+main()
+    int res = fibonacci(3)
+    print(res)
+end
 ```
+Byte-code will be generated: (lunac data/fibonacci.lu && cat data/fibonacci.luo)
+```
+fibonacci
+LDV n
+LDC 1
+EQ
+JZ 6
+LDC 1
+RET
+LDV n
+LDC 2
+EQ
+JZ 12
+LDC 1
+RET
+LDV n
+LDC 2
+SUB
+CALL fibonacci 1
+LDV n
+LDC 1
+SUB
+CALL fibonacci 1
+ADD
+RET
+main
+LDC 3
+CALL fibonacci 1
+ASN res
+LDV res
+CALL print 1
+```
+Run the bytecode file by luna virtual machine: (luna data/fibonacci.luo)
+```
+2
+```
+
+## Implementation Plan
+Lei Zhang: scanner, parser, AST generating.
+Zelin Bao: bytecode generator(for, if, while blocks), testing<br />
+Yiru Hu: bytecode generator(others), testing<br />
+Yuan Cao: interpreter(stack-based virtual machine) and bash scripts<br />
+

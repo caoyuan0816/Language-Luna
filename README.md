@@ -7,7 +7,7 @@
 - @lanzhige, Zhang Lei
 
 ## Implement plan
-Zelin Bao: bytecode generator, help documents and testing
+Zelin Bao: bytecode generator, help documents and testing<br />
 Yuan Cao: interpreter and bash scripts
 Yiru Hu: bytecode generator, help documents and testing
 Lei Zhang: scanner, parser and cmake files

@@ -11,12 +11,14 @@
 - Ubuntu(native)
 
 ## Install Directions
-- ~$ Make sure you are `.../SER502-Spring2018-Team4/src/interpreter`
+- ~$ Make sure your current dir is `.../SER502-Spring2018-Team4/src/interpreter`
 - ~$ mkdir build
 - ~$ cd build
 - ~$ cmake..
 - ~$ make
 - ~$ bin/luna or bin/lunac
+
+## YouTube Video Link
 
 ## Language Luna
 Luna is a lightweight, static typing, lua-like programming language. Luna provide a Flex and Bison based compiler and a stack based interpreter which called `lunac` and `luna`.

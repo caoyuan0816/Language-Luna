@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "macros.h"
+
 #define YYSTYPE TreeNode *
 
 typedef enum {

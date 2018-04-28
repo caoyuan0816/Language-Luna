@@ -6,17 +6,17 @@ FILE *out_fp;
 
 #ifdef _LUNAC_DEBUG_
 
-#define OUTPUT_CMD(X) {if (checkFlag==0) {printf("%d ", *line); (*line)++; printf(X); printf("\n");} else (*line)++;}
-#define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){printf("%d ", *line); (*line)++; printf(X, Y); printf("\n");} else (*line)++;} 
-#define COMPILE_ERROR(X,Y) {printf("error: line %d ", Y); printf(X); printf("\n");}
-#define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){printf("%d ", *line); (*line)++; printf("CALL "); printf("%s %d\n", X, Y);} else (*line)++;}
+#define OUTPUT_CMD(X) {if (checkFlag==0) {(*line)++; fprintf(out_fp, X); fprintf(out_fp, "\n");} else (*line)++;}
+#define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){fprintf(out_fp, "%d ", *line); (*line)++; fprintf(out_fp, X, Y); fprintf(out_fp, "\n");} else (*line)++;} 
+#define COMPILE_ERROR(X,Y) {fprintf(out_fp, "error: line %d ", Y); fprintf(out_fp, X); fprintf(out_fp, "\n");}
+#define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){out_fp, fprintf("%d ", *line); (*line)++; fprintf(out_fp, "CALL "); fprintf(out_fp, "%s %d\n", X, Y);} else (*line)++;}
 
 #else
 
-#define OUTPUT_CMD(X) {if (checkFlag==0) { (*line)++; printf(X); printf("\n");} else (*line)++;}
-#define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){ (*line)++; printf(X, Y); printf("\n");} else (*line)++;} 
-#define COMPILE_ERROR(X,Y) {printf("error: line %d ", Y); printf(X); printf("\n");}
-#define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){ (*line)++; printf("CALL "); printf("%s %d\n", X, Y);} else (*line)++;}
+#define OUTPUT_CMD(X) {if (checkFlag==0) { (*line)++; fprintf(out_fp, X); fprintf(out_fp, "\n");} else (*line)++;}
+#define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){ (*line)++; fprintf(out_fp, X, Y); fprintf(out_fp, "\n");} else (*line)++;} 
+#define COMPILE_ERROR(X,Y) {fprintf(out_fp, "error: line %d ", Y); fprintf(out_fp, X); fprintf(out_fp, "\n");}
+#define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){ (*line)++; fprintf(out_fp, "CALL "); fprintf(out_fp, "%s %d\n", X, Y);} else (*line)++;}
 
 #endif
 
@@ -86,11 +86,11 @@ void addParam(TreeNode *tree, VarTable *varTable, int checkFlag) {
   TreeNode *temp = tree->child;
   while (temp){
     if (checkFlag==0){
-      printf(" %s", temp->child->sibling->literal);
+      fprintf(out_fp, " %s", temp->child->sibling->literal);
     }
     temp = temp->sibling;
   }
-  if (checkFlag==0) printf("\n");
+  if (checkFlag==0) fprintf(out_fp, "\n");
 }
 
 void addVar(TreeNode *tree, VarTable *varTable) {
@@ -445,7 +445,7 @@ void funcGen(TreeNode *tree, FuncTable *funcTable, int *line, int checkFlag) {
   if (tree->nodeKind == functiondef_NodeKind){
     //TODO: dulplicate function def check
     funcTable->returnNode = tree->child;
-    if (checkFlag==0) printf("%s",funcTable->returnNode->child->sibling->literal);
+    if (checkFlag==0) fprintf(out_fp, "%s",funcTable->returnNode->child->sibling->literal);
     TreeNode *temp = tree->child->sibling;
     // temp is funcbody
     if (temp->nodeKind == function_body_NodeKind){
@@ -471,7 +471,7 @@ void codeGen(TreeNode *tree, FuncTable *funcTable, int *line, char *inputFilePat
   memcpy(outputFilePath, &inputFilePath[0], strlen(inputFilePath)-3);
   memcpy(outputFilePath + strlen(inputFilePath)-3, ".luo", 4);
   outputFilePath[strlen(inputFilePath)+1] = '\0';
-  #ifdef _LUNAC_MACROS_
+  #ifdef _LUNAC_DEBUG_
   printf("Saving to :%s\n", outputFilePath);
   #endif
 
@@ -487,7 +487,7 @@ void codeGen(TreeNode *tree, FuncTable *funcTable, int *line, char *inputFilePat
   FuncTable *f_tail = funcTable;
   while (root) {
     if (root->nodeKind == main_function_NodeKind) {
-      printf("main\n");
+      fprintf(out_fp, "main\n");
       int start_line = *line;
       if (f_tail->blockTable==NULL)
         f_tail->blockTable = makeNewBlockTable();

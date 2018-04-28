@@ -836,7 +836,7 @@ int main(int argc, char** argv){
 	  	}
   	}
 
-  	#ifdef _LUNAC_MACROS_
+  	#ifdef _LUNAC_DEBUG_
   		printf("Loading from :%s\n", argv[1]);
   	#endif
 

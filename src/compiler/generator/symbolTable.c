@@ -1,23 +1,24 @@
 #include "symbolTable.h"
 
 #define NULL_ERROR {printf("error null in line: %d\n", tree->line_no); exit(1); }
-#define OUTPUT_CMD(X) {if (checkFlag==0) {printf("%d ", *line); (*line)++; printf(X); printf("\n");} else (*line)++;}
+
+FILE *out_fp;
 
 #ifdef _LUNAC_DEBUG_
 
+#define OUTPUT_CMD(X) {if (checkFlag==0) {printf("%d ", *line); (*line)++; printf(X); printf("\n");} else (*line)++;}
 #define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){printf("%d ", *line); (*line)++; printf(X, Y); printf("\n");} else (*line)++;} 
 #define COMPILE_ERROR(X,Y) {printf("error: line %d ", Y); printf(X); printf("\n");}
 #define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){printf("%d ", *line); (*line)++; printf("CALL "); printf("%s %d\n", X, Y);} else (*line)++;}
 
 #else
 
+#define OUTPUT_CMD(X) {if (checkFlag==0) { (*line)++; printf(X); printf("\n");} else (*line)++;}
 #define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){ (*line)++; printf(X, Y); printf("\n");} else (*line)++;} 
 #define COMPILE_ERROR(X,Y) {printf("error: line %d ", Y); printf(X); printf("\n");}
 #define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){ (*line)++; printf("CALL "); printf("%s %d\n", X, Y);} else (*line)++;}
 
 #endif
-
-
 
 void blockGen(const TreeNode *tree, const FuncTable *funcTable, BlockTable *blockTable, int *line, int checkFlag);
 void expression(const TreeNode *tree, const FuncTable *funcTable, BlockTable *blockTable, int *line, int checkFlag);
@@ -463,9 +464,24 @@ void funcGen(TreeNode *tree, FuncTable *funcTable, int *line, int checkFlag) {
   }
 }
 
-void codeGen(TreeNode *tree, FuncTable *funcTable, int *line) {
-  //printf("tree: %s\n", nodeKindStr[tree->nodeKind]);
-    if (tree == NULL|| tree->nodeKind!=file_NodeKind) return;
+void codeGen(TreeNode *tree, FuncTable *funcTable, int *line, char *inputFilePath) {
+  //Setting output file path
+  //Will automatically generate output file to input file's directory
+  char outputFilePath[256];
+  memcpy(outputFilePath, &inputFilePath[0], strlen(inputFilePath)-3);
+  memcpy(outputFilePath + strlen(inputFilePath)-3, ".luo", 4);
+  outputFilePath[strlen(inputFilePath)+1] = '\0';
+  #ifdef _LUNAC_MACROS_
+  printf("Saving to :%s\n", outputFilePath);
+  #endif
+
+  out_fp = fopen(outputFilePath, "w");
+  if(out_fp == NULL){
+    printf("Output file cannot be opened. Please check your file path.\n");
+    exit(1);
+  }
+
+  if (tree == NULL|| tree->nodeKind!=file_NodeKind) return;
   TreeNode *root = tree;
   root = root->child;
   FuncTable *f_tail = funcTable;
@@ -497,6 +513,10 @@ void codeGen(TreeNode *tree, FuncTable *funcTable, int *line) {
       }
     }
   }
+
+  //Closing output file
+  fclose(out_fp);
+  return;
 }
 
 int codeGenBlock(TreeNode *tree, FuncTable *funcTable, BlockTable *blockTable){

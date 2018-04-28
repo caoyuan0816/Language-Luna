@@ -135,14 +135,10 @@ int commenteof()
 }
 
 int openFile(int argc, char** argv){
-  if (argc != 2){
-    printf("the input file format is not correct!\n");
-    exit(1);
-  }
 
   yyin = fopen(argv[1], "r");
   if (!yyin){
-    printf("open input file failed!\n");
+    printf("Output file cannot be opened.\nPlease check your file path.\n");
     exit(1);
   }
   return 0;

@@ -812,17 +812,48 @@ void printThisTree(TreeNode * t, int *uncle, int level) {
 }
 
 int main(int argc, char** argv){
-  errorOccur = 0;
-  errorOccur = openFile(argc, argv);
-  yyparse();
-  int uncle[200]={0};
 
-#ifdef _LUNAC_DEBUG_
-  printThisTree(tree, uncle, 0);
-#endif
+	//Checking arguments number
+	if (argc != 2){
+	    printf("Cannot find input file\n");
+	    printf("Usage: lunac [input_file.lu]\n");
+	    exit(1);
+  	}
 
-  FuncTable *funcTable = makeNewFuncTable();
-  int line =0;
-  codeGen(tree, funcTable, &line);
-  return 0;
+  	//Checking file name
+  	if(strlen(argv[1]) <= 3){
+  		printf("Suffix of input file must be *.lu\n");
+  		printf("Please check your input file format.\n");
+  		exit(1);
+  	}else{
+  		char file_suf[4];
+	  	memcpy(file_suf, &(argv[1][strlen(argv[1])-3]), 3);
+	  	file_suf[3] = '\0';
+	  	if(strcmp(file_suf, ".lu") != 0){
+	  		printf("Suffix of input file must be *.lu\n");
+	  		printf("Please check your input file format.\n");
+	  		exit(1);
+	  	}
+  	}
+
+  	#ifdef _LUNAC_MACROS_
+  		printf("Loading from :%s\n", argv[1]);
+  	#endif
+
+  	//Parsing
+	errorOccur = 0;
+	errorOccur = openFile(argc, argv);
+	yyparse();
+	int uncle[200]={0};
+
+	//Debug information
+	#ifdef _LUNAC_DEBUG_
+	    printThisTree(tree, uncle, 0);
+	#endif
+
+	//Byte code generating
+	FuncTable *funcTable = makeNewFuncTable();
+	int line =0;
+	codeGen(tree, funcTable, &line, argv[1]);
+	return 0;
 }

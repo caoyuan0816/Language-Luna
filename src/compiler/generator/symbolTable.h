@@ -38,7 +38,7 @@ BlockTable *makeNewBlockTable();
 FuncTable *makeNewFuncTable();
 
 void funcGen(TreeNode *, FuncTable *, int *line, int);
-void codeGen(TreeNode *, FuncTable *, int *line);
+void codeGen(TreeNode *, FuncTable *, int *line, char *inputFilePath);
 
 void releaseVarTable(VarTable *);
 void releaseBlockTable(BlockTable *);

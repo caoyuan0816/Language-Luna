@@ -178,7 +178,7 @@ JZ 10        | Operand: 1        | Jump if zero, if top element of stack is zero
 RET          | Operand: 0        | Return to parent function
 CALL fun 1   | Operand: 2        | Call function by function name and arguments number
 ---------------------------------------------------------------------
-6. Output Instructions
+6. Termination Instruction
 ---------------------------------------------------------------------
 HALT         | Operand: 0        | Immediately terminate program  
 ---------------------------------------------------------------------

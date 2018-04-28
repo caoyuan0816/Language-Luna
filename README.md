@@ -14,15 +14,14 @@ Lei Zhang: scanner, parser and cmake files
 
 ## System Requirement
 ## Platform
-- Ubuntu(native)
+- Linux (native)
 
 ## Install Directions
-- ~$ Make sure your current dir is `.../SER502-Spring2018-Team4/src/interpreter`
-- ~$ mkdir build
-- ~$ cd build
-- ~$ cmake..
-- ~$ make
-- ~$ bin/luna or bin/lunac
+-  Download SER502-Spring2018-Team4-master.zip from Github
+   ~$ wget https://github.com/lanzhige/SER502-Spring2018-Team4/archive/master.zip
+-  ~$ tar xvf master.tar.gz 
+-  Make sure your current dir is `.../SER502-Spring2018-Team4/src/interpreter`
+- ~$ ./build.sh
 
 ## YouTube Video Link
 ## Tools

@@ -1,0 +1,10 @@
+function int error(int x, int x)
+  int y=0
+  y++
+  z=y
+  int y=z
+end
+
+main()
+  error()
+end

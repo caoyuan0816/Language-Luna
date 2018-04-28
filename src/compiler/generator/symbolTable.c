@@ -375,7 +375,7 @@ void whileStatement(const TreeNode *tree, const FuncTable *funcTable, BlockTable
   boolExpression(tree->child, funcTable, blockTable, line, checkFlag);
   OUTPUT_CMD_P("JZ %d", tree->child->sibling->end_ins_line);
   blockGen(tree->child->sibling, funcTable, blockTable, line, checkFlag);
-  OUTPUT_CMD_P("JZ %d", tree->child->start_ins_line);
+  OUTPUT_CMD_P("JMP %d", tree->child->start_ins_line);
   if (checkFlag==1){
     tree->child->sibling->end_ins_line = *line;
   }
@@ -399,7 +399,7 @@ void forStatement(const TreeNode *tree, const FuncTable *funcTable, BlockTable *
       OUTPUT_CMD_P("LDV %s", temp->literal);
       OUTPUT_CMD_P("LDC %s", temp->sibling->sibling->sibling->literal);
       OUTPUT_CMD("ADD");
-      OUTPUT_CMD_P("JZ %d", temp->start_ins_line);
+      OUTPUT_CMD_P("JMP %d", temp->start_ins_line);
       if (checkFlag ==1){
         temp->end_ins_line = *line;
       }

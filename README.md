@@ -1,4 +1,4 @@
-# SER502-Spring2018-Team4
+# Laanguage Luna
 
 ## Team Members
 - Yuan Cao [(@caoyuan0816)](https://github.com/caoyuan0816)

@@ -16,14 +16,6 @@ Lei Zhang: scanner, parser and cmake files
 ## Platform
 - Linux (native)
 
-## Install Directions
--  Download SER502-Spring2018-Team4-master.zip from Github
-   ~$ wget https://github.com/lanzhige/SER502-Spring2018-Team4/archive/master.zip
--  ~$ tar xvf master.tar.gz 
--  Make sure your current dir is `.../SER502-Spring2018-Team4/src/interpreter`
-- ~$ ./build.sh
-
-## YouTube Video Link
 ## Tools
 [Doxygen](https://en.wikipedia.org/wiki/Doxygen), a tool for writing software reference documentation. The documentation is written within code, and is thus relatively easy to keep up to date. Doxygen can cross reference documentation and code, so that the reader of a document can easily refer to the actual code. <br />
 We use _doxygen_ to comments our code and create a documentation.
@@ -40,14 +32,23 @@ We use bison to  analyze a sequence of tokens to determine its grammatical struc
 [valgrind](http://valgrind.org/) is an instrumentation framework for building dynamic analysis tools. There are Valgrind tools that can automatically detect many memory management and threading bugs, and profile your programs in detail. You can also use Valgrind to build new tools. <br />
 (todo ..descirpt ..)
 
+## Install Directions
+-  Download SER502-Spring2018-Team4-master.zip from Github
+   ~$ wget https://github.com/lanzhige/SER502-Spring2018-Team4/archive/master.zip
+-  ~$ tar xvf master.tar.gz 
+-  Make sure your current dir is `.../SER502-Spring2018-Team4/src/interpreter`
+- ~$ ./build.sh
+
+## Build and Run Directions
+
+## YouTube Video Link
+
 ## Language Luna
 Luna is a lightweight, static typing, lua-like programming language. Luna provide a Flex and Bison based compiler and a stack based interpreter which called `lunac` and `luna`.
 
-## Install Luna
+## Grammar Rule
 
-## Build and run Luna 
-To build our Luna compiler and runtime, you should go  `.../SER502-Spring2018-Team4/src/interpreter`  and find `build.sh` . Then, <br />
-`~$ ./build.sh`
+
 
 ## Byte Code
 `1.  

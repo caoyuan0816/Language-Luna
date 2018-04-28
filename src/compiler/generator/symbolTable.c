@@ -490,9 +490,7 @@ void funcGen(TreeNode *tree, FuncTable *funcTable, int *line, int checkFlag) {
     // temp is funcbody
     if (temp->nodeKind == function_body_NodeKind){
       if (temp->child->nodeKind==parameter_list_NodeKind){
-        if (funcTable->paramTable==NULL){
-          addParam(temp->child, funcTable, checkFlag);
-        }
+        addParam(temp->child, funcTable, checkFlag);
         temp = temp->child->sibling;
         if (temp->nodeKind!=block_NodeKind) printf("error detecting block: %d\n", temp->line_no);
         if (funcTable->blockTable==NULL) funcTable->blockTable = makeNewBlockTable();

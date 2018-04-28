@@ -696,7 +696,13 @@ real_num :MINUS REALNUMBER {
 	$$ = $2;
 	$$->nodeKind = double_NodeKind;
 	$$->line_no = $1->line_no;
-//TODO: add minus to the string of number
+        int len = strlen($$->literal);
+        char *temp = (char *)malloc((len+2)*sizeof(char));
+        temp[0]='-';
+        strcpy(&temp[1], $$->literal);
+        free($$->literal);
+	$$->literal = temp;
+      //TODO: add minus to the string of number
 	currentline = $$->line_no;
 	releaseNode($1);
 	}|
@@ -713,6 +719,12 @@ int_num : MINUS INTNUM {
 	$$->nodeKind = int_NodeKind;
 	$$->line_no = $1->line_no;
 	currentline = $$->line_no;
+	int len = strlen($$->literal);
+        char *temp = (char *)malloc((len+2)*sizeof(char));
+        temp[0]='-';
+        strcpy(&temp[1], $$->literal);
+        free($$->literal);
+	$$->literal = temp;
 	releaseNode($1);
 	} |
 	INTNUM {
@@ -720,7 +732,7 @@ int_num : MINUS INTNUM {
 	$$->nodeKind = int_NodeKind;
 	$$->line_no = $1->line_no;
 	currentline = $$->line_no;
-	}
+        }
 	;
 
 identifier : IDENTIFIER {

@@ -382,9 +382,6 @@ expression : math_expression {
 	$$->line_no = $1->line_no;
 	$$->child = $1;
 	} |
-	functioncall{
-	$$ = $1;
-	} |
 	error {
 	  printf("expression error detected!\n");
 	}
@@ -436,9 +433,11 @@ term : term mulop num_id {
 	}
 	$3->sibling = $1;
 	$$ = $2;
-	}
-	|
+	} |
 	num_id {
+	$$ = $1;
+	} |
+        functioncall{
 	$$ = $1;
 	}
 	;
@@ -503,7 +502,7 @@ funcbody : LPAREN paramlist RPAREN block END {
 	}
 	;
 
-return_statement : RETURN num_id {
+return_statement : RETURN expression {
 	$$ = makeNewNode();
 	$$->nodeKind = return_NodeKind;
 	$$->child = $2;

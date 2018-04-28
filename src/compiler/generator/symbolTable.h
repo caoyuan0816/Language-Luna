@@ -9,7 +9,7 @@ typedef struct VarTable{
   struct VarTable *sibling;
   struct VarTable *father;
   NodeKind varType;
-  TreeNode *var;
+  char *id;
   int line_no;
 } VarTable;
 

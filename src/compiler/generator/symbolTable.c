@@ -6,10 +6,12 @@ FILE *out_fp;
 
 #ifdef _LUNAC_DEBUG_
 
-#define OUTPUT_CMD(X) {if (checkFlag==0) {(*line)++; fprintf(out_fp, X); fprintf(out_fp, "\n");} else (*line)++;}
+#define OUTPUT_CMD(X) {if (checkFlag==0) {fprintf(out_fp, "%d ", (*line)); (*line)++; fprintf(out_fp, X); fprintf(out_fp, "\n");} else (*line)++;}
 #define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){fprintf(out_fp, "%d ", *line); (*line)++; fprintf(out_fp, X, Y); fprintf(out_fp, "\n");} else (*line)++;} 
 #define COMPILE_ERROR(X,Y) {fprintf(out_fp, "error: line %d ", Y); fprintf(out_fp, X); fprintf(out_fp, "\n");}
-#define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){out_fp, fprintf("%d ", *line); (*line)++; fprintf(out_fp, "CALL "); fprintf(out_fp, "%s %d\n", X, Y);} else (*line)++;}
+#define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){fprintf(out_fp, "%d ", *line); (*line)++; fprintf(out_fp, "CALL "); fprintf(out_fp, "%s %d\n", X, Y);} else (*line)++;}
+#define UNRESOLVED_REF(X, Y){ fprintf(stderr, "error line %d: unresolved reference %s\n", Y, X);}
+#define DULP_DEF_ERROR(X, Y){ fprintf(stderr, "error line %d: dulplicate definition of %s\n", Y, X);}
 
 #else
 
@@ -17,8 +19,11 @@ FILE *out_fp;
 #define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){ (*line)++; fprintf(out_fp, X, Y); fprintf(out_fp, "\n");} else (*line)++;} 
 #define COMPILE_ERROR(X,Y) {fprintf(out_fp, "error: line %d ", Y); fprintf(out_fp, X); fprintf(out_fp, "\n");}
 #define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){ (*line)++; fprintf(out_fp, "CALL "); fprintf(out_fp, "%s %d\n", X, Y);} else (*line)++;}
+#define UNRESOLVED_REF(X, Y){ fprintf(stderr, "error line %d: unresolved reference %s\n", Y, X);}
+#define DULP_DEF_ERROR(X, Y){ fprintf(stderr, "error line %d: dulplicate definition of %s\n", Y, X);}
 
 #endif
+#include <stdbool.h>
 
 void blockGen(const TreeNode *tree, const FuncTable *funcTable, BlockTable *blockTable, int *line, int checkFlag);
 void expression(const TreeNode *tree, const FuncTable *funcTable, BlockTable *blockTable, int *line, int checkFlag);
@@ -37,7 +42,7 @@ VarTable *makeNewVarTable(){
 
   t->varType = variable_NodeKind;
 
-  t->var = NULL;
+  t->id = NULL;
   t->line_no = 0;
 
   return t;
@@ -82,11 +87,53 @@ FuncTable *makeNewFuncTable(){
   return t;
 }
 
-void addParam(TreeNode *tree, VarTable *varTable, int checkFlag) {
+bool inVarTable(const char *id, const VarTable *varTable){
+  if (varTable==NULL) return false;
+  if (strcmp(varTable->id, id)==0||inVarTable(id, varTable->sibling)) return true;
+  return false;
+}
+
+bool inBlockTable(const char *id, const BlockTable *blockTable){
+  if (blockTable==NULL) return false;
+  if (inVarTable(id, blockTable->varTable)) return true;
+  return false;
+}
+
+bool inFuncTable(const char *id, const FuncTable *funcTable){
+  if (funcTable==NULL) return false;
+  if (inVarTable(id, funcTable->paramTable)) return true;
+  return false;
+}
+
+void addVarBlockTable(char *id, BlockTable *blockTable){
+  VarTable *temp = makeNewVarTable();
+  temp->id = id;
+  temp->sibling = blockTable->varTable;
+  blockTable->varTable = temp;
+}
+
+void checkIdentifier(const char *id, const FuncTable *funcTable, int line_no, int checkFlag){
+  if (checkFlag==0) return;
+  if (funcTable==NULL||funcTable->blockTable==NULL) UNRESOLVED_REF(id, line_no);
+  if (inFuncTable(id, funcTable)) return;
+  if (inBlockTable(id, funcTable->blockTable)) return;
+  UNRESOLVED_REF(id, line_no);
+}
+
+void addParam(TreeNode *tree, FuncTable *funcTable, int checkFlag) {
   TreeNode *temp = tree->child;
   while (temp){
     if (checkFlag==0){
       fprintf(out_fp, " %s", temp->child->sibling->literal);
+    } else {
+      if (inFuncTable(temp->child->sibling->literal, funcTable)){
+        DULP_DEF_ERROR(temp->child->sibling->literal, temp->child->sibling->line_no);
+      } else {
+        VarTable *varTableTemp = makeNewVarTable();
+        varTableTemp->id = temp->child->sibling->literal;
+        varTableTemp->sibling = funcTable->paramTable;
+        funcTable->paramTable = varTableTemp;
+      }
     }
     temp = temp->sibling;
   }
@@ -97,11 +144,11 @@ void addVar(TreeNode *tree, VarTable *varTable) {
   if (tree == NULL) return;
   // TODO: add type check if still have time
   if (tree->nodeKind==variable_NodeKind){
-    TreeNode *temp = tree;
+    TreeNode *temp = tree->child;
     VarTable *table = varTable;
     while (temp!=NULL){
-      if(table->var==NULL){
-        table->var = temp;
+      if(table->id==NULL){
+        table->id = temp->sibling->literal;
       } else{
         
       }
@@ -168,6 +215,11 @@ void mathExpression(const TreeNode *tree, const FuncTable *funcTable, BlockTable
       OUTPUT_CMD("DIV");
       break;
 
+    case functioncall_NodeKind:
+      mathExpression(tree->sibling, funcTable, blockTable, line, checkFlag);
+      functioncall(tree, funcTable, blockTable, line, checkFlag);
+      break;
+
     default:
       COMPILE_ERROR("unknow math expression", tree->line_no);
   }  
@@ -178,6 +230,7 @@ void identifierAssign(const TreeNode *tree, const FuncTable *funcTable, BlockTab
   // TODO: type check and symbol table check
   TreeNode *identifier = tree->child;
   TreeNode *assign = identifier->sibling;
+  checkIdentifier(identifier->literal, funcTable, identifier->line_no, checkFlag);
   switch (assign->nodeKind){
     case true_NodeKind:
       OUTPUT_CMD("LDC 1");
@@ -191,11 +244,6 @@ void identifierAssign(const TreeNode *tree, const FuncTable *funcTable, BlockTab
 
     case math_expression_NodeKind:
       mathExpression(assign->child, funcTable, blockTable, line, checkFlag);
-      OUTPUT_CMD_P("ASN %s", identifier->literal);
-      break;
-    
-    case functioncall_NodeKind:
-      functioncall(assign, funcTable, blockTable, line, checkFlag);
       OUTPUT_CMD_P("ASN %s", identifier->literal);
       break;
 
@@ -213,6 +261,13 @@ void defineAssign(const TreeNode *tree, const FuncTable *funcTable, BlockTable *
   // TODO: type check and symbol table check
   TreeNode *identifier = tree->child->child->sibling;
   TreeNode *assign = tree->child->sibling;
+  if (checkFlag){
+    if (inBlockTable(identifier->literal, blockTable)){
+      DULP_DEF_ERROR(identifier->literal, identifier->line_no);
+    } else {
+      addVarBlockTable(identifier->literal, blockTable);
+    }
+  }
   switch (assign->nodeKind){
     case true_NodeKind:
       OUTPUT_CMD("LDC 1");
@@ -226,11 +281,6 @@ void defineAssign(const TreeNode *tree, const FuncTable *funcTable, BlockTable *
 
     case math_expression_NodeKind:
       mathExpression(assign->child, funcTable, blockTable, line, checkFlag);
-      OUTPUT_CMD_P("ASN %s", identifier->literal);
-      break;
-    
-    case functioncall_NodeKind:
-      functioncall(assign, funcTable, blockTable, line, checkFlag);
       OUTPUT_CMD_P("ASN %s", identifier->literal);
       break;
 
@@ -248,10 +298,6 @@ void expression(const TreeNode *tree, const FuncTable *funcTable, BlockTable *bl
   switch(tree->nodeKind){
     case math_expression_NodeKind:
       mathExpression(tree->child, funcTable, blockTable, line, checkFlag);
-      break;
-
-    case functioncall_NodeKind:
-      functioncall(tree, funcTable, blockTable, line, checkFlag);
       break;
 
     default:
@@ -373,21 +419,8 @@ void forStatement(const TreeNode *tree, const FuncTable *funcTable, BlockTable *
 
 void returnStatement(const TreeNode *tree, const FuncTable *funcTable, BlockTable *blockTable, int *line, int checkFlag){
   TreeNode *temp = tree->child;
-  switch(temp->nodeKind){
-    case int_NodeKind:
-    case double_NodeKind:
-      OUTPUT_CMD_P("LDC %s", temp->literal);
-      OUTPUT_CMD("RET");
-      break;
-
-    case id_NodeKind:
-      OUTPUT_CMD_P("LDV %s", temp->literal);
-      OUTPUT_CMD("RET");
-      break;
-
-    default:
-      printf("line %d illegal return statement\n", tree->line_no);
-  }
+  mathExpression(temp->child, funcTable, blockTable, line, checkFlag);
+  OUTPUT_CMD("RET");
 }
 
 void blockGen(const TreeNode *tree, const FuncTable *funcTable, BlockTable *blockTable, int *line, int checkFlag){
@@ -401,7 +434,14 @@ void blockGen(const TreeNode *tree, const FuncTable *funcTable, BlockTable *bloc
         break;
 
       case unary_assign_NodeKind:
-        
+        OUTPUT_CMD_P("LDV %s", temp->child->sibling->literal);
+        if (temp->child->nodeKind==increase_one_NodeKind){
+          OUTPUT_CMD("LDC 1");
+        } else if (temp->child->nodeKind==decrease_one_NodeKind){
+          OUTPUT_CMD("LDC -1");
+        }
+        OUTPUT_CMD("ADD");
+        OUTPUT_CMD_P("ASN %s", temp->child->sibling->literal);
         break;
 
       case define_assign_NodeKind:
@@ -422,7 +462,7 @@ void blockGen(const TreeNode *tree, const FuncTable *funcTable, BlockTable *bloc
         break;
 
       case do_statement_NodeKind:
-
+        blockGen(temp->child, funcTable, blockTable, line, checkFlag);
         break;
 
       case functioncall_NodeKind:
@@ -451,7 +491,7 @@ void funcGen(TreeNode *tree, FuncTable *funcTable, int *line, int checkFlag) {
     if (temp->nodeKind == function_body_NodeKind){
       if (temp->child->nodeKind==parameter_list_NodeKind){
         if (funcTable->paramTable==NULL){
-          addParam(temp->child, funcTable->paramTable, checkFlag);
+          addParam(temp->child, funcTable, checkFlag);
         }
         temp = temp->child->sibling;
         if (temp->nodeKind!=block_NodeKind) printf("error detecting block: %d\n", temp->line_no);

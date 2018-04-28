@@ -3,10 +3,21 @@
 #define NULL_ERROR {printf("error null in line: %d\n", tree->line_no); exit(1); }
 #define OUTPUT_CMD(X) {if (checkFlag==0) {printf("%d ", *line); (*line)++; printf(X); printf("\n");} else (*line)++;}
 
+#ifdef _LUNAC_DEBUG_
+
 #define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){printf("%d ", *line); (*line)++; printf(X, Y); printf("\n");} else (*line)++;} 
 #define COMPILE_ERROR(X,Y) {printf("error: line %d ", Y); printf(X); printf("\n");}
-
 #define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){printf("%d ", *line); (*line)++; printf("CALL "); printf("%s %d\n", X, Y);} else (*line)++;}
+
+#else
+
+#define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){ (*line)++; printf(X, Y); printf("\n");} else (*line)++;} 
+#define COMPILE_ERROR(X,Y) {printf("error: line %d ", Y); printf(X); printf("\n");}
+#define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){ (*line)++; printf("CALL "); printf("%s %d\n", X, Y);} else (*line)++;}
+
+#endif
+
+
 
 void blockGen(const TreeNode *tree, const FuncTable *funcTable, BlockTable *blockTable, int *line, int checkFlag);
 void expression(const TreeNode *tree, const FuncTable *funcTable, BlockTable *blockTable, int *line, int checkFlag);
@@ -453,7 +464,7 @@ void funcGen(TreeNode *tree, FuncTable *funcTable, int *line, int checkFlag) {
 }
 
 void codeGen(TreeNode *tree, FuncTable *funcTable, int *line) {
-  printf("tree: %s\n", nodeKindStr[tree->nodeKind]);
+  //printf("tree: %s\n", nodeKindStr[tree->nodeKind]);
     if (tree == NULL|| tree->nodeKind!=file_NodeKind) return;
   TreeNode *root = tree;
   root = root->child;

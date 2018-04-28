@@ -3,6 +3,7 @@
  * Luna grammar in Yacc format, based originally on
  * BNF of Luna language
  */
+#include "macros.h"
 #include "common.h"
 #include "symbolTable.h"
 #include <stdio.h>
@@ -747,18 +748,6 @@ void printTree(TreeNode *root, int bias){
   }
 }
 
-int main(int argc, char** argv){
-  errorOccur = 0;
-  errorOccur = openFile(argc, argv);
-  yyparse();
-  int uncle[200]={0};
-  printThisTree(tree, uncle, 0);
-  FuncTable *funcTable = makeNewFuncTable();
-  int line =0;
-  codeGen(tree, funcTable, &line);
-  return 0;
-}
-
 int yyerror(char *s){
   fprintf(stderr, "%s\n", s);
   errorOccur++;
@@ -820,4 +809,20 @@ void printThisTree(TreeNode * t, int *uncle, int level) {
 
     k = k->sibling;
   }
+}
+
+int main(int argc, char** argv){
+  errorOccur = 0;
+  errorOccur = openFile(argc, argv);
+  yyparse();
+  int uncle[200]={0};
+
+#ifdef _LUNAC_DEBUG_
+  printThisTree(tree, uncle, 0);
+#endif
+
+  FuncTable *funcTable = makeNewFuncTable();
+  int line =0;
+  codeGen(tree, funcTable, &line);
+  return 0;
 }

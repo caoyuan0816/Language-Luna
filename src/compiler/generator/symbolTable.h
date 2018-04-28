@@ -1,6 +1,7 @@
 #ifndef SYMBOLTABLE_H_
 #define SYMBOLTABLE_H_
 
+#include "macros.h"
 #include "common.h"
 
 typedef struct VarTable{

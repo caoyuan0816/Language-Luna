@@ -7,7 +7,7 @@ FILE *out_fp;
 #ifdef _LUNAC_DEBUG_
 
 #define OUTPUT_CMD(X) {if (checkFlag==0) {fprintf(out_fp, "%d ", (*line)); (*line)++; fprintf(out_fp, X); fprintf(out_fp, "\n");} else (*line)++;}
-#define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){fprintf(out_fp, "%d ", *line); (*line)++; fprintf(out_fp, X, Y); fprintf(out_fp, "\n");} else (*line)++;} 
+#define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){fprintf(out_fp, "%d ", *line); (*line)++; fprintf(out_fp, X, Y); fprintf(out_fp, "\n");} else (*line)++;}
 #define COMPILE_ERROR(X,Y) {fprintf(out_fp, "error: line %d ", Y); fprintf(out_fp, X); fprintf(out_fp, "\n");}
 #define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){fprintf(out_fp, "%d ", *line); (*line)++; fprintf(out_fp, "CALL "); fprintf(out_fp, "%s %d\n", X, Y);} else (*line)++;}
 #define UNRESOLVED_REF(X, Y){ fprintf(stderr, "error line %d: unresolved reference %s\n", Y, X);}
@@ -16,7 +16,7 @@ FILE *out_fp;
 #else
 
 #define OUTPUT_CMD(X) {if (checkFlag==0) { (*line)++; fprintf(out_fp, X); fprintf(out_fp, "\n");} else (*line)++;}
-#define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){ (*line)++; fprintf(out_fp, X, Y); fprintf(out_fp, "\n");} else (*line)++;} 
+#define OUTPUT_CMD_P(X,Y) {if (checkFlag==0){ (*line)++; fprintf(out_fp, X, Y); fprintf(out_fp, "\n");} else (*line)++;}
 #define COMPILE_ERROR(X,Y) {fprintf(out_fp, "error: line %d ", Y); fprintf(out_fp, X); fprintf(out_fp, "\n");}
 #define FUNC_CALL_CMD(X,Y) {if (checkFlag==0){ (*line)++; fprintf(out_fp, "CALL "); fprintf(out_fp, "%s %d\n", X, Y);} else (*line)++;}
 #define UNRESOLVED_REF(X, Y){ fprintf(stderr, "error line %d: unresolved reference %s\n", Y, X);}
@@ -150,7 +150,7 @@ void addVar(TreeNode *tree, VarTable *varTable) {
       if(table->id==NULL){
         table->id = temp->sibling->literal;
       } else{
-        
+
       }
     }
   }
@@ -222,7 +222,7 @@ void mathExpression(const TreeNode *tree, const FuncTable *funcTable, BlockTable
 
     default:
       COMPILE_ERROR("unknow math expression", tree->line_no);
-  }  
+  }
 }
 
 void identifierAssign(const TreeNode *tree, const FuncTable *funcTable, BlockTable *blockTable, int *line, int checkFlag) {
@@ -498,7 +498,7 @@ void funcGen(TreeNode *tree, FuncTable *funcTable, int *line, int checkFlag) {
       }
     } else {
       NULL_ERROR
-    }  
+    }
   }
 }
 
@@ -532,7 +532,7 @@ void codeGen(TreeNode *tree, FuncTable *funcTable, int *line, char *inputFilePat
       blockGen(root->child, f_tail, f_tail->blockTable, line, 1);
       *line = start_line;
       blockGen(root->child, f_tail, f_tail->blockTable, line, 0);
-      
+
       break;
     } else if (root->nodeKind == functiondef_list_NodeKind) {
       TreeNode *funcList = root->child;
@@ -551,7 +551,7 @@ void codeGen(TreeNode *tree, FuncTable *funcTable, int *line, char *inputFilePat
       }
     }
   }
-  fprint(out_fp, "HALT\n");
+  fprintf(out_fp, "HALT\n");
 
   //Closing output file
   fclose(out_fp);

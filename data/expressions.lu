@@ -1,0 +1,37 @@
+main()
+
+    /*
+        Variable Declaration Test
+    */
+    int a = -2       //Simple int variable declaration
+    a++              //++ operator will modify a to -1
+    int b = 1 + 1    //Variable declaration by expression 
+    int c = a + b    //Variable declaration by variable expression
+
+    print(a)         //a = -1
+    print(b)         //b = 2
+    print(c)         //c = 1
+
+    double x = 1.2   //Simple double variable declaration
+    double y = 2.3   //declaration by expression
+    double z = x * y //declaration by variable expression
+    
+    print(x)         //x = 1.0
+    print(y)         //y = 2.0
+    print(z)         //z = 0.5
+
+    bool t = true    //Simple bool variable declaration
+    bool f = false
+
+    print(t)
+
+    /*
+        Math Expressions Test
+    */
+
+    print(a+c)       //Addition expression
+    print(a+c*a*a)   //Mixed addition and multiplication
+    print(a*x)       //Multiply int by double, result is double
+    print(b/y)       //int divide double, result is double
+
+end

@@ -49,6 +49,7 @@ void VirtualMachine::loadInstructions(const char* bytecodeFileName){
             	Instruction ins(commandIndex, opStrList);
             	curFrame->pushInstruction(ins);
             }else{//function name, create new
+                //std::cout << command << std::endl;
             	curFrame = new Frame(command.c_str(), opStrList,
             		[this](std::string frameName, std::map<std::string, Operand*> *callArgs){return this->runFrame(frameName, callArgs);},
             		[this](Operand &op){return this->frameReturn(op);},

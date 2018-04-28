@@ -86,7 +86,8 @@ digit ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 id ::= [a-z|A-Z]
 ```
 ## Byte Code
-`1.  
+```
+1.  
 2. assignment operation  
 ldv  
 ldc  
@@ -104,7 +105,8 @@ not
 jmp  
 jz  
 halt  
-ret`  
+ret
+```
 
 
 

@@ -33,7 +33,7 @@ Luna is a lightweight, static typing, lua-like programming language. Luna provid
 ### Install
 - `cd build && sudo make install && cd ..`, now you can use `luna` and `lunac` anywhere.
 
-## Tools We used to Develop Language Luna
+## Tools We Used to Develop Language Luna
 [CMake](https://cmake.org/)  is an open-source, cross-platform family of tools designed to build, test and package software. CMake is used to control the software compilation process using simple platform and compiler independent configuration files, and generate native makefiles and workspaces that can be used in the compiler environment of your choice.<br />
 We use CMake to generate the makefiles.
 
@@ -51,7 +51,6 @@ We use _doxygen_ to comments our code and create a documentation.
 
 ## Language Design
 ### Grammar 
-A means 0 or more As, and [A] means an optional A
 ```
 program ::= {functiondef} "main" '(' [var ',' var] ')' block "end" 
 block ::= {stat} [retstat] 
@@ -125,7 +124,7 @@ CALL /*Call function*/
 ```
 
 ## Examples
-### Fibonacci (`./data/fibonacci.lu`)
+### Fibonacci (`cat data/fibonacci.lu`)
 ```
 function int fibonacci(int n)
     if (n==1)

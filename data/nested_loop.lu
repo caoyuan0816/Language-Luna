@@ -1,0 +1,14 @@
+main()
+
+    int t = 0
+    
+    while (t < 3) do
+        for i = 1, 4, 1 do
+            for j = 1, 4, 1 do
+                print(i*j)
+            end
+        end
+        t++
+    end
+
+end

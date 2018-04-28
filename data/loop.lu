@@ -1,12 +1,29 @@
 main()
+    
+    int i = 0
+    /*
+        Test For loop
+    */
+
+    //For loop with step 1
     for i = 0, 5, 1 do
         print(i)
     end
 
-    int i = 0
+    //For loop with step 2
+    for i = 0, 5, 2 do
+        print(i)
+    end
+
+    /*
+       Test while loop 
+    */
+
+    i = 0
     while (i < 5)
     do
        print(i)
        i++
     end
+
 end

@@ -1,0 +1,19 @@
+function int gcd(int x, int y)
+  if (x==y)
+    return x
+  else
+    if (x>y)
+      int z=x-y
+      return gcd(y,z)
+    else
+      z=y-x
+      return gcd(x,z)
+    end
+  end
+end
+
+main()
+  int a = 98
+  int b = 56
+  print(gcd(a,b))
+end

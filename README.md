@@ -51,25 +51,25 @@ To build our Luna compiler and runtime, you should go  `.../SER502-Spring2018-Te
 `~$ ./build.sh`
 
 ## Byte Code
-`1. 
-2. assignment operation
-ldv
-ldc
-asn
-dup
-3. arithmetic operation
-add
-sub
-mul
-div
-4. logic operation
-and 
-or
-not
-jmp
-jz
-halt
-ret`
+`1.  
+2. assignment operation  
+ldv  
+ldc  
+asn  
+dup  
+3. arithmetic operation  
+add  
+sub  
+mul  
+div  
+4. logic operation  
+and   
+or  
+not  
+jmp  
+jz  
+halt  
+ret`  
 
 
 

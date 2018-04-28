@@ -77,4 +77,11 @@ ret`
 ## How to write a Luna program
 Here are some examples to start Luna programming:
 ```
+//return sum of two values
+function int sum(int x, int y)
+    int z = 0
+    z = x + y
+    return z
+end
+
 ```

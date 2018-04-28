@@ -140,6 +140,9 @@ statement : assign_statement {
 	if_statement {
 	$$ = $1;
 	}|
+        return_statement{
+        $$ = $1;
+        }|
 	error {
 	  printf("statement error detected\n");
 	  printf("line number: %d\n", $$->line_no);
@@ -466,7 +469,7 @@ functiondef : FUNCTION variable funcbody{
 	}
 	;
 
-funcbody : LPAREN paramlist RPAREN block return_statement END {
+funcbody : LPAREN paramlist RPAREN block END {
 	$$ = makeNewNode();
 	$$->nodeKind = function_body_NodeKind;
 	TreeNode *temp = makeNewNode();
@@ -476,16 +479,13 @@ funcbody : LPAREN paramlist RPAREN block return_statement END {
 	currentline = $1->line_no;
 	$$->line_no = currentline;
 	if ($4!=NULL){
-        temp->sibling = $4;
-	  $4->sibling = $5;
-	} else {
-	  temp->sibling = $5;
+          temp->sibling = $4;
 	}
 	releaseNode($1);
 	releaseNode($3);
-	releaseNode($6);
+	releaseNode($5);
 	}|
-	LPAREN RPAREN block return_statement END{
+	LPAREN RPAREN block END{
 	$$ = makeNewNode();
 	$$->nodeKind = function_body_NodeKind;
 	TreeNode *temp = makeNewNode();
@@ -495,13 +495,10 @@ funcbody : LPAREN paramlist RPAREN block return_statement END {
 	$$->line_no = currentline;
 	if ($3!=NULL){
 	  temp->sibling = $3;
-	  $3->sibling = $4;
-	} else {
-	  temp->sibling = $4;
 	}
 	releaseNode($1);
 	releaseNode($2);
-	releaseNode($5);
+	releaseNode($4);
 	}
 	;
 
@@ -699,6 +696,7 @@ real_num :MINUS REALNUMBER {
 	$$ = $2;
 	$$->nodeKind = double_NodeKind;
 	$$->line_no = $1->line_no;
+//TODO: add minus to the string of number
 	currentline = $$->line_no;
 	releaseNode($1);
 	}|

@@ -8,6 +8,12 @@
 
 ## YouTube Video Link
 
+## Bonus Point
+- Function Defination and Call (see `./data/fibonacci.lu`)
+- Function Recursion (see `./data/fibonacci.lu`)
+- Build-in Print Function (see `./data/fibonacci.lu`)
+- Static Type Checking (see `./data/error.lu`)
+
 ## Language Luna
 Luna is a lightweight, static typing, lua-like programming language. Luna provide a Flex and Bison based compiler and a stack based interpreter which called `lunac` and `luna`.
 

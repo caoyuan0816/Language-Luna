@@ -184,6 +184,9 @@ HALT         | Operand: 0        | Immediately terminate program
 ---------------------------------------------------------------------
 ```
 
+### Virtual Machine Design
+![vmdesign](./doc/VirtualMachine.jpeg)
+
 ## Examples
 ### Fibonacci (`cat data/fibonacci.lu`)
 ```

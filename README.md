@@ -7,6 +7,7 @@
 - Zhang Lei [(@lanzhige)](https://github.com/lanzhige)
 
 ## YouTube Video Link
+[https://youtu.be/EkllWYdYX_k](https://youtu.be/EkllWYdYX_k)
 
 ## Bonus Point
 - Function Defination and Call (see `./data/fibonacci.lu`)

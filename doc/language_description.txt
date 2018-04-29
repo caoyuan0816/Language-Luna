@@ -1,3 +1,6 @@
+!That is the grammar rule description
+!To get grammar details, please see ./doc/SER502_Project_Milestone2.pdf
+
 file :              functiondef_list MAIN LPAREN variable COMMA variable RPAREN block END |
                     functiondef_list MAIN LPAREN RPAREN block END ;
 

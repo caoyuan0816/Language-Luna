@@ -15,7 +15,6 @@ Luna is a lightweight, static typing, lua-like programming language. Luna provid
 ### Platform
 - Linux
 - MacOS
-- Windows (git-bash) (not recommend)
 
 ### Prerequierment
 - cmake (with c & c++ compiler support) (with c++11 feature)
@@ -29,6 +28,9 @@ Luna is a lightweight, static typing, lua-like programming language. Luna provid
 
 ### Compile
 - `./build.sh`, if the build process is failed, there will be an error message in the screen.
+
+### Run Tests
+- `./run,sh`, to run all test files inside directory data.
 
 ### Install
 - `cd build && sudo make install && cd ..`, now you can use `luna` and `lunac` anywhere.

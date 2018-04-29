@@ -63,7 +63,8 @@ mkdir "${ROOT_PATH}/build"
 cd "${ROOT_PATH}/build"
 cmake .. && make
 cd ${ROOT_PATH}
-cp $(echo "${ROOT_PATH}/build/bin/*") "${ROOT_PATH}"
+cp bin/lunac ../
+cp bin/luna  ../
 
 # Finished
 echo ""

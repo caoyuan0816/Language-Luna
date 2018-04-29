@@ -1,0 +1,39 @@
+------------------------------------------------------------------------------
+1. Assignment Instrctions 
+------------------------------------------------------------------------------
+LDV a        | Operand: 1        | Load the variable into stack using given name
+LDC 10       | Operand: 1        | Load the constant into stack
+ASN x        | Operand: 1        | Assign top element of stack to given variable name
+DUP          | Operand: 0        | Duplicate the top element of stack
+---------------------------------------------------------------------
+2. Arithmetic Instrctions (Pop two elements from stack, add them, push result back)
+---------------------------------------------------------------------
+ADD          | Operand: 0        | Addition.
+SUB          | Operand: 0        | Substraction.
+MUL          | Operand: 0        | Multiplication.
+DIV          | Operand: 0        | Division.
+---------------------------------------------------------------------
+3. Comparison Instructions (Pop two elements from stack, check relationship between them, push result back.
+)
+---------------------------------------------------------------------
+GT           | Operand: 0        | a > b
+GE           | Operand: 0        | a >= b
+LT           | Operand: 0        | a < b
+LE           | Operand: 0        | a <= b
+EQ           | Operand: 0        | a == b
+NEQ          | Operand: 0        | a != b
+---------------------------------------------------------------------
+4. Jump Instructions
+---------------------------------------------------------------------
+JMP 10       | Operand: 1        | No condition jump, jump to given line
+JZ 10        | Operand: 1        | Jump if zero, if top element of stack is zero, jump
+---------------------------------------------------------------------
+5. Function Call Instrctions
+---------------------------------------------------------------------
+RET          | Operand: 0        | Return to parent function
+CALL fun 1   | Operand: 2        | Call function by function name and arguments number
+---------------------------------------------------------------------
+6. Termination Instruction
+---------------------------------------------------------------------
+HALT         | Operand: 0        | Immediately terminate program  
+---------------------------------------------------------------------

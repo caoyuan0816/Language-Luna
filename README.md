@@ -186,6 +186,9 @@ HALT         | Operand: 0        | Immediately terminate program
 ---------------------------------------------------------------------
 ```
 
+### Virtual Machine Design
+![vmdesign](./doc/VirtualMachine.jpeg)
+
 ## Examples
 ### Fibonacci (`cat data/fibonacci.lu`)
 ```
@@ -241,8 +244,8 @@ Run the bytecode file by luna virtual machine: (luna data/fibonacci.luo)
 2
 ```
 
-## Implementation Plan
-Lei Zhang: scanner, parser, AST generating.
+## Contribution
+Lei Zhang: scanner, parser, AST generating.<br />
 Zelin Bao: bytecode generator(for, if, while blocks), testing<br />
 Yiru Hu: bytecode generator(others), testing<br />
 Yuan Cao: interpreter(stack-based virtual machine) and bash scripts<br />

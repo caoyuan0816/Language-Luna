@@ -796,11 +796,7 @@ void printThisTree(TreeNode * t, int *uncle, int level) {
   if (t->literal) {
     printf("%s-%s\n", t->literal, nodeKindStr[t->nodeKind]);
   } else {
-    if (t->nodeKind >= 0) {
-      printf("%s%d\n", nodeKindStr[t->nodeKind], t->line_no);
-    } else {
-      printf("%c%d\n", 0x01, t->nodeKind);
-    }
+    printf("%s%d\n", nodeKindStr[t->nodeKind], t->line_no);
   }
 
   TreeNode * k = t->child;

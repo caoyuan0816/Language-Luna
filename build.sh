@@ -62,9 +62,10 @@ rm lunac
 mkdir "${ROOT_PATH}/build"
 cd "${ROOT_PATH}/build"
 cmake .. && make
+cp ./bin/lunac ../
+cp ./bin/luna  ../
+
 cd ${ROOT_PATH}
-cp bin/lunac ../
-cp bin/luna  ../
 
 # Finished
 echo ""
